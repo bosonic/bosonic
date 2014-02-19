@@ -1,0 +1,35 @@
+{
+  "name": "bosonic",
+  "version": "0.0.0",
+  "description": "bosonic =======",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bosonic/bosonic.git"
+  },
+  "author": "Raphaël Rougeron <goldoraf@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bosonic/bosonic/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "karma": "~0.11.14",
+    "grunt-karma": "~0.7.2",
+    "mocha": "~1.17.1",
+    "karma-mocha": "~0.1.1",
+    "chai": "~1.9.0",
+    "karma-chai": "~0.1.0",
+    "karma-chrome-launcher": "~0.1.2",
+    "karma-firefox-launcher": "~0.1.3"
+  }
+}

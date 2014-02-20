@@ -25,8 +25,19 @@
 
     function addLifecycleCallbacks(propertiesObject, behavior) {
         var created = behavior.createdCallback || behavior.readyCallback;
-        if (created)
-            propertiesObject.createdCallback = { enumerable: true, value: created };
+        if (behavior.template) {console.log(behavior.template)
+            propertiesObject.createdCallback = {
+                enumerable: true,
+                value: function () {
+                    this.template = Bosonic.createTemplateElement(this.template);
+                    var output = created ? created.apply(this, arguments) : null;
+                    return output || null;
+                }
+            };
+        } else {
+            if (created)
+                propertiesObject.createdCallback = { enumerable: true, value: created };
+        }
         
         var attached = behavior.insertedCallback || behavior.attachedCallback;
         if (attached) 
@@ -60,6 +71,9 @@
             };
             if (descriptor.hasOwnProperty('value')) {
                 propertiesObject[key].value = descriptor.value;
+                if (typeof descriptor.value !== 'function') {
+                    propertiesObject[key].writable = true;
+                }
             }
             if (descriptor.hasOwnProperty('get')) {
                 propertiesObject[key].get = descriptor.get;

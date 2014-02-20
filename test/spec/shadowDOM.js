@@ -33,7 +33,7 @@ describe('shadowDOM usage', function() {
                 template: '<div class="shadow"><content></content></div>',
                 createdCallback: function() {
                     this._root = this.createShadowRoot();
-                    this._root.innerHTML = this.template;
+                    this._root.appendChild(document.importNode(this.template.content));
                 }
             });
         });

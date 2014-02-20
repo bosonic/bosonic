@@ -135,11 +135,12 @@
         while (fragment.childNodes.length > 0) {
             fragment.removeChild(fragment.childNodes[0]);
         }
-        var tmp = document.createElement('body'), child;
-        tmp.innerHTML = html;
-        while (child = tmp.firstChild) {
-            fragment.appendChild(child);
+        var div = fragment.appendChild(document.createElement('div'));
+        div.innerHTML = html;
+        while (child = div.firstChild) {
+            fragment.insertBefore(child, div);
         }
+        fragment.removeChild(div);
         return fragment;
     }
 
@@ -179,6 +180,18 @@
         }
         enhanceFragment(fragment);
         return fragment;
+    }
+
+    function createFragmentFromHTML(html) {
+        var frag = document.createDocumentFragment();
+        setFragmentInnerHTML(frag, html);
+        return frag;
+    }
+
+    function createTemplateElement(html) {
+        return {
+            content: createFragmentFromHTML(html)
+        };
     }
 
     if (HTMLElement.prototype.webkitCreateShadowRoot) {
@@ -332,8 +345,19 @@
 
     function addLifecycleCallbacks(propertiesObject, behavior) {
         var created = behavior.createdCallback || behavior.readyCallback;
-        if (created)
-            propertiesObject.createdCallback = { enumerable: true, value: created };
+        if (behavior.template) {console.log(behavior.template)
+            propertiesObject.createdCallback = {
+                enumerable: true,
+                value: function () {
+                    this.template = Bosonic.createTemplateElement(this.template);
+                    var output = created ? created.apply(this, arguments) : null;
+                    return output || null;
+                }
+            };
+        } else {
+            if (created)
+                propertiesObject.createdCallback = { enumerable: true, value: created };
+        }
         
         var attached = behavior.insertedCallback || behavior.attachedCallback;
         if (attached) 
@@ -367,6 +391,9 @@
             };
             if (descriptor.hasOwnProperty('value')) {
                 propertiesObject[key].value = descriptor.value;
+                if (typeof descriptor.value !== 'function') {
+                    propertiesObject[key].writable = true;
+                }
             }
             if (descriptor.hasOwnProperty('get')) {
                 propertiesObject[key].get = descriptor.get;
@@ -379,6 +406,8 @@
     }
     var Bosonic = {
         createDocumentFragment: createEnhancedDocumentFragment,
+        createTemplateElement: createTemplateElement,
+        createFragmentFromHTML: createFragmentFromHTML,
         renderComposedDOM: renderComposedDOM,
         registerElement: registerElement,
         wrap: wrap,

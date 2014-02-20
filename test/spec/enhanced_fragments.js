@@ -10,6 +10,15 @@ describe('Enhanced Document Fragments', function() {
         });
     });
 
+    describe('creation from HTML', function() {
+        var frag = Bosonic.createFragmentFromHTML('<div id="toto"><a>Titi</a><p>Tata</p></div>');
+
+        it('should work ;)', function() {
+            expect(frag.childNodes.length).to.equal(1);
+            expect(frag.childNodes[0].childNodes.length).to.equal(2);
+        });
+    });
+
     describe('innerHTML support', function() {
         it('should work when the provided HTML has only one root node', function() {
             var html = '<div><div><h1>Test</h1></div><button>Go</button></div>',

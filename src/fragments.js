@@ -3,11 +3,12 @@
         while (fragment.childNodes.length > 0) {
             fragment.removeChild(fragment.childNodes[0]);
         }
-        var tmp = document.createElement('body'), child;
-        tmp.innerHTML = html;
-        while (child = tmp.firstChild) {
-            fragment.appendChild(child);
+        var div = fragment.appendChild(document.createElement('div'));
+        div.innerHTML = html;
+        while (child = div.firstChild) {
+            fragment.insertBefore(child, div);
         }
+        fragment.removeChild(div);
         return fragment;
     }
 
@@ -47,4 +48,16 @@
         }
         enhanceFragment(fragment);
         return fragment;
+    }
+
+    function createFragmentFromHTML(html) {
+        var frag = document.createDocumentFragment();
+        setFragmentInnerHTML(frag, html);
+        return frag;
+    }
+
+    function createTemplateElement(html) {
+        return {
+            content: createFragmentFromHTML(html)
+        };
     }

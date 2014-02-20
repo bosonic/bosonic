@@ -1,5 +1,7 @@
     var Bosonic = {
         createDocumentFragment: createEnhancedDocumentFragment,
+        createTemplateElement: createTemplateElement,
+        createFragmentFromHTML: createFragmentFromHTML,
         renderComposedDOM: renderComposedDOM,
         registerElement: registerElement,
         wrap: wrap,

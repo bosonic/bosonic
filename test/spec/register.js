@@ -1,10 +1,10 @@
 describe('When registering a custom element', function() {
     before(function() {
-        Bosonic.registerElement('vr-dummy', {});
+        Bosonic.registerElement('b-dummy', {});
     });
 
     beforeEach(function() {
-        this.elt = document.createElement('vr-dummy');
+        this.elt = document.createElement('b-dummy');
         this.elt.innerHTML = '<div>toto</div><div>toto</div>';
         document.body.appendChild(this.elt);
     });
@@ -22,5 +22,16 @@ describe('When registering a custom element', function() {
             done();
         }
         this.elt.innerHTML = '<div>titi</div>';
+    });
+
+    describe('With a template', function() {
+        Bosonic.registerElement('b-dummy-with-template', {
+            template: '<div>toto</div><div>titi</div>'
+        });
+
+        it('should have a template property', function() {
+            var elt = document.createElement('b-dummy-with-template');
+            expect(elt.template.content).to.respondTo('cloneNode');
+        });
     });
 });

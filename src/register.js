@@ -25,7 +25,7 @@
 
     function addLifecycleCallbacks(propertiesObject, behavior) {
         var created = behavior.createdCallback || behavior.readyCallback;
-        if (behavior.template) {console.log(behavior.template)
+        if (behavior.template) {
             propertiesObject.createdCallback = {
                 enumerable: true,
                 value: function () {

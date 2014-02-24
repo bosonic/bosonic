@@ -4,6 +4,7 @@
         createFragmentFromHTML: createFragmentFromHTML,
         renderComposedDOM: renderComposedDOM,
         registerElement: registerElement,
+        registerMixin: registerMixin,
         wrap: wrap,
         unwrap: unwrap
     }

@@ -318,23 +318,28 @@
     window.addEventListener('WebComponentsReady', function() {
         childListObserver.observe(document, { childList: true, subtree: true });
     });
+    var excludedConventionalProperties = [
+        'mixins',
+        'readyCallback', 
+        'createdCallback',
+        'insertedCallback',
+        'attachedCallback',
+        'removedCallback',
+        'detachedCallback',
+        'attributeChanged',
+        'childListChanged'
+    ];
+
     function registerElement(name, behavior) {
         var propertiesObject = {};
         addLifecycleCallbacks(propertiesObject, behavior);
+        addMixins(propertiesObject, behavior);
         
-        var userlandCallbacks = [
-            'readyCallback', 
-            'createdCallback',
-            'insertedCallback',
-            'removedCallback',
-            'attributeChanged',
-            'childListChanged'
-        ];
         // We inject all user-specified methods & properties in the properties object
-        mixin(behavior, propertiesObject, userlandCallbacks);
+        mixin(behavior, propertiesObject, excludedConventionalProperties);
 
         if (!HTMLElement.prototype.createShadowRoot) {
-            console.log('No native Shadow DOM ; polyfilling '+name+' element');
+            logFlags.dom && console.log('No native Shadow DOM ; polyfilling '+name+' element');
             mixin(ShadowDOMPolyfillMixin, propertiesObject);
         }
 
@@ -382,6 +387,31 @@
         return propertiesObject;
     }
 
+    function addMixins(propertiesObject, behavior) {
+        if (behavior.mixins) {
+            behavior.mixins.forEach(function(mixinName) {
+                if (!mixinExists(mixinName)) {
+                    throw new Error('Mixin not found: '+mixinName);
+                }
+                mixin(registeredMixins[mixinName], propertiesObject);
+            });
+        }
+        return propertiesObject;
+    }
+
+    var registeredMixins = {};
+
+    function mixinExists(name) {
+        return registeredMixins.hasOwnProperty(name);
+    }
+
+    function registerMixin(name, mixin) {
+        if (mixinExists(name)) {
+            throw new Error('Already registered mixin: '+name);
+        }
+        registeredMixins[name] = mixin;
+    }
+
     function mixin(behavior, propertiesObject, exclude) {
         Object.getOwnPropertyNames(behavior).forEach(function(key) {
             if (exclude && exclude.indexOf(key) !== -1) return;
@@ -410,6 +440,7 @@
         createFragmentFromHTML: createFragmentFromHTML,
         renderComposedDOM: renderComposedDOM,
         registerElement: registerElement,
+        registerMixin: registerMixin,
         wrap: wrap,
         unwrap: unwrap
     }

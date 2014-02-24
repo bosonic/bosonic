@@ -35,3 +35,26 @@ describe('When registering a custom element', function() {
         });
     });
 });
+
+describe('When registering a mixin', function() {
+    it('should be includable in an element', function() {
+        Bosonic.registerMixin('foo', {
+            myProperty: 'toto',
+            get toto() {
+                return this.myProperty;
+            },
+            set toto(val) {
+                this.myProperty = val;
+            },
+            bar: function() {
+                return 'bar';
+            }
+        });
+        Bosonic.registerElement('b-foo', { mixins: ['foo'] });
+        var elt = document.createElement('b-foo');
+        expect(elt).to.respondTo('bar');
+        expect(elt.toto).to.equal('toto');
+        elt.toto = 'titi';
+        expect(elt.toto).to.equal('titi');
+    });
+});

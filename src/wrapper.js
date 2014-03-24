@@ -6,7 +6,7 @@
     // 'isSameNode', 'isSupported' <= CR & IE only
     var normalMethods = [
         'addEventListener',
-        'cloneNode',
+        //'cloneNode', <- implementation provided by Bosonic, don't proxify
         'compareDocumentPosition',
         'dispatchEvent',
         'hasChildNodes',
@@ -15,7 +15,7 @@
         'lookupNamespaceURI',
         'lookupPrefix',
         'normalize',
-        'querySelector',
+        //'querySelector', <- idem
         'querySelectorAll',
         'removeEventListener'
     ];
@@ -33,7 +33,6 @@
     var getterProperties = [
         'childNodes',
         'firstChild',
-        'innerHTML',
         'lastChild',
         'localName',
         'namespaceURI',
@@ -46,10 +45,6 @@
         'prefix',
         'previousSibling',
         'textContent'
-    ];
-    var setterProperties = [
-        'innerHTML',
-        //'textContent'
     ];
 
     // We don't proxify these properties either:
@@ -73,10 +68,96 @@
     // 'TEXT_NODE',
 
     function DocumentFragmentWrapper(target) {
+        identifyNodes(target);
         this.target = target;
+        this.registeredListeners = [];
     }
 
-    var descriptors = {};
+    var descriptors = {
+        innerHTML: {
+            enumerable: true,
+            set: function(html) {
+                setFragmentInnerHTML(this.target, html);
+                this.onUpdate();
+            },
+            get: function() {
+                return getFragmentInnerHTML(this.target);
+            }
+        },
+
+        onUpdate: {
+            enumerable: false,
+            configurable: false,
+            writable: false,
+            value: function() {
+                identifyNodes(this.target);
+                this.target.dispatchEvent(new CustomEvent('update'));
+            }
+        },
+
+        cloneNode: {
+            enumerable: true,
+            value: function(deep) {
+                var clone = this.target.cloneNode(deep);
+                return wrap(clone);
+            }
+        },
+
+        unwrap: {
+            enumerable: true,
+            value: function() {
+                return unwrap(this);
+            }
+        },
+
+        querySelector: {
+            enumerable: true,
+            configurable: false,
+            writable: false,
+            value: function(selector) {
+                var elt = this.target.querySelector(selector);
+                if (elt) {
+                    instrumentElement(elt, this);
+                }
+                return elt;
+            }
+        },
+
+        registerListener: {
+            enumerable: false,
+            configurable: false,
+            writable: false,
+            value: function(guid, type, listener, useCapture) {
+                var detail = {
+                    guid: guid,
+                    type: type,
+                    listener: listener,
+                    useCapture: useCapture
+                };
+                this.registeredListeners.push(detail);
+                this.target.dispatchEvent(new CustomEvent('addListener', { detail: detail }));
+            }
+        },
+
+        unregisterListener: {
+            enumerable: false,
+            configurable: false,
+            writable: false,
+            value: function(guid, type, listener, useCapture) {
+                var unregistered;
+                this.registeredListeners.forEach(function(detail, index) {
+                    if (detail.guid === guid && detail.type === type && detail.listener === listener) {
+                        unregistered = detail;
+                        this.registeredListeners.splice(index, 1);
+                    }
+                }, this);
+                if (unregistered) {
+                    this.target.dispatchEvent(new CustomEvent('removeListener', { detail: unregistered }));
+                }
+            }
+        }
+    };
+
     updateMethods.forEach(function(name) {
         descriptors[name] = {
             enumerable: true,
@@ -84,7 +165,7 @@
             writable: false,
             value: function() {
                 var result = this.target[name].apply(this.target, arguments);
-                this.target.dispatchEvent(new CustomEvent('update'));
+                this.onUpdate();
                 return result;
             }
         };
@@ -100,28 +181,51 @@
         };
     });
     getterProperties.forEach(function(name) {
-        var descriptor = {
+        descriptors[name] = {
             enumerable: true,
             configurable: false,
             get: function() {
                 return this.target[name];
             }
         };
-        if (setterProperties.indexOf(name) !== -1) {
-            descriptor.set = function(value) {
-                this.target[name] = value;
-                this.target.dispatchEvent(new CustomEvent('update'));
-            }
-        }
-        descriptors[name] = descriptor;
     });
 
     Object.defineProperties(DocumentFragmentWrapper.prototype, descriptors);
 
-    function wrap(element) {
-        return new DocumentFragmentWrapper(element);
+    function wrap(fragment) {
+        return new DocumentFragmentWrapper(fragment);
     }
 
-    function unwrap(wrappedElement) {
-        return wrappedElement.target;
+    function unwrap(wrappedFragment) {
+        return removeNodeIDs(wrappedFragment.target);
+    }
+
+    function instrumentElement(element, ownerFragment) {
+        var addMethod = element.addEventListener,
+            removeMethod = element.removeEventListener;
+        
+        Object.defineProperties(element, {
+            addEventListener: {
+                enumerable: true,
+                value: function(type, listener, useCapture) {
+                    ownerFragment.registerListener(this.getAttribute('data-b-guid'), type, listener, useCapture);
+                    return;
+                }
+            },
+            removeEventListener: {
+                enumerable: true,
+                value: function(type, listener, useCapture) {
+                    ownerFragment.unregisterListener(this.getAttribute('data-b-guid'), type, listener, useCapture);
+                    return;
+                }
+            },
+            __addEventListener__: {
+                enumerable: true,
+                value: addMethod
+            },
+            __removeEventListener__: {
+                enumerable: true,
+                value: removeMethod
+            }
+        });
     }

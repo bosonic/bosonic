@@ -5,11 +5,12 @@ module.exports = function(config) {
     basePath: '',
 
     // frameworks to use
-    frameworks: ['mocha', 'chai'],
+    frameworks: ['mocha', 'chai', 'effroi'],
 
     // list of files / patterns to load in the browser
     files: [
       'dist/bosonic-polyfills.js',
+      'test/support/platform.js',
       'dist/bosonic.js',
       'test/support/*.js',
       'test/spec/*.js'

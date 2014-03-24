@@ -25,15 +25,21 @@
         });
     } else {
         var ShadowDOMPolyfillMixin = {
-            __shadowRoots__: [],
-
+            
             createShadowRoot: function() {
                 var that = this;
+                if (!this.__shadowRoots__) {
+                    this.__shadowRoots__ = [];
+                }
                 if (!this.__lightDOM__) {
                     this.__lightDOM__ = Bosonic.createDocumentFragment(this);
                     this.lightDOM.addEventListener('update', function(e) {
                         logFlags.dom && console.log('lightDOM updated');
                         that.refreshComposedDOM(e);
+                    });
+                    this.lightDOM.addEventListener('addListener', function(e) {
+                        logFlags.dom && console.log('listener attached to a lightDOM node');
+                        that.attachListener(e.detail);
                     });
                     if (!Platform.test) {
                         Object.defineProperty(this, 'innerHTML', {
@@ -52,19 +58,24 @@
                 }
                 var root = Bosonic.createDocumentFragment();
                 root.addEventListener('update', function(e) {
+                    logFlags.dom && console.log('shadowDOM updated');
                     that.refreshComposedDOM(e);
                 });
+                root.addEventListener('addListener', function(e) {
+                    logFlags.dom && console.log('listener attached to a shadowDOM node');
+                    that.attachListener(e.detail);
+                });
                 this.__shadowRoots__.push(root);
-                return Bosonic.wrap(root);
+                return root;
             },
 
             get lightDOM() {
-                return Bosonic.wrap(this.__lightDOM__);
+                return this.__lightDOM__;
             },
 
             get shadowRoot() {
-                if (this.__shadowRoots__.length === 0) return undefined;
-                return Bosonic.wrap(this.__shadowRoots__[0]);
+                if (!this.__shadowRoots__ || this.__shadowRoots__.length === 0) return undefined;
+                return this.__shadowRoots__[0];
             },
 
             refreshComposedDOM: function(event) {
@@ -74,13 +85,30 @@
                     this.removeChild(this.childNodes[0]);
                 }
                 this.appendChild(composedFragment);
+                
+                if (this.shadowRoot.registeredListeners) {
+                    this.shadowRoot.registeredListeners.forEach(function(listener) {
+                        this.attachListener(listener);
+                    }, this);
+                }
+
+                if (this.lightDOM.registeredListeners) {
+                    this.lightDOM.registeredListeners.forEach(function(listener) {
+                        this.attachListener(listener);
+                    }, this);
+                }
+            },
+
+            attachListener: function(detail) {
+                var elt = this.querySelector("[data-b-guid='"+detail.guid+"']");
+                elt.addEventListener(detail.type, detail.listener, detail.useCapture);
             }
         };
     }
 
     function renderComposedDOM(shadowFragment, lightFragment) {
-        var composed = shadowFragment.cloneNode(true),
-            light = lightFragment.cloneNode(true),
+        var composed = shadowFragment.target.cloneNode(true),
+            light = lightFragment.target.cloneNode(true),
             insertionPoints = composed.querySelectorAll('content');
 
         var forEach = Array.prototype.forEach;

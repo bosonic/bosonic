@@ -11,7 +11,7 @@
     // 'isSameNode', 'isSupported' <= CR & IE only
     var normalMethods = [
         'addEventListener',
-        'cloneNode',
+        //'cloneNode', <- implementation provided by Bosonic, don't proxify
         'compareDocumentPosition',
         'dispatchEvent',
         'hasChildNodes',
@@ -20,7 +20,7 @@
         'lookupNamespaceURI',
         'lookupPrefix',
         'normalize',
-        'querySelector',
+        //'querySelector', <- idem
         'querySelectorAll',
         'removeEventListener'
     ];
@@ -38,7 +38,6 @@
     var getterProperties = [
         'childNodes',
         'firstChild',
-        'innerHTML',
         'lastChild',
         'localName',
         'namespaceURI',
@@ -51,10 +50,6 @@
         'prefix',
         'previousSibling',
         'textContent'
-    ];
-    var setterProperties = [
-        'innerHTML',
-        //'textContent'
     ];
 
     // We don't proxify these properties either:
@@ -78,10 +73,96 @@
     // 'TEXT_NODE',
 
     function DocumentFragmentWrapper(target) {
+        identifyNodes(target);
         this.target = target;
+        this.registeredListeners = [];
     }
 
-    var descriptors = {};
+    var descriptors = {
+        innerHTML: {
+            enumerable: true,
+            set: function(html) {
+                setFragmentInnerHTML(this.target, html);
+                this.onUpdate();
+            },
+            get: function() {
+                return getFragmentInnerHTML(this.target);
+            }
+        },
+
+        onUpdate: {
+            enumerable: false,
+            configurable: false,
+            writable: false,
+            value: function() {
+                identifyNodes(this.target);
+                this.target.dispatchEvent(new CustomEvent('update'));
+            }
+        },
+
+        cloneNode: {
+            enumerable: true,
+            value: function(deep) {
+                var clone = this.target.cloneNode(deep);
+                return wrap(clone);
+            }
+        },
+
+        unwrap: {
+            enumerable: true,
+            value: function() {
+                return unwrap(this);
+            }
+        },
+
+        querySelector: {
+            enumerable: true,
+            configurable: false,
+            writable: false,
+            value: function(selector) {
+                var elt = this.target.querySelector(selector);
+                if (elt) {
+                    instrumentElement(elt, this);
+                }
+                return elt;
+            }
+        },
+
+        registerListener: {
+            enumerable: false,
+            configurable: false,
+            writable: false,
+            value: function(guid, type, listener, useCapture) {
+                var detail = {
+                    guid: guid,
+                    type: type,
+                    listener: listener,
+                    useCapture: useCapture
+                };
+                this.registeredListeners.push(detail);
+                this.target.dispatchEvent(new CustomEvent('addListener', { detail: detail }));
+            }
+        },
+
+        unregisterListener: {
+            enumerable: false,
+            configurable: false,
+            writable: false,
+            value: function(guid, type, listener, useCapture) {
+                var unregistered;
+                this.registeredListeners.forEach(function(detail, index) {
+                    if (detail.guid === guid && detail.type === type && detail.listener === listener) {
+                        unregistered = detail;
+                        this.registeredListeners.splice(index, 1);
+                    }
+                }, this);
+                if (unregistered) {
+                    this.target.dispatchEvent(new CustomEvent('removeListener', { detail: unregistered }));
+                }
+            }
+        }
+    };
+
     updateMethods.forEach(function(name) {
         descriptors[name] = {
             enumerable: true,
@@ -89,7 +170,7 @@
             writable: false,
             value: function() {
                 var result = this.target[name].apply(this.target, arguments);
-                this.target.dispatchEvent(new CustomEvent('update'));
+                this.onUpdate();
                 return result;
             }
         };
@@ -105,32 +186,92 @@
         };
     });
     getterProperties.forEach(function(name) {
-        var descriptor = {
+        descriptors[name] = {
             enumerable: true,
             configurable: false,
             get: function() {
                 return this.target[name];
             }
         };
-        if (setterProperties.indexOf(name) !== -1) {
-            descriptor.set = function(value) {
-                this.target[name] = value;
-                this.target.dispatchEvent(new CustomEvent('update'));
-            }
-        }
-        descriptors[name] = descriptor;
     });
 
     Object.defineProperties(DocumentFragmentWrapper.prototype, descriptors);
 
-    function wrap(element) {
-        return new DocumentFragmentWrapper(element);
+    function wrap(fragment) {
+        return new DocumentFragmentWrapper(fragment);
     }
 
-    function unwrap(wrappedElement) {
-        return wrappedElement.target;
+    function unwrap(wrappedFragment) {
+        return removeNodeIDs(wrappedFragment.target);
+    }
+
+    function instrumentElement(element, ownerFragment) {
+        var addMethod = element.addEventListener,
+            removeMethod = element.removeEventListener;
+        
+        Object.defineProperties(element, {
+            addEventListener: {
+                enumerable: true,
+                value: function(type, listener, useCapture) {
+                    ownerFragment.registerListener(this.getAttribute('data-b-guid'), type, listener, useCapture);
+                    return;
+                }
+            },
+            removeEventListener: {
+                enumerable: true,
+                value: function(type, listener, useCapture) {
+                    ownerFragment.unregisterListener(this.getAttribute('data-b-guid'), type, listener, useCapture);
+                    return;
+                }
+            },
+            __addEventListener__: {
+                enumerable: true,
+                value: addMethod
+            },
+            __removeEventListener__: {
+                enumerable: true,
+                value: removeMethod
+            }
+        });
     }
     
+    //Generate four random hex digits.
+    function S4() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    }
+
+    // Generate a pseudo-GUID by concatenating random hexadecimal.
+    function guid() {
+       return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+    }
+
+    function identifyNodes(fragment) {
+        var node, length = fragment.childNodes.length;
+        for (var i = 0; i < length; i++) {
+            node = fragment.childNodes[i];
+            if (node.nodeType === 1 && !node.hasAttribute('data-b-guid')) {
+                node.setAttribute('data-b-guid', guid());
+            }
+            if (node.childNodes.length > 0) {
+                identifyNodes(node);
+            }
+        }
+    }
+
+    function removeNodeIDs(fragment) {
+        var node, length = fragment.childNodes.length;
+        for (var i = 0; i < length; i++) {
+            node = fragment.childNodes[i];
+            if (node.nodeType === 1 && node.hasAttribute('data-b-guid')) {
+                node.removeAttribute('data-b-guid');
+            }
+            if (node.childNodes.length > 0) {
+                removeNodeIDs(node);
+            }
+        }
+        return fragment;
+    }
+
     function setFragmentInnerHTML(fragment, html) {
         while (fragment.childNodes.length > 0) {
             fragment.removeChild(fragment.childNodes[0]);
@@ -150,36 +291,14 @@
         return tmp.innerHTML;
     }
 
-    function enhanceFragment(fragment) {
-        Object.defineProperty(fragment, 'innerHTML', {
-            enumerable: true,
-            set: function(html) {
-                setFragmentInnerHTML(this, html);
-            },
-            get: function() {
-                return getFragmentInnerHTML(this);
-            }
-        });
-        var cloneNode = fragment.cloneNode;
-        Object.defineProperty(fragment, 'cloneNode', {
-            enumerable: true,
-            value: function(deep) {
-                var clone = cloneNode.call(this, deep);
-                enhanceFragment(clone);
-                return clone;
-            }
-        });
-    }
-
-    function createEnhancedDocumentFragment(fromNode) {
+    function createWrappedDocumentFragment(fromNode) {
         var fragment = document.createDocumentFragment();
         if (fromNode) {
             while (child = fromNode.firstChild) {
                 fragment.appendChild(child);
             }
         }
-        enhanceFragment(fragment);
-        return fragment;
+        return wrap(fragment);
     }
 
     function createFragmentFromHTML(html) {
@@ -221,15 +340,21 @@
         });
     } else {
         var ShadowDOMPolyfillMixin = {
-            __shadowRoots__: [],
-
+            
             createShadowRoot: function() {
                 var that = this;
+                if (!this.__shadowRoots__) {
+                    this.__shadowRoots__ = [];
+                }
                 if (!this.__lightDOM__) {
                     this.__lightDOM__ = Bosonic.createDocumentFragment(this);
                     this.lightDOM.addEventListener('update', function(e) {
                         logFlags.dom && console.log('lightDOM updated');
                         that.refreshComposedDOM(e);
+                    });
+                    this.lightDOM.addEventListener('addListener', function(e) {
+                        logFlags.dom && console.log('listener attached to a lightDOM node');
+                        that.attachListener(e.detail);
                     });
                     if (!Platform.test) {
                         Object.defineProperty(this, 'innerHTML', {
@@ -248,19 +373,24 @@
                 }
                 var root = Bosonic.createDocumentFragment();
                 root.addEventListener('update', function(e) {
+                    logFlags.dom && console.log('shadowDOM updated');
                     that.refreshComposedDOM(e);
                 });
+                root.addEventListener('addListener', function(e) {
+                    logFlags.dom && console.log('listener attached to a shadowDOM node');
+                    that.attachListener(e.detail);
+                });
                 this.__shadowRoots__.push(root);
-                return Bosonic.wrap(root);
+                return root;
             },
 
             get lightDOM() {
-                return Bosonic.wrap(this.__lightDOM__);
+                return this.__lightDOM__;
             },
 
             get shadowRoot() {
-                if (this.__shadowRoots__.length === 0) return undefined;
-                return Bosonic.wrap(this.__shadowRoots__[0]);
+                if (!this.__shadowRoots__ || this.__shadowRoots__.length === 0) return undefined;
+                return this.__shadowRoots__[0];
             },
 
             refreshComposedDOM: function(event) {
@@ -270,13 +400,30 @@
                     this.removeChild(this.childNodes[0]);
                 }
                 this.appendChild(composedFragment);
+                
+                if (this.shadowRoot.registeredListeners) {
+                    this.shadowRoot.registeredListeners.forEach(function(listener) {
+                        this.attachListener(listener);
+                    }, this);
+                }
+
+                if (this.lightDOM.registeredListeners) {
+                    this.lightDOM.registeredListeners.forEach(function(listener) {
+                        this.attachListener(listener);
+                    }, this);
+                }
+            },
+
+            attachListener: function(detail) {
+                var elt = this.querySelector("[data-b-guid='"+detail.guid+"']");
+                elt.addEventListener(detail.type, detail.listener, detail.useCapture);
             }
         };
     }
 
     function renderComposedDOM(shadowFragment, lightFragment) {
-        var composed = shadowFragment.cloneNode(true),
-            light = lightFragment.cloneNode(true),
+        var composed = shadowFragment.target.cloneNode(true),
+            light = lightFragment.target.cloneNode(true),
             insertionPoints = composed.querySelectorAll('content');
 
         var forEach = Array.prototype.forEach;
@@ -434,16 +581,26 @@
         });
         return propertiesObject;
     }
-    var Bosonic = {
-        createDocumentFragment: createEnhancedDocumentFragment,
-        createTemplateElement: createTemplateElement,
-        createFragmentFromHTML: createFragmentFromHTML,
-        renderComposedDOM: renderComposedDOM,
-        registerElement: registerElement,
-        registerMixin: registerMixin,
-        wrap: wrap,
-        unwrap: unwrap
-    }
+    var Bosonic;
 
+    if (Platform.test) {
+        window.DocumentFragmentWrapper = DocumentFragmentWrapper;
+
+        Bosonic = {
+            createDocumentFragment: createWrappedDocumentFragment,
+            createTemplateElement: createTemplateElement,
+            createFragmentFromHTML: createFragmentFromHTML,
+            getHTMLFromFragment: getFragmentInnerHTML,
+            removeNodeIDs: removeNodeIDs,
+            renderComposedDOM: renderComposedDOM,
+            registerElement: registerElement,
+            registerMixin: registerMixin
+        }
+    } else {
+        Bosonic = {
+            registerElement: registerElement
+        }
+    }
+    
     window.Bosonic = Bosonic;
 }());

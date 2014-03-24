@@ -1,4 +1,41 @@
     
+    //Generate four random hex digits.
+    function S4() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    }
+
+    // Generate a pseudo-GUID by concatenating random hexadecimal.
+    function guid() {
+       return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+    }
+
+    function identifyNodes(fragment) {
+        var node, length = fragment.childNodes.length;
+        for (var i = 0; i < length; i++) {
+            node = fragment.childNodes[i];
+            if (node.nodeType === 1 && !node.hasAttribute('data-b-guid')) {
+                node.setAttribute('data-b-guid', guid());
+            }
+            if (node.childNodes.length > 0) {
+                identifyNodes(node);
+            }
+        }
+    }
+
+    function removeNodeIDs(fragment) {
+        var node, length = fragment.childNodes.length;
+        for (var i = 0; i < length; i++) {
+            node = fragment.childNodes[i];
+            if (node.nodeType === 1 && node.hasAttribute('data-b-guid')) {
+                node.removeAttribute('data-b-guid');
+            }
+            if (node.childNodes.length > 0) {
+                removeNodeIDs(node);
+            }
+        }
+        return fragment;
+    }
+
     function setFragmentInnerHTML(fragment, html) {
         while (fragment.childNodes.length > 0) {
             fragment.removeChild(fragment.childNodes[0]);
@@ -18,36 +55,14 @@
         return tmp.innerHTML;
     }
 
-    function enhanceFragment(fragment) {
-        Object.defineProperty(fragment, 'innerHTML', {
-            enumerable: true,
-            set: function(html) {
-                setFragmentInnerHTML(this, html);
-            },
-            get: function() {
-                return getFragmentInnerHTML(this);
-            }
-        });
-        var cloneNode = fragment.cloneNode;
-        Object.defineProperty(fragment, 'cloneNode', {
-            enumerable: true,
-            value: function(deep) {
-                var clone = cloneNode.call(this, deep);
-                enhanceFragment(clone);
-                return clone;
-            }
-        });
-    }
-
-    function createEnhancedDocumentFragment(fromNode) {
+    function createWrappedDocumentFragment(fromNode) {
         var fragment = document.createDocumentFragment();
         if (fromNode) {
             while (child = fromNode.firstChild) {
                 fragment.appendChild(child);
             }
         }
-        enhanceFragment(fragment);
-        return fragment;
+        return wrap(fragment);
     }
 
     function createFragmentFromHTML(html) {

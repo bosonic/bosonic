@@ -15,7 +15,8 @@
         }
     } else {
         Bosonic = {
-            registerElement: registerElement
+            registerElement: registerElement,
+            createTemplateElement: createTemplateElement
         }
     }
     

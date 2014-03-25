@@ -450,7 +450,7 @@
     
     function handleChildListMutations(mutations) {
         mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList' && mutation.target.__upgraded__) {
+            if (mutation.type === 'childList') {
                 var elt = mutation.target;
                 logFlags.dom && console.log('children change', elt);
                 if (elt.childListChangedCallback) {
@@ -598,7 +598,8 @@
         }
     } else {
         Bosonic = {
-            registerElement: registerElement
+            registerElement: registerElement,
+            createTemplateElement: createTemplateElement
         }
     }
     

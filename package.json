@@ -31,6 +31,8 @@
     "karma-chai": "~0.1.0",
     "karma-chrome-launcher": "~0.1.2",
     "karma-firefox-launcher": "~0.1.3",
-    "karma-effroi": "0.0.0"
+    "karma-effroi": "0.0.0",
+    "karma-opera-launcher": "^0.1.0",
+    "karma-safari-launcher": "^0.1.1"
   }
 }

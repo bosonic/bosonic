@@ -357,7 +357,8 @@
                         that.attachListener(e.detail);
                     });
                     if (!Platform.test) {
-                        Object.defineProperty(this, 'innerHTML', {
+                        // Disabled for now because of a Safari bug: https://github.com/bosonic/bosonic/issues/1
+                        /*Object.defineProperty(this, 'innerHTML', {
                             enumerable: true,
                             configurable: false,
                             get: function() {
@@ -368,7 +369,7 @@
                                 logFlags.dom && console.log('set innerHTML called on element ; forwarding to lightDOM', html);
                                 this.lightDOM.innerHTML = html;
                             }
-                        });
+                        });*/
                     }
                 }
                 var root = Bosonic.createDocumentFragment();

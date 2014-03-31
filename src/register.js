@@ -10,7 +10,9 @@
         'childListChanged'
     ];
 
-    function registerElement(name, behavior) {
+    var elementPrototypes = {};
+
+    function registerElement(name, behavior, extendElement) {
         var propertiesObject = {};
         addLifecycleCallbacks(propertiesObject, behavior);
         addMixins(propertiesObject, behavior);
@@ -23,9 +25,28 @@
             mixin(ShadowDOMPolyfillMixin, propertiesObject);
         }
 
+        if (extendElement) {
+            var superPrototype = elementPrototypes[extendElement];
+            if (!superPrototype) {
+                throw new Error('You tried to extend an element that does not exist', extendElement);
+            }
+            propertiesObject._super = {
+                enumerable: false,
+                writable: false,
+                configurable: false,
+                value: superPrototype
+            };
+            var elementPrototype = Object.create(superPrototype, propertiesObject);
+        } else {
+            var elementPrototype = Object.create(HTMLElement.prototype, propertiesObject);
+            
+        }
+
         document.register(name, {
-            prototype: Object.create(HTMLElement.prototype, propertiesObject)
+            prototype: elementPrototype
         });
+        
+        elementPrototypes[name] = elementPrototype;
     }
 
     function addLifecycleCallbacks(propertiesObject, behavior) {

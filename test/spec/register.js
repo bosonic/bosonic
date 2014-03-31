@@ -9,6 +9,10 @@ describe('When registering a custom element', function() {
         document.body.appendChild(this.elt);
     });
 
+    afterEach(function() {
+        document.body.removeChild(this.elt);
+    });
+
     it('s children should be accessible', function() {
         expect(this.elt.querySelectorAll('div').length).to.equal(2);
     });
@@ -32,6 +36,36 @@ describe('When registering a custom element', function() {
         it('should have a template property', function() {
             var elt = document.createElement('b-dummy-with-template');
             expect(elt.template.content).to.respondTo('cloneNode');
+        });
+    });
+
+    describe('That extends another custom element', function() {
+        Bosonic.registerElement('b-simple-dummy', {
+            readyCallback: function() {
+                this.readyCallbackCalled = true;
+            },
+            toggle: function() {
+                this.toggled = true;
+            }
+        });
+        Bosonic.registerElement('b-extended-dummy', {
+            toggle: function() {
+                this._super.toggle.call(this);
+                this.superToggled = true;
+            }
+        }, 'b-simple-dummy');
+
+        it('should call its super methods when not overrided', function() {
+            var elt = document.createElement('b-extended-dummy');
+            expect(elt.readyCallbackCalled).to.be.true;
+        });
+
+        it('should have a reference to its super prototype, useable by overrided methods', function() {
+            var elt = document.createElement('b-extended-dummy');
+            expect(elt.toggled).to.be.undefined;
+            elt.toggle();
+            expect(elt.toggled).to.be.true;
+            expect(elt.superToggled).to.be.true;
         });
     });
 });

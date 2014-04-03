@@ -27,30 +27,23 @@ describe('renderComposedDOM', function() {
     });
 });
 
-describe('shadowDOM usage', function() {
-    
-    describe('When creating a custom element with a template', function() {
+if (!Platform.nativeShadowDOM) {
+    describe('shadowDOM usage', function() {
         
-        before(function() {
-            Bosonic.registerElement('vr-foo', {
-                template: '<div class="shadow"><content></content></div>',
-                createdCallback: function() {
-                    var root = this.createShadowRoot();
-                    root.appendChild(this.template.content.cloneNode(true));
-                }
+        describe('When creating a shadow root', function() {
+
+            beforeEach(function() {
+                this.elt = document.createElement('div');
+                document.body.appendChild(this.elt);
+                this.elt.createShadowRoot();
+                this.elt.shadowRoot.innerHTML = '<div class="shadow"><content></content></div>';
             });
-        });
 
-        beforeEach(function() {
-            this.elt = document.createElement('vr-foo');
-            document.body.appendChild(this.elt);
-        });
+            it('should create a shadowRoot', function() {
+                expect(this.elt.shadowRoot).to.exist;
+            });
 
-        it('should create a shadowRoot', function() {
-            expect(this.elt.shadowRoot).to.exist;
-        });
-
-        if (!HTMLElement.prototype.createShadowRoot) {
+            
             it('should distribute the lightDOM into the shadowDOM', function() {
                 this.elt.lightDOM.innerHTML = '<div class="light">toto</div>';
                 expect(Bosonic.removeNodeIDs(this.elt).innerHTML).to.equal('<div class="shadow"><div class="light">toto</div></div>');
@@ -61,27 +54,16 @@ describe('shadowDOM usage', function() {
                 this.elt.lightDOM.appendChild(document.createElement('button'));
                 expect(Bosonic.removeNodeIDs(this.elt).innerHTML).to.equal('<div class="shadow"><div class="light">toto</div><button></button></div>');
             });
-        }
-    });
-
-    if (!HTMLElement.prototype.createShadowRoot) {
-        
+        });
+            
         describe('When adding an event listener to a shadowDOM or lightDOM node', function() {
             
             var elt;
 
-            before(function() {
-                Bosonic.registerElement('b-shadow-dom-events', {
-                    template: '<div><button class="close">x</button><content></content></div>',
-                    readyCallback: function() {
-                        var root = this.createShadowRoot();
-                        root.appendChild(this.template.content.cloneNode(true));
-                    }
-                });
-            });
-
             beforeEach(function() {
-                elt = document.createElement('b-shadow-dom-events');
+                elt = document.createElement('div');
+                elt.createShadowRoot();
+                elt.shadowRoot.innerHTML = '<div><button class="close">x</button><content></content></div>';
                 elt.lightDOM.innerHTML = '<p>toto</p>';
                 document.body.appendChild(elt);
             });
@@ -134,5 +116,5 @@ describe('shadowDOM usage', function() {
                 });
             });
         });
-    }
-});
+    });
+}

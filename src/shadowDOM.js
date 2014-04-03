@@ -1,4 +1,5 @@
-    if (HTMLElement.prototype.webkitCreateShadowRoot) {
+    if (HTMLElement.prototype.webkitCreateShadowRoot || HTMLElement.prototype.createShadowRoot) {
+        Platform.nativeShadowDOM = true;
         logFlags.dom && console.log('Native Shadow DOM detected');
 
         var originalCreateShadowRoot = Element.prototype.webkitCreateShadowRoot;
@@ -24,87 +25,97 @@
             }
         });
     } else {
-        var ShadowDOMPolyfillMixin = {
-            
-            createShadowRoot: function() {
-                var that = this;
-                if (!this.__shadowRoots__) {
-                    this.__shadowRoots__ = [];
+        Platform.nativeShadowDOM = false;
+        logFlags.dom && console.log('No native Shadow DOM ; polyfilling '+name+' element');
+
+        Object.defineProperties(Element.prototype, {
+            shadowRoot: {
+                get: function() {
+                    if (!this.__shadowRoots__ || this.__shadowRoots__.length === 0) return undefined;
+                    return this.__shadowRoots__[0];
                 }
-                if (!this.__lightDOM__) {
-                    this.__lightDOM__ = Bosonic.createDocumentFragment(this);
-                    this.lightDOM.addEventListener('update', function(e) {
-                        logFlags.dom && console.log('lightDOM updated');
+            },
+            lightDOM: {
+                get: function() {
+                    return this.__lightDOM__;
+                }
+            },
+            createShadowRoot: {
+                value: function() {
+                    var that = this;
+                    if (!this.__shadowRoots__) {
+                        this.__shadowRoots__ = [];
+                    }
+                    if (!this.__lightDOM__) {
+                        this.__lightDOM__ = createWrappedDocumentFragment(this);
+                        this.lightDOM.addEventListener('update', function(e) {
+                            logFlags.dom && console.log('lightDOM updated');
+                            that.refreshComposedDOM(e);
+                        });
+                        this.lightDOM.addEventListener('addListener', function(e) {
+                            logFlags.dom && console.log('listener attached to a lightDOM node');
+                            that.attachListener(e.detail);
+                        });
+                        if (!Platform.test) {
+                            // Disabled for now because of a Safari bug: https://github.com/bosonic/bosonic/issues/1
+                            /*Object.defineProperty(this, 'innerHTML', {
+                                enumerable: true,
+                                configurable: false,
+                                get: function() {
+                                    logFlags.dom && console.log('get innerHTML called on element ; forwarding to lightDOM');
+                                    return this.lightDOM.innerHTML;
+                                },
+                                set: function(html) {
+                                    logFlags.dom && console.log('set innerHTML called on element ; forwarding to lightDOM', html);
+                                    this.lightDOM.innerHTML = html;
+                                }
+                            });*/
+                        }
+                    }
+                    var root = createWrappedDocumentFragment();
+                    root.addEventListener('update', function(e) {
+                        logFlags.dom && console.log('shadowDOM updated');
                         that.refreshComposedDOM(e);
                     });
-                    this.lightDOM.addEventListener('addListener', function(e) {
-                        logFlags.dom && console.log('listener attached to a lightDOM node');
+                    root.addEventListener('addListener', function(e) {
+                        logFlags.dom && console.log('listener attached to a shadowDOM node');
                         that.attachListener(e.detail);
                     });
-                    if (!Platform.test) {
-                        // Disabled for now because of a Safari bug: https://github.com/bosonic/bosonic/issues/1
-                        /*Object.defineProperty(this, 'innerHTML', {
-                            enumerable: true,
-                            configurable: false,
-                            get: function() {
-                                logFlags.dom && console.log('get innerHTML called on element ; forwarding to lightDOM');
-                                return this.lightDOM.innerHTML;
-                            },
-                            set: function(html) {
-                                logFlags.dom && console.log('set innerHTML called on element ; forwarding to lightDOM', html);
-                                this.lightDOM.innerHTML = html;
-                            }
-                        });*/
+                    this.__shadowRoots__.push(root);
+                    return root;
+                }
+            },
+
+            refreshComposedDOM: {
+                value: function(event) {
+                    logFlags.dom && console.log('refreshing composed DOM');
+                    var composedFragment = renderComposedDOM(this.shadowRoot, this.__lightDOM__);
+                    while (this.childNodes.length > 0) {
+                        this.removeChild(this.childNodes[0]);
+                    }
+                    this.appendChild(composedFragment);
+                    
+                    if (this.shadowRoot.registeredListeners) {
+                        this.shadowRoot.registeredListeners.forEach(function(listener) {
+                            this.attachListener(listener);
+                        }, this);
+                    }
+
+                    if (this.lightDOM.registeredListeners) {
+                        this.lightDOM.registeredListeners.forEach(function(listener) {
+                            this.attachListener(listener);
+                        }, this);
                     }
                 }
-                var root = Bosonic.createDocumentFragment();
-                root.addEventListener('update', function(e) {
-                    logFlags.dom && console.log('shadowDOM updated');
-                    that.refreshComposedDOM(e);
-                });
-                root.addEventListener('addListener', function(e) {
-                    logFlags.dom && console.log('listener attached to a shadowDOM node');
-                    that.attachListener(e.detail);
-                });
-                this.__shadowRoots__.push(root);
-                return root;
             },
 
-            get lightDOM() {
-                return this.__lightDOM__;
-            },
-
-            get shadowRoot() {
-                if (!this.__shadowRoots__ || this.__shadowRoots__.length === 0) return undefined;
-                return this.__shadowRoots__[0];
-            },
-
-            refreshComposedDOM: function(event) {
-                logFlags.dom && console.log('refreshing composed DOM');
-                var composedFragment = renderComposedDOM(this.shadowRoot, this.__lightDOM__);
-                while (this.childNodes.length > 0) {
-                    this.removeChild(this.childNodes[0]);
+            attachListener: {
+                value: function(detail) {
+                    var elt = this.querySelector("[data-b-guid='"+detail.guid+"']");
+                    elt.addEventListener(detail.type, detail.listener, detail.useCapture);
                 }
-                this.appendChild(composedFragment);
-                
-                if (this.shadowRoot.registeredListeners) {
-                    this.shadowRoot.registeredListeners.forEach(function(listener) {
-                        this.attachListener(listener);
-                    }, this);
-                }
-
-                if (this.lightDOM.registeredListeners) {
-                    this.lightDOM.registeredListeners.forEach(function(listener) {
-                        this.attachListener(listener);
-                    }, this);
-                }
-            },
-
-            attachListener: function(detail) {
-                var elt = this.querySelector("[data-b-guid='"+detail.guid+"']");
-                elt.addEventListener(detail.type, detail.listener, detail.useCapture);
             }
-        };
+        });
     }
 
     function renderComposedDOM(shadowFragment, lightFragment) {

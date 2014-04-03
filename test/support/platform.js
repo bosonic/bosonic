@@ -1,1 +1,3 @@
-Platform.test = true;
+window.Platform = {
+    test: true
+}

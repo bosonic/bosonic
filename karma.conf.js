@@ -9,9 +9,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'dist/bosonic-polyfills.js',
       'test/support/platform.js',
-      'dist/bosonic.js',
+      'dist/bosonic-polyfills.js',
       'test/support/*.js',
       'test/spec/*.js'
     ],

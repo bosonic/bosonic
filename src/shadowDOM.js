@@ -2,7 +2,7 @@
         Platform.nativeShadowDOM = true;
         logFlags.dom && console.log('Native Shadow DOM detected');
 
-        var originalCreateShadowRoot = Element.prototype.webkitCreateShadowRoot;
+        var originalCreateShadowRoot = HTMLElement.prototype.webkitCreateShadowRoot || HTMLElement.prototype.createShadowRoot;
         Element.prototype.webkitCreateShadowRoot = function() {
             var elderRoot = this.webkitShadowRoot;
             var root = originalCreateShadowRoot.call(this);

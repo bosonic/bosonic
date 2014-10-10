@@ -26,25 +26,19 @@ describe("Web component lifecycle", function() {
         expect(elt.attachedCallbackCalled).to.be.undefined;
     });
 
-    // it("should called attachedCallback when appended", function(done) {
-    //     var elt = document.createElement('x-foo');
-    //     document.body.appendChild(elt);
-    //     wait(function() {
-    //         expect(elt.attachedCallbackCalled).to.be.true;
-    //         expect(elt.detachedCallbackCalled).to.be.undefined;
-    //         done();
-    //     });
-    // });
+    it("should called attachedCallback when appended", function() {
+        return createCustomElement('x-foo').then(function(elt) {
+            expect(elt.attachedCallbackCalled).to.be.true;
+            expect(elt.detachedCallbackCalled).to.be.undefined;
+        });
+    });
 
-    // it("should called detachedCallback when removed", function(done) {
-    //     var elt = document.createElement('x-foo');
-    //     document.body.appendChild(elt);
-    //     wait(function() {
-    //         document.body.removeChild(elt);
-    //         wait(function() {
-    //             expect(elt.detachedCallbackCalled).to.be.true;
-    //             done();
-    //         });
-    //     });
-    // });
+    it("should called detachedCallback when removed", function() {
+        return createCustomElement('x-foo').then(function(elt) {
+            document.body.removeChild(elt);
+            return wait(elt);
+        }).then(function(elt) {
+            expect(elt.detachedCallbackCalled).to.be.true;
+        });
+    });
 });

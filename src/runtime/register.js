@@ -94,6 +94,14 @@
         });
     }
 
+    function getFragmentFromNode(node) {
+        var fragment = document.createDocumentFragment();
+        while (child = node.firstChild) {
+            fragment.appendChild(child);
+        }
+        return fragment;
+    }
+
     Bosonic.register = function(options) {
         var script = document._currentScript;
         var element = script && script.parentNode ? script.parentNode : null;
@@ -123,7 +131,8 @@
                 writable: true,
                 value: function() {
                     this.createShadowRoot();
-                    this.shadowRoot.appendChild(document.importNode(template.content, true));
+                    var content = template.content ? template.content : getFragmentFromNode(template);
+                    this.shadowRoot.appendChild(document.importNode(content, true));
                     if (Platform.shadowDOM !== 'native') {
                         scopeShadowStyles(this.shadowRoot, name);
                     }

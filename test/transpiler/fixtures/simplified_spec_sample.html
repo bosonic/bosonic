@@ -1,0 +1,41 @@
+<element name="tick-tock-clock">
+  <template>
+    <style>
+      :host {
+        border: 1px solid #ccc;
+      }
+    </style>
+    <span id="hh"></span>
+    <span id="sep">:</span>
+    <span id="mm"></span>
+  </template>
+  <script>
+    function start() {
+      this.tick();
+      this._interval = window.setInterval(this.tick.bind(this), 1000);
+    }
+    function stop() {
+      window.clearInterval(this._interval);
+    }
+    function fmt(n) {
+      return (n < 10 ? '0' : '') + n;
+    }
+
+    ({
+      createdCallback: function() {
+        if (this.parentElement) {
+          start.call(this);
+        }
+      },
+      attachedCallback: start,
+      detachedCallback: stop,
+      tick: function () {
+        var now = new Date();
+        this.shadowRoot.querySelector('#hh').textContent = fmt(now.getHours());
+        this.shadowRoot.querySelector('#sep').style.visibility =
+            now.getSeconds() % 2 ? 'visible' : 'hidden';
+        this.shadowRoot.querySelector('#mm').textContent = fmt(now.getMinutes());
+      }
+    });
+  </script>
+</element>

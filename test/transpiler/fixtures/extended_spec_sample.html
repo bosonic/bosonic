@@ -1,0 +1,11 @@
+<element name="super-tick-tock-clock" extends="tick-tock-clock">
+  <script>
+    ({
+      tick: function () {
+        super.tick();
+        var now = new Date();
+        this.style.borderColor = now.getSeconds() % 2 ? '#ccc' : 'red';
+      }
+    });
+  </script>
+</element>

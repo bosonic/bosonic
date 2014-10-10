@@ -17,17 +17,27 @@ module.exports = function(grunt) {
       }
     },
 
+    mochaTest: {
+      transpiler: {
+        options: {
+          reporter: 'spec'
+        },
+        src: ['test/transpiler/*.js']
+      }
+    },
+
     watch: {
       platform: {
-        files: ['src/*.js'],
-        tasks: ['concat']
+        files: ['src/platform*.js'],
+        tasks: ['concat:platform']
       }
     }
 
   });
 
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-concat');
+  require('load-grunt-tasks')(grunt);
+
+  grunt.registerTask('test:transpiler', ['mochaTest']);
 
   grunt.registerTask('default', ['concat', 'watch']);
 

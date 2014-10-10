@@ -18,9 +18,21 @@
   "bugs": {
     "url": "https://github.com/bosonic/bosonic/issues"
   },
+  "dependencies": {
+    "cheerio": "~0.17.0",
+    "escodegen": "~1.2.0",
+    "css": "^1.6.0",
+    "jstransform": "^6.3.2",
+    "esprima-fb": "^6001.1001.0-dev-harmony-fb"
+  },
   "devDependencies": {
+    "chai": "^1.9.2",
     "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.0",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-contrib-concat": "^0.5.0"
+    "grunt-mocha-test": "^0.12.1",
+    "jsdom": "^1.0.1",
+    "load-grunt-tasks": "^0.6.0",
+    "mocha": "^1.21.4"
   }
 }

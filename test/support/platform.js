@@ -1,3 +1,0 @@
-window.Platform = {
-    test: true
-}

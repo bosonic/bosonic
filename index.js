@@ -60,7 +60,7 @@ function includeTemplatingCode(options) {
     options.inject = options.inject || {};
     options.inject.createdCallback = [
         'this.createShadowRoot();',
-        'this.shadowRoot.appendChild(document.importNode(template.content, true));'
+        'this.shadowRoot.appendChild(document.importNode('+options.templateVar+'.content, true));'
     ]
     return options;
 }
@@ -78,6 +78,10 @@ function includeAttributeChangedCode(options, attributes) {
     return options;
 }
 
+function templateVar(element) {
+    return '__bosonic__template__' + element.name.replace(/-/g, '_') + '__';
+}
+
 function transpileForBosonicPlatform(htmlString, options) {
     var $ = cheerio.load(htmlString, { xmlMode: true }),
         element = getElementFacets($),
@@ -88,7 +92,8 @@ function transpileForBosonicPlatform(htmlString, options) {
     var template = $('template');
     if (template.length !== 0) {
         options.prepend = options.prepend || [];
-        options.prepend.push('var template = ' + transpileTemplate(template.html()));
+        options.templateVar = templateVar(element);
+        options.prepend.push('var ' + options.templateVar + ' = ' + transpileTemplate(template.html()));
         
         includeTemplatingCode(options);
     }
@@ -121,7 +126,8 @@ function transpileForPolymerPlatform(htmlString, options) {
     var template = $('template');
     if (template.length !== 0) {
         options.prepend = options.prepend || [];
-        options.prepend.push('var template = document._currentScript.parentNode.querySelector(\'template\');');
+        options.templateVar = templateVar(element);
+        options.prepend.push('var ' + options.templateVar + ' = document._currentScript.parentNode.querySelector(\'template\');');
         
         includeTemplatingCode(options);
     }
@@ -163,7 +169,8 @@ function transpileToNativeElement(htmlString, options) {
     var template = $('template');
     if (template.length !== 0) {
         options.prepend = options.prepend || [];
-        options.prepend.push('var template = document.currentScript.parentNode.querySelector(\'template\');');
+        options.templateVar = templateVar(element);
+        options.prepend.push('var ' + options.templateVar + ' = document.currentScript.parentNode.querySelector(\'template\');');
         
         includeTemplatingCode(options);
     }

@@ -20,14 +20,14 @@ function stop() {
 function fmt(n) {
     return (n < 10 ? '0' : '') + n;
 }
-var template = document.currentScript.parentNode.querySelector('template');
+var __bosonic__template__tick_tock_clock__ = document.currentScript.parentNode.querySelector('template');
 window.TickTockClock = document.registerElement('tick-tock-clock', {
     prototype: Object.create(HTMLElement.prototype, {
         createdCallback: {
             enumerable: true,
             value: function () {
                 this.createShadowRoot();
-                this.shadowRoot.appendChild(document.importNode(template.content, true));
+                this.shadowRoot.appendChild(document.importNode(__bosonic__template__tick_tock_clock__.content, true));
                 if (this.parentElement) {
                     start.call(this);
                 }

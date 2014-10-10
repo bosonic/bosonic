@@ -8,7 +8,7 @@ function stop() {
 function fmt(n) {
     return (n < 10 ? '0' : '') + n;
 }
-var template = function () {
+var __bosonic__template__tick_tock_clock__ = function () {
         var df0 = document.createDocumentFragment();
         var el0 = document.createElement('span');
         el0.setAttribute('id', 'hh');
@@ -28,7 +28,7 @@ window.TickTockClock = document.registerElement('tick-tock-clock', {
             enumerable: true,
             value: function () {
                 this.createShadowRoot();
-                this.shadowRoot.appendChild(document.importNode(template.content, true));
+                this.shadowRoot.appendChild(document.importNode(__bosonic__template__tick_tock_clock__.content, true));
                 if (this.parentElement) {
                     start.call(this);
                 }

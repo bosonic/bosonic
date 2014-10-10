@@ -1,1 +1,4 @@
 
+[submodule "lib/document-register-element"]
+	path = lib/document-register-element
+	url = https://github.com/WebReflection/document-register-element.git

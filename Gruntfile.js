@@ -21,6 +21,7 @@ module.exports = function(grunt) {
     'lib/document-register-element/build/document-register-element.max.js',
     'lib/CustomEvent.js',
     'lib/DOMTokenList.js',
+    'lib/importNode.js',
     'src/platform/ShadowDOM.js'
   ];
 

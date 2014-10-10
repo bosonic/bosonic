@@ -108,7 +108,7 @@ function transpileForBosonicPlatform(htmlString, options) {
     }
 
     return {
-        js: transpiled ? reindentScript("(function () {" + transpiled.code + "}());") : '',
+        js: transpiled ? reindentScript(transpiled.code) : '',
         css: styles
     };
 }
@@ -138,7 +138,7 @@ function transpileForPolymerPlatform(htmlString, options) {
             mainScript.html(), 
             options
         );
-        mainScript.html("\n"+reindentScript("(function () {" + transpiled.code + "}());")+"\n");
+        mainScript.html("\n"+reindentScript(transpiled.code)+"\n");
     }
 
     $('style').each(function(i, style) {
@@ -180,7 +180,7 @@ function transpileToNativeElement(htmlString, options) {
             mainScript.html(), 
             options
         );
-        mainScript.html("\n"+reindentScript("(function () {" + transpiled.code + "}());")+"\n");
+        mainScript.html("\n"+reindentScript(transpiled.code)+"\n");
     }
     
     return $.html();

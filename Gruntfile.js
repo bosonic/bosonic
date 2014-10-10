@@ -1,16 +1,17 @@
 'use strict';
 
 module.exports = function(grunt) {
-
   var runtimeFiles = [
     'lib/WeakMap/weakmap.js',
     'lib/MutationObservers/MutationObserver.js',
-    'lib/HTMLImports/src/scope.js',
     'lib/HTMLImports/src/base.js',
+    'lib/HTMLImports/src/path.js',
+    'lib/HTMLImports/src/xhr.js',
     'lib/HTMLImports/src/Loader.js',
-    'lib/HTMLImports/src/Parser.js',
-    'lib/HTMLImports/src/HTMLImports.js',
     'lib/HTMLImports/src/Observer.js',
+    'lib/HTMLImports/src/parser.js',
+    'lib/HTMLImports/src/importer.js',
+    'lib/HTMLImports/src/dynamic.js',
     'lib/HTMLImports/src/boot.js',
     'src/runtime/register.js'
   ];

@@ -852,6 +852,110 @@ scope.isIE = isIE;
  */
 HTMLImports.addModule(function(scope) {
 
+var CSS_URL_REGEXP = /(url\()([^)]*)(\))/g;
+var CSS_IMPORT_REGEXP = /(@import[\s]+(?!url\())([^;]*)(;)/g;
+
+// path fixup: style elements in imports must be made relative to the main 
+// document. We fixup url's in url() and @import.
+var path = {
+
+  resolveUrlsInStyle: function(style) {
+    var doc = style.ownerDocument;
+    var resolver = doc.createElement('a');
+    style.textContent = this.resolveUrlsInCssText(style.textContent, resolver);
+    return style;  
+  },
+
+  resolveUrlsInCssText: function(cssText, urlObj) {
+    var r = this.replaceUrls(cssText, urlObj, CSS_URL_REGEXP);
+    r = this.replaceUrls(r, urlObj, CSS_IMPORT_REGEXP);
+    return r;
+  },
+
+  replaceUrls: function(text, urlObj, regexp) {
+    return text.replace(regexp, function(m, pre, url, post) {
+      var urlPath = url.replace(/["']/g, '');
+      urlObj.href = urlPath;
+      urlPath = urlObj.href;
+      return pre + '\'' + urlPath + '\'' + post;
+    });    
+  }
+
+};
+
+// exports
+scope.path = path;
+
+});
+
+/*
+ * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+HTMLImports.addModule(function(scope) {
+
+/*
+  xhr processor.
+*/
+xhr = {
+  async: true,
+
+  ok: function(request) {
+    return (request.status >= 200 && request.status < 300)
+        || (request.status === 304)
+        || (request.status === 0);
+  },
+
+  load: function(url, next, nextContext) {
+    var request = new XMLHttpRequest();
+    if (scope.flags.debug || scope.flags.bust) {
+      url += '?' + Math.random();
+    }
+    request.open('GET', url, xhr.async);
+    request.addEventListener('readystatechange', function(e) {
+      if (request.readyState === 4) {
+        // Servers redirecting an import can add a Location header to help us
+        // polyfill correctly.
+        var locationHeader = request.getResponseHeader("Location");
+        var redirectedUrl = null;
+        if (locationHeader) {
+          var redirectedUrl = (locationHeader.substr( 0, 1 ) === "/")
+            ? location.origin + locationHeader  // Location is a relative path
+            : locationHeader;                    // Full path
+        }
+        next.call(nextContext, !xhr.ok(request) && request,
+            request.response || request.responseText, redirectedUrl);
+      }
+    });
+    request.send();
+    return request;
+  },
+
+  loadDocument: function(url, next, nextContext) {
+    this.load(url, next, nextContext).responseType = 'document';
+  }
+  
+};
+
+// exports
+scope.xhr = xhr;
+
+});
+
+/*
+ * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+HTMLImports.addModule(function(scope) {
+
 // imports
 var xhr = scope.xhr;
 var flags = scope.flags;
@@ -1025,6 +1129,573 @@ Observer.prototype = {
 
 // exports
 scope.Observer = Observer;
+
+});
+
+/*
+ * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+HTMLImports.addModule(function(scope) {
+
+// imports
+var path = scope.path;
+var rootDocument = scope.rootDocument;
+var flags = scope.flags;
+var isIE = scope.isIE;
+var IMPORT_LINK_TYPE = scope.IMPORT_LINK_TYPE;
+var IMPORT_SELECTOR = 'link[rel=' + IMPORT_LINK_TYPE + ']';
+
+// importParser
+// highlander object to manage parsing of imports
+// parses import related elements and ensures proper parse order
+// parse order is enforced by crawling the tree and monitoring which elements
+// have been parsed;
+// elements can be dynamically added to imports. These are maintained in a 
+// separate queue and parsed after all other elements.
+var importParser = {
+
+  // parse selectors for main document elements
+  documentSelectors: IMPORT_SELECTOR,
+
+  // parse selectors for import document elements
+  importsSelectors: [
+    IMPORT_SELECTOR,
+    'link[rel=stylesheet]',
+    'style',
+    'script:not([type])',
+    'script[type="text/javascript"]'
+  ].join(','),
+
+  map: {
+    link: 'parseLink',
+    script: 'parseScript',
+    style: 'parseStyle'
+  },
+
+  dynamicElements: [],
+
+  // try to parse the next import in the tree
+  parseNext: function() {
+    var next = this.nextToParse();
+    if (next) {
+      this.parse(next);
+    }
+  },
+
+  parse: function(elt) {
+    if (this.isParsed(elt)) {
+      flags.parse && console.log('[%s] is already parsed', elt.localName);
+      return;
+    }
+    var fn = this[this.map[elt.localName]];
+    if (fn) {
+      this.markParsing(elt);
+      fn.call(this, elt);
+    }
+  },
+
+  // marks an element for dynamic parsing and attempts to parse the next element
+  parseDynamic: function(elt, quiet) {
+    this.dynamicElements.push(elt);
+    if (!quiet) {
+      this.parseNext();
+    }
+  },
+
+  // only 1 element may be parsed at a time; parsing is async so each
+  // parsing implementation must inform the system that parsing is complete
+  // via markParsingComplete.
+  // To prompt the system to parse the next element, parseNext should then be
+  // called.
+  // Note, parseNext used to be included at the end of markParsingComplete, but
+  // we must not do this so that, for example, we can (1) mark parsing complete 
+  // then (2) fire an import load event, and then (3) parse the next resource.
+  markParsing: function(elt) {
+    flags.parse && console.log('parsing', elt);
+    this.parsingElement = elt;
+  },
+
+  markParsingComplete: function(elt) {
+    elt.__importParsed = true;
+    this.markDynamicParsingComplete(elt);
+    if (elt.__importElement) {
+      elt.__importElement.__importParsed = true;
+      this.markDynamicParsingComplete(elt.__importElement);
+    }
+    this.parsingElement = null;
+    flags.parse && console.log('completed', elt);
+  },
+
+  markDynamicParsingComplete: function(elt) {
+    var i = this.dynamicElements.indexOf(elt);
+    if (i >= 0) {
+      this.dynamicElements.splice(i, 1);
+    }
+  },
+
+  parseImport: function(elt) {
+    // TODO(sorvell): consider if there's a better way to do this;
+    // expose an imports parsing hook; this is needed, for example, by the
+    // CustomElements polyfill.
+    if (HTMLImports.__importsParsingHook) {
+      HTMLImports.__importsParsingHook(elt);
+    }
+    if (elt.import) {
+      elt.import.__importParsed = true;
+    }
+    this.markParsingComplete(elt);
+    // fire load event
+    if (elt.__resource && !elt.__error) {
+      elt.dispatchEvent(new CustomEvent('load', {bubbles: false}));    
+    } else {
+      elt.dispatchEvent(new CustomEvent('error', {bubbles: false}));
+    }
+    // TODO(sorvell): workaround for Safari addEventListener not working
+    // for elements not in the main document.
+    if (elt.__pending) {
+      var fn;
+      while (elt.__pending.length) {
+        fn = elt.__pending.shift();
+        if (fn) {
+          fn({target: elt});
+        }
+      }
+    }
+    this.parseNext();
+  },
+
+  parseLink: function(linkElt) {
+    if (nodeIsImport(linkElt)) {
+      this.parseImport(linkElt);
+    } else {
+      // make href absolute
+      linkElt.href = linkElt.href;
+      this.parseGeneric(linkElt);
+    }
+  },
+
+  parseStyle: function(elt) {
+    // TODO(sorvell): style element load event can just not fire so clone styles
+    var src = elt;
+    elt = cloneStyle(elt);
+    elt.__importElement = src;
+    this.parseGeneric(elt);
+  },
+
+  parseGeneric: function(elt) {
+    this.trackElement(elt);
+    this.addElementToDocument(elt);
+  },
+
+  rootImportForElement: function(elt) {
+    var n = elt;
+    while (n.ownerDocument.__importLink) {
+      n = n.ownerDocument.__importLink;
+    }
+    return n;
+  },
+
+  addElementToDocument: function(elt) {
+    var port = this.rootImportForElement(elt.__importElement || elt);
+    var l = port.__insertedElements = port.__insertedElements || 0;
+    var refNode = port.nextElementSibling;
+    for (var i=0; i < l; i++) {
+      refNode = refNode && refNode.nextElementSibling;
+    }
+    port.parentNode.insertBefore(elt, refNode);
+  },
+
+  // tracks when a loadable element has loaded
+  trackElement: function(elt, callback) {
+    var self = this;
+    var done = function(e) {
+      if (callback) {
+        callback(e);
+      }
+      self.markParsingComplete(elt);
+      self.parseNext();
+    };
+    elt.addEventListener('load', done);
+    elt.addEventListener('error', done);
+
+    // NOTE: IE does not fire "load" event for styles that have already loaded
+    // This is in violation of the spec, so we try our hardest to work around it
+    if (isIE && elt.localName === 'style') {
+      var fakeLoad = false;
+      // If there's not @import in the textContent, assume it has loaded
+      if (elt.textContent.indexOf('@import') == -1) {
+        fakeLoad = true;
+      // if we have a sheet, we have been parsed
+      } else if (elt.sheet) {
+        fakeLoad = true;
+        var csr = elt.sheet.cssRules;
+        var len = csr ? csr.length : 0;
+        // search the rules for @import's
+        for (var i = 0, r; (i < len) && (r = csr[i]); i++) {
+          if (r.type === CSSRule.IMPORT_RULE) {
+            // if every @import has resolved, fake the load
+            fakeLoad = fakeLoad && Boolean(r.styleSheet);
+          }
+        }
+      }
+      // dispatch a fake load event and continue parsing
+      if (fakeLoad) {
+        elt.dispatchEvent(new CustomEvent('load', {bubbles: false}));
+      }
+    }
+  },
+
+  // NOTE: execute scripts by injecting them and watching for the load/error
+  // event. Inline scripts are handled via dataURL's because browsers tend to
+  // provide correct parsing errors in this case. If this has any compatibility
+  // issues, we can switch to injecting the inline script with textContent.
+  parseScript: function(scriptElt) {
+    var script = document.createElement('script');
+    script.__importElement = scriptElt;
+    script.src = scriptElt.src ? scriptElt.src : 
+        generateScriptDataUrl(scriptElt);
+    // keep track of executing script to help polyfill `document.currentScript`
+    scope.currentScript = scriptElt;
+    this.trackElement(script, function(e) {
+      script.parentNode.removeChild(script);
+      scope.currentScript = null;  
+    });
+    this.addElementToDocument(script);
+  },
+
+  // determine the next element in the tree which should be parsed
+  // crawl the document tree to find the next unparsed element
+  // then process any dynamically added elements (these should process in 'add'
+  // order.
+  nextToParse: function() {
+    this._mayParse = [];
+    return !this.parsingElement && (this.nextToParseInDoc(rootDocument) || 
+        this.nextToParseDynamic());
+  },
+
+  nextToParseInDoc: function(doc, link) {
+    // use `marParse` list to avoid looping into the same document again
+    // since it could cause an iloop.
+    if (doc && this._mayParse.indexOf(doc) < 0) {
+      this._mayParse.push(doc);
+      var nodes = doc.querySelectorAll(this.parseSelectorsForNode(doc));
+      for (var i=0, l=nodes.length, p=0, n; (i<l) && (n=nodes[i]); i++) {
+        if (!this.isParsed(n)) {
+          if (this.hasResource(n)) {
+            return nodeIsImport(n) ? this.nextToParseInDoc(n.import, n) : n;
+          } else {
+            return;
+          }
+        }
+      }
+    }
+    // all nodes have been parsed, ready to parse import, if any
+    return link;
+  },
+
+  // note dynamically added elements are stored in a separate queue
+  nextToParseDynamic: function() {
+    return this.dynamicElements[0];
+  },
+
+  // return the set of parse selectors relevant for this node.
+  parseSelectorsForNode: function(node) {
+    var doc = node.ownerDocument || node;
+    return doc === rootDocument ? this.documentSelectors :
+        this.importsSelectors;
+  },
+
+  isParsed: function(node) {
+    return node.__importParsed;
+  },
+
+  needsDynamicParsing: function(elt) {
+    return (this.dynamicElements.indexOf(elt) >= 0);
+  },
+
+  hasResource: function(node) {
+    if (nodeIsImport(node) && (node.import === undefined)) {
+      return false;
+    }
+    return true;
+  }
+
+};
+
+function nodeIsImport(elt) {
+  return (elt.localName === 'link') && (elt.rel === IMPORT_LINK_TYPE);
+}
+
+function generateScriptDataUrl(script) {
+  var scriptContent = generateScriptContent(script);
+  return 'data:text/javascript;charset=utf-8,' + encodeURIComponent(scriptContent);
+}
+
+function generateScriptContent(script) {
+  return script.textContent + generateSourceMapHint(script);
+}
+
+// calculate source map hint
+function generateSourceMapHint(script) {
+  var owner = script.ownerDocument;
+  owner.__importedScripts = owner.__importedScripts || 0;
+  var moniker = script.ownerDocument.baseURI;
+  var num = owner.__importedScripts ? '-' + owner.__importedScripts : '';
+  owner.__importedScripts++;
+  return '\n//# sourceURL=' + moniker + num + '.js\n';
+}
+
+// style/stylesheet handling
+
+// clone style with proper path resolution for main document
+// NOTE: styles are the only elements that require direct path fixup.
+function cloneStyle(style) {
+  var clone = style.ownerDocument.createElement('style');
+  clone.textContent = style.textContent;
+  path.resolveUrlsInStyle(clone);
+  return clone;
+}
+
+// exports
+scope.parser = importParser;
+scope.IMPORT_SELECTOR = IMPORT_SELECTOR;
+
+});
+
+/*
+ * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+HTMLImports.addModule(function(scope) {
+
+// imports
+var flags = scope.flags;
+var IMPORT_LINK_TYPE = scope.IMPORT_LINK_TYPE;
+var IMPORT_SELECTOR = scope.IMPORT_SELECTOR;
+var rootDocument = scope.rootDocument;
+var Loader = scope.Loader;
+var Observer = scope.Observer;
+var parser = scope.parser;
+
+// importer
+// highlander object to manage loading of imports
+// for any document, importer:
+// - loads any linked import documents (with deduping)
+// - whenever an import is loaded, prompts the parser to try to parse
+// - observes imported documents for new elements (these are handled via the 
+// dynamic importer)
+var importer = {
+
+  documents: {},
+  
+  // nodes to load in the mian document
+  documentPreloadSelectors: IMPORT_SELECTOR,
+  
+  // nodes to load in imports
+  importsPreloadSelectors: [
+    IMPORT_SELECTOR
+  ].join(','),
+  
+  loadNode: function(node) {
+    importLoader.addNode(node);
+  },
+  
+  // load all loadable elements within the parent element
+  loadSubtree: function(parent) {
+    var nodes = this.marshalNodes(parent);
+    // add these nodes to loader's queue
+    importLoader.addNodes(nodes);
+  },
+  
+  marshalNodes: function(parent) {
+    // all preloadable nodes in inDocument
+    return parent.querySelectorAll(this.loadSelectorsForNode(parent));
+  },
+  
+  // find the proper set of load selectors for a given node
+  loadSelectorsForNode: function(node) {
+    var doc = node.ownerDocument || node;
+    return doc === rootDocument ? this.documentPreloadSelectors :
+        this.importsPreloadSelectors;
+  },
+  
+  loaded: function(url, elt, resource, err, redirectedUrl) {
+    flags.load && console.log('loaded', url, elt);
+    // store generic resource
+    // TODO(sorvell): fails for nodes inside <template>.content
+    // see https://code.google.com/p/chromium/issues/detail?id=249381.
+    elt.__resource = resource;
+    elt.__error = err;
+    if (isImportLink(elt)) {
+      var doc = this.documents[url];
+      // if we've never seen a document at this url
+      if (doc === undefined) {
+        // generate an HTMLDocument from data
+        doc = err ? null : makeDocument(resource, redirectedUrl || url);
+        if (doc) {
+          doc.__importLink = elt;
+          // note, we cannot use MO to detect parsed nodes because
+          // SD polyfill does not report these as mutations.
+          this.bootDocument(doc);
+        }
+        // cache document
+        this.documents[url] = doc;
+      }
+      // don't store import record until we're actually loaded
+      // store document resource
+      elt.import = doc;
+    }
+    parser.parseNext();
+  },
+  
+  bootDocument: function(doc) {
+    this.loadSubtree(doc);
+    // observe documents for new elements being added
+    this.observer.observe(doc);
+    parser.parseNext();
+  },
+
+  loadedAll: function() {
+    parser.parseNext();
+  }
+
+};
+
+// loader singleton to handle loading imports
+var importLoader = new Loader(importer.loaded.bind(importer), 
+    importer.loadedAll.bind(importer));
+
+// observer singleton to handle observing elements in imports
+// NOTE: the observer has a node added callback and this is set 
+// by the dynamic importer module.
+importer.observer = new Observer();
+
+function isImportLink(elt) {
+  return isLinkRel(elt, IMPORT_LINK_TYPE);
+}
+
+function isLinkRel(elt, rel) {
+  return elt.localName === 'link' && elt.getAttribute('rel') === rel;
+}
+
+function makeDocument(resource, url) {
+  // create a new HTML document
+  var doc = document.implementation.createHTMLDocument(IMPORT_LINK_TYPE);
+  // cache the new document's source url
+  doc._URL = url;
+  // establish a relative path via <base>
+  var base = doc.createElement('base');
+  base.setAttribute('href', url);
+  // add baseURI support to browsers (IE) that lack it.
+  if (!doc.baseURI) {
+    doc.baseURI = url;
+  }
+  // ensure UTF-8 charset
+  var meta = doc.createElement('meta');
+  meta.setAttribute('charset', 'utf-8');
+
+  doc.head.appendChild(meta);
+  doc.head.appendChild(base);
+  // install html
+  doc.body.innerHTML = resource;
+  // TODO(sorvell): ideally this code is not aware of Template polyfill,
+  // but for now the polyfill needs help to bootstrap these templates
+  if (window.HTMLTemplateElement && HTMLTemplateElement.bootstrap) {
+    HTMLTemplateElement.bootstrap(doc);
+  }
+  return doc;
+}
+
+// Polyfill document.baseURI for browsers without it.
+if (!document.baseURI) {
+  var baseURIDescriptor = {
+    get: function() {
+      var base = document.querySelector('base');
+      return base ? base.href : window.location.href;
+    },
+    configurable: true
+  };
+
+  Object.defineProperty(document, 'baseURI', baseURIDescriptor);
+  Object.defineProperty(rootDocument, 'baseURI', baseURIDescriptor);
+}
+
+// exports
+scope.importer = importer;
+scope.importLoader = importLoader;
+
+});
+/*
+ * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+HTMLImports.addModule(function(scope) {
+
+// imports
+var parser = scope.parser;
+var importer = scope.importer;
+
+// dynamic
+// highlander object to manage elements dynamically added to imports
+// for any observed document, dynamic:
+// - tells the importer to load any imports that are added.
+// - tells the parser to parse any added elements that need to be parsed.
+// dynamic importer)
+var dynamic = {
+  // process (load/parse) any nodes added to imported documents.
+  added: function(nodes) {
+    var owner, parsed;
+    for (var i=0, l=nodes.length, n; (i<l) && (n=nodes[i]); i++) {
+      if (!owner) {
+        owner = n.ownerDocument;
+        parsed = parser.isParsed(owner);
+      }
+      // note: the act of loading kicks the parser, so we use parseDynamic's
+      // 2nd argument to control if this added node needs to kick the parser.
+      loading = this.shouldLoadNode(n);
+      if (loading) {
+        importer.loadNode(n);
+      }
+      if (this.shouldParseNode(n) && parsed) {
+        parser.parseDynamic(n, loading);
+      }
+    }
+  },
+
+  shouldLoadNode: function(node) {
+    return (node.nodeType === 1) && matches.call(node,
+        importer.loadSelectorsForNode(node));
+  },
+
+  shouldParseNode: function(node) {
+    return (node.nodeType === 1) && matches.call(node,
+        parser.parseSelectorsForNode(node));  
+  }
+  
+};
+
+// let the dynamic element helper tie into the import observer.
+importer.observer.addCallback = dynamic.added.bind(dynamic);
+
+// x-plat matches
+var matches = HTMLElement.prototype.matches || 
+    HTMLElement.prototype.matchesSelector || 
+    HTMLElement.prototype.webkitMatchesSelector ||
+    HTMLElement.prototype.mozMatchesSelector ||
+    HTMLElement.prototype.msMatchesSelector;
 
 });
 

@@ -47,6 +47,21 @@ module.exports = function(grunt) {
       }
     },
 
+    karma: require('bosonic-tools/test/config/grunt-karma')({
+      options: {
+        sauceLabs: {
+          testName: 'Bosonic Platform Unit Tests',
+          recordScreenshots: false
+        },
+        files: [
+          'node_modules/bosonic-tools/test/helpers/npo.js',
+          'node_modules/bosonic-tools/test/helpers/karma.js',
+          'dist/bosonic-platform.js',
+          'test/platform/*.js'
+        ]
+      }
+    }),
+
     watch: {
       platform: {
         files: ['src/platform/*.js'],
@@ -63,6 +78,7 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.registerTask('test:transpiler', ['mochaTest']);
+  grunt.registerTask('test:platform', ['karma']);
 
   grunt.registerTask('default', ['concat', 'watch']);
 

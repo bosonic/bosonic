@@ -2,18 +2,37 @@
 
 module.exports = function(grunt) {
 
+  var runtimeFiles = [
+    'lib/WeakMap/weakmap.js',
+    'lib/MutationObservers/MutationObserver.js',
+    'lib/HTMLImports/src/scope.js',
+    'lib/HTMLImports/src/base.js',
+    'lib/HTMLImports/src/Loader.js',
+    'lib/HTMLImports/src/Parser.js',
+    'lib/HTMLImports/src/HTMLImports.js',
+    'lib/HTMLImports/src/Observer.js',
+    'lib/HTMLImports/src/boot.js',
+    'src/runtime/register.js'
+  ];
+
+  var platformFiles = [
+    'src/platform/bootstrap.js',
+    'lib/document-register-element/build/document-register-element.max.js',
+    'lib/CustomEvent.js',
+    'lib/DOMTokenList.js',
+    'src/platform/ShadowDOM.js'
+  ];
+
   grunt.initConfig({
 
     concat: {
       platform: {
-        src: [
-          'src/platform/bootstrap.js',
-          'lib/document-register-element/build/document-register-element.max.js',
-          'lib/CustomEvent.js',
-          'lib/DOMTokenList.js',
-          'src/platform/ShadowDOM.js'
-        ],
+        src: platformFiles,
         dest: 'dist/bosonic-platform.js'
+      },
+      runtime: {
+        src: runtimeFiles,
+        dest: 'dist/bosonic-runtime.js'
       }
     },
 
@@ -28,8 +47,12 @@ module.exports = function(grunt) {
 
     watch: {
       platform: {
-        files: ['src/platform*.js'],
+        files: ['src/platform/*.js'],
         tasks: ['concat:platform']
+      },
+      runtime: {
+        files: ['src/runtime/*.js'],
+        tasks: ['concat:runtime']
       }
     }
 

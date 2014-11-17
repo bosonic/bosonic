@@ -1,3 +1,10 @@
+# Dependencies
 node_modules/*
+
+# Editors config folders
+.idea
+.DS_Store
+
+# Others
 sauce.json
 C:\\nppdf32Log\\debuglog.txt

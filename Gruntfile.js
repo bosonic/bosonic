@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   var runtimeFiles = [
     'lib/WeakMap/weakmap.js',
     'lib/MutationObservers/MutationObserver.js',
@@ -62,7 +62,53 @@ module.exports = function(grunt) {
       }
     }),
 
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish')
+      },
+      all: [
+        '*.js',
+        'dist/{,*/}*.js',
+        'lib/{,*/}*.js',
+        'src/{,*/}*.js',
+        'test/{,*/}*.js'
+      ]
+    },
+
+    jsonlint: {
+      all: {
+        src: [
+          '*.json',
+          'dist/{,*/}*.json',
+          'lib/{,*/}*.json',
+          'src/{,*/}*.json',
+          'test/{,*/}*.json'
+        ]
+      }
+    },
+
     watch: {
+      js: {
+        files: [
+          '*.js',
+          'dist/{,*/}*.js',
+          'lib/{,*/}*.js',
+          'src/{,*/}*.js',
+          'test/{,*/}*.js'
+        ],
+        tasks: ['jshint']
+      },
+      json: {
+        files: [
+          '*.json',
+          'dist/{,*/}*.json',
+          'lib/{,*/}*.json',
+          'src/{,*/}*.json',
+          'test/{,*/}*.json'
+        ],
+        tasks: ['jsonlint']
+      },
       platform: {
         files: ['src/platform/*.js'],
         tasks: ['concat:platform']

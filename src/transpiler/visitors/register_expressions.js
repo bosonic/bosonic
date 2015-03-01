@@ -1,3 +1,5 @@
+'use strict';
+
 var Syntax = require('esprima-fb').Syntax,
     utils = require('jstransform/src/utils'),
     tools = require('../tools');
@@ -27,7 +29,7 @@ function renderGetterSetter(traverse, node, path, state) {
         return;
     }
     var key = node.key.name,
-        inverseKind = node.kind === 'get' ? 'set' : 'get';
+        inverseKind = node.kind === 'get' ? 'set' : 'get',
         inverse = tools.searchProperty(path[0].properties, key, inverseKind);
 
     utils.catchup(node.range[0], state);
@@ -39,10 +41,10 @@ function renderGetterSetter(traverse, node, path, state) {
     path.shift();
 
     utils.catchup(node.value.range[1], state);
-    
+
     if (inverse) {
-        state.gettersSetters.push(key)
-        
+        state.gettersSetters.push(key);
+
         utils.move(inverse.key.range[1], state);
         utils.append(', ' + inverseKind + ': function', state);
 
@@ -66,7 +68,7 @@ function renderProperty(traverse, node, path, state) {
         var actualArgs = node.value.params.map(function(p) { return p.name; });
         tools.injectCode(state.g.opts.inject[node.key.name], state, actualArgs);
     }
-    
+
     path.unshift(node);
     traverse(node.value, path, state);
     path.shift();
@@ -102,29 +104,29 @@ function visitRegisterExpression(traverse, node, path, state) {
     if (state.g.opts.prepend) {
         var prepend = Array.isArray(state.g.opts.prepend) ? state.g.opts.prepend : [state.g.opts.prepend];
         prepend.forEach(function(line) {
-            utils.append(line + "\n", state);
+            utils.append(line + '\n', state);
         });
     }
 
     state.g.opts.inject = tools.expandInjectObject(state.g.opts.inject);
 
-    utils.append("window."+elementClass+" = document.registerElement('"+elementName+"', { ", state);
-    utils.append("prototype : Object.create("+extendeeClass+".prototype, {", state);
-    
+    utils.append('window.' + elementClass + ' = document.registerElement(\'' + elementName + '\', { ', state);
+    utils.append('prototype : Object.create(' + extendeeClass + '.prototype, {', state);
+
     utils.move(expressionNode.range[0] + '{'.length, state);
 
     createInjectableMethods(expressionNode.properties, state);
-    
+
     path.unshift(expressionNode);
     renderProperties(traverse, expressionNode, path, state);
     path.shift();
-    
+
     utils.catchupWhiteSpace(node.range[1], state);
 
     utils.append('})', state);
     // CAUTION: when extending a non-native element, the polyfill doesn't work properly when the 'extends' option is set
-    if (extendee && extendsNativeElement) { 
-        utils.append(", extends: '" + extendee + "' ", state);
+    if (extendee && extendsNativeElement) {
+        utils.append(', extends: \'' + extendee + '\' ', state);
     }
     utils.append('});', state);
     return false;

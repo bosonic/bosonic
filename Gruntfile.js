@@ -41,10 +41,19 @@ module.exports = function (grunt) {
     mochaTest: {
       transpiler: {
         options: {
-          reporter: 'spec'
+          reporter: 'spec',
+          colors: false
         },
         src: ['test/transpiler/*.js']
       }
+    },
+
+    eslint: {
+      options: {
+        configFile: '.eslintrc',
+        quiet: true
+      },
+      target: ['src/**/*.js', 'test/**/*.js']
     },
 
     karma: require('bosonic-tools/test/config/grunt-karma')({
@@ -62,53 +71,7 @@ module.exports = function (grunt) {
       }
     }),
 
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc',
-        reporter: require('jshint-stylish')
-      },
-      all: [
-        '*.js',
-        'dist/{,*/}*.js',
-        'lib/{,*/}*.js',
-        'src/{,*/}*.js',
-        'test/{,*/}*.js'
-      ]
-    },
-
-    jsonlint: {
-      all: {
-        src: [
-          '*.json',
-          'dist/{,*/}*.json',
-          'lib/{,*/}*.json',
-          'src/{,*/}*.json',
-          'test/{,*/}*.json'
-        ]
-      }
-    },
-
     watch: {
-      js: {
-        files: [
-          '*.js',
-          'dist/{,*/}*.js',
-          'lib/{,*/}*.js',
-          'src/{,*/}*.js',
-          'test/{,*/}*.js'
-        ],
-        tasks: ['jshint']
-      },
-      json: {
-        files: [
-          '*.json',
-          'dist/{,*/}*.json',
-          'lib/{,*/}*.json',
-          'src/{,*/}*.json',
-          'test/{,*/}*.json'
-        ],
-        tasks: ['jsonlint']
-      },
       platform: {
         files: ['src/platform/*.js'],
         tasks: ['concat:platform']
@@ -116,6 +79,10 @@ module.exports = function (grunt) {
       runtime: {
         files: ['src/runtime/*.js'],
         tasks: ['concat:runtime']
+      },
+      test: {
+        files: ['test/**/*.js'],
+        tasks: ['test:transpiler']
       }
     }
 
@@ -125,6 +92,8 @@ module.exports = function (grunt) {
 
   grunt.registerTask('test:transpiler', ['mochaTest']);
   grunt.registerTask('test:platform', ['karma']);
+
+  grunt.registerTask('tdd', ['watch:test']);
 
   grunt.registerTask('default', ['concat', 'watch']);
 

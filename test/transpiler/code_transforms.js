@@ -1,3 +1,5 @@
+'use strict';
+
 var jstransform = require('jstransform'),
     expect = require('chai').expect,
     visitRegisterExpression = require('../../src/transpiler/visitors/register_expressions'),

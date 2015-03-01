@@ -1,3 +1,5 @@
+'use strict';
+
 var Syntax = require('esprima-fb').Syntax,
     utils = require('jstransform/src/utils'),
     jstransform = require('jstransform'),
@@ -14,14 +16,14 @@ function searchProperty(properties, key, kind) {
 function searchMethod(properties, key) {
     var found;
     properties.forEach(function(property) {
-        if (property.kind === 'init' && property.key.name === key 
+        if (property.kind === 'init' && property.key.name === key
             && property.value.type === Syntax.FunctionExpression) found = property;
     });
     return found;
 }
 
 function stringifyArray(attributes) {
-    return attributes.map(function(a) { return "'" + a + "'"; }).join(', ');
+    return attributes.map(function(a) { return '\'' + a + '\''; }).join(', ');
 }
 
 function ucfirst(str) {
@@ -49,7 +51,7 @@ function extendsNativeElement(extendee) {
 
 function getExtendeeClass(extendee) {
     if (!extendee) {
-        return 'HTMLElement'
+        return 'HTMLElement';
     } else if (extendsNativeElement(extendee)) {
         if (['thead', 'tbody', 'tfoot'].indexOf(extendee) !== -1) {
             return 'HTMLTableSectionElement';
@@ -71,7 +73,7 @@ function injectCode(method, state, actualArgs) {
         });
     }
     if (Object.getOwnPropertyNames(replacements).length === 0) replacements = false;
-    
+
     var body = Array.isArray(method.body) ? method.body : [method.body];
     body.forEach(function(line) {
         if (replacements) {

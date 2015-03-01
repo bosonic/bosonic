@@ -1,11 +1,13 @@
+'use strict';
+
 function buildShadowRegexes(elementName) {
     return [
-        [/^:host\(([^:]+)\)$/, elementName+'$1'],
-        [/^:host(:hover|:active|:focus)$/, elementName+'$1'],
-        [/^:host(\[[^:]+\])$/, elementName+'$1'],
+        [/^:host\(([^:]+)\)$/, elementName + '$1'],
+        [/^:host(:hover|:active|:focus)$/, elementName + '$1'],
+        [/^:host(\[[^:]+\])$/, elementName + '$1'],
         [/^:host$/, elementName],
-        [/^:ancestor\(([^:]+)\)$/, '$1 '+elementName], // deprecated; replaced by :host-context
-        [/^:host-context\(([^:]+)\)$/, '$1 '+elementName],
+        [/^:ancestor\(([^:]+)\)$/, '$1 ' + elementName], // deprecated; replaced by :host-context
+        [/^:host-context\(([^:]+)\)$/, '$1 ' + elementName],
         [/^::content/, elementName],
     ];
 }

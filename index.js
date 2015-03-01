@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs'),
     cheerio = require('cheerio'),
     esprima = require('esprima-fb'),
@@ -60,8 +62,8 @@ function includeTemplatingCode(options) {
     options.inject = options.inject || {};
     options.inject.createdCallback = [
         'this.createShadowRoot();',
-        'this.shadowRoot.appendChild(document.importNode('+options.templateVar+'.content, true));'
-    ]
+        'this.shadowRoot.appendChild(document.importNode(' + options.templateVar + '.content, true));'
+    ];
     return options;
 }
 
@@ -84,8 +86,8 @@ function templateVar(element) {
 
 function transpileForBosonicPlatform(htmlString, options) {
     var $ = cheerio.load(htmlString, { xmlMode: true }),
-        element = getElementFacets($),
-        options = getDefaultOptions(element, options);
+        element = getElementFacets($);
+    options = getDefaultOptions(element, options);
 
     var styles = transpileToCSS(element, $, options);
 
@@ -94,7 +96,7 @@ function transpileForBosonicPlatform(htmlString, options) {
         options.prepend = options.prepend || [];
         options.templateVar = templateVar(element);
         options.prepend.push('var ' + options.templateVar + ' = ' + transpileTemplate(template.html()));
-        
+
         includeTemplatingCode(options);
     }
 
@@ -106,8 +108,8 @@ function transpileForBosonicPlatform(htmlString, options) {
 
     if (mainScript && mainScript.html() !== null) {
         var transpiled = jstransform.transform(
-            [visitRegisterExpression, visitSuperCallExpression], 
-            mainScript.html(), 
+            [visitRegisterExpression, visitSuperCallExpression],
+            mainScript.html(),
             options
         );
     }
@@ -120,15 +122,15 @@ function transpileForBosonicPlatform(htmlString, options) {
 
 function transpileForPolymerPlatform(htmlString, options) {
     var $ = cheerio.load(htmlString, { xmlMode: true }),
-        element = getElementFacets($),
-        options = getDefaultOptions(element, options);
+        element = getElementFacets($);
+    options = getDefaultOptions(element, options);
 
     var template = $('template');
     if (template.length !== 0) {
         options.prepend = options.prepend || [];
         options.templateVar = templateVar(element);
         options.prepend.push('var ' + options.templateVar + ' = document._currentScript.parentNode.querySelector(\'template\');');
-        
+
         includeTemplatingCode(options);
     }
 
@@ -140,38 +142,38 @@ function transpileForPolymerPlatform(htmlString, options) {
 
     if (mainScript && mainScript.html() !== null) {
         var transpiled = jstransform.transform(
-            [visitRegisterExpression, visitSuperCallExpression], 
-            mainScript.html(), 
+            [visitRegisterExpression, visitSuperCallExpression],
+            mainScript.html(),
             options
         );
-        mainScript.html("\n"+reindentScript(transpiled.code)+"\n");
+        mainScript.html('\n' + reindentScript(transpiled.code) + '\n');
     }
 
     $('style').each(function(i, style) {
         if ($(this).parent('template').length !== 0) {
             $(this).closest('element').prepend(
-                '\n<style>\n' + 
-                shimShadowStyles($(this).html(), element.name) + 
+                '\n<style>\n' +
+                shimShadowStyles($(this).html(), element.name) +
                 '\n</style>'
             );
             $(this).remove();
         }
     });
-    
+
     return $.html();
 }
 
 function transpileToNativeElement(htmlString, options) {
     var $ = cheerio.load(htmlString, { xmlMode: true }),
-        element = getElementFacets($),
-        options = getDefaultOptions(element, options);
+        element = getElementFacets($);
+    options = getDefaultOptions(element, options);
 
     var template = $('template');
     if (template.length !== 0) {
         options.prepend = options.prepend || [];
         options.templateVar = templateVar(element);
         options.prepend.push('var ' + options.templateVar + ' = document.currentScript.parentNode.querySelector(\'template\');');
-        
+
         includeTemplatingCode(options);
     }
 
@@ -183,13 +185,13 @@ function transpileToNativeElement(htmlString, options) {
 
     if (mainScript && mainScript.html() !== null) {
         var transpiled = jstransform.transform(
-            [visitRegisterExpression, visitSuperCallExpression], 
-            mainScript.html(), 
+            [visitRegisterExpression, visitSuperCallExpression],
+            mainScript.html(),
             options
         );
-        mainScript.html("\n"+reindentScript(transpiled.code)+"\n");
+        mainScript.html('\n' + reindentScript(transpiled.code) + '\n');
     }
-    
+
     return $.html();
 }
 
@@ -220,4 +222,4 @@ exports = module.exports = {
     transpileForPolymerPlatform: transpileForPolymerPlatform,
     reindentScript: reindentScript,
     shimShadowStyles: shimShadowStyles
-}
+};

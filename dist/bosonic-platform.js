@@ -1,8 +1,11 @@
+'use strict';
+
 if (!window.Platform) {
     window.Platform = {
         name: 'bosonic'
     };
 }
+
 /*!
 Copyright (C) 2014 by WebReflection
 
@@ -667,6 +670,8 @@ defineElementGetter(Element.prototype, 'classList', function () {
         document.importNode = importNode;
     }
 })();
+'use strict';
+
 if (HTMLElement.prototype.createShadowRoot) {
     Platform.shadowDOM = 'native';
 } else if (HTMLElement.prototype.webkitCreateShadowRoot && !HTMLElement.prototype.createShadowRoot) {
@@ -687,9 +692,9 @@ if (HTMLElement.prototype.createShadowRoot) {
     });
 } else {
     Platform.shadowDOM = 'polyfill';
-    function ShadowRoot(host) {
+    var ShadowRoot = function(host) {
         this.host = host;
-    }
+    };
 
     ShadowRoot.prototype.appendChild = function(child) {
         var composed = renderComposedDOM(child, this.host);
@@ -697,17 +702,17 @@ if (HTMLElement.prototype.createShadowRoot) {
             this.host.removeChild(this.host.childNodes[0]);
         }
         this.host.appendChild(composed);
-    }
+    };
 
     ShadowRoot.prototype.querySelector = function(selector) {
         return this.host.querySelector(selector);
-    }
+    };
 
     ShadowRoot.prototype.querySelectorAll = function(selector) {
         return this.host.querySelectorAll(selector);
-    }
+    };
 
-    function renderComposedDOM(shadow, light) {
+    var renderComposedDOM = function(shadow, light) {
         var composed = shadow,
             insertionPoints = composed.querySelectorAll('content');
 
@@ -729,7 +734,7 @@ if (HTMLElement.prototype.createShadowRoot) {
             }
         });
         return composed;
-    }
+    };
 
     Object.defineProperties(Element.prototype, {
         shadowRoot: {
@@ -744,28 +749,7 @@ if (HTMLElement.prototype.createShadowRoot) {
                 if (!this.__shadowRoots__) {
                     this.__shadowRoots__ = [];
                 }
-                
-                var root = new ShadowRoot(this);
-                this.__shadowRoots__.push(root);
-                return root;
-            }
-        }
-    });
 
-    Object.defineProperties(HTMLUnknownElement.prototype, {
-        shadowRoot: {
-            get: function() {
-                if (!this.__shadowRoots__ || this.__shadowRoots__.length === 0) return undefined;
-                return this.__shadowRoots__[0];
-            }
-        },
-        createShadowRoot: {
-            value: function() {
-                var that = this;
-                if (!this.__shadowRoots__) {
-                    this.__shadowRoots__ = [];
-                }
-                
                 var root = new ShadowRoot(this);
                 this.__shadowRoots__.push(root);
                 return root;

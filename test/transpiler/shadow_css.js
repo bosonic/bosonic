@@ -1,3 +1,5 @@
+'use strict';
+
 var expect = require('chai').expect,
     css = require('../../src/transpiler/css');
 

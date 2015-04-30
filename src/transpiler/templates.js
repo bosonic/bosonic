@@ -1,3 +1,5 @@
+'use strict';
+
 var jstransform = require('jstransform'),
     Syntax = require('esprima-fb').Syntax,
     utils = require('jstransform/src/utils');
@@ -83,10 +85,10 @@ visitTag.test = function(object, path, state) {
 };
 
 function transpileTemplate(html) {
-    var template = html.trim().replace(/\n/g, "")
-                              .replace(/[\t ]+\</g, "<")
-                              .replace(/\>[\t ]+\</g, "><")
-                              .replace(/\>[\t ]+$/g, ">"),
+    var template = html.trim().replace(/\n/g, '')
+                              .replace(/[\t ]+\</g, '<')
+                              .replace(/\>[\t ]+\</g, '><')
+                              .replace(/\>[\t ]+$/g, '>'),
         transformed = jstransform.transform(
         [visitTag],
         '<stupid-wrapper>' + template + '</stupid-wrapper>',

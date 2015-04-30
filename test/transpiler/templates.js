@@ -1,3 +1,7 @@
+'use strict';
+/*eslint no-unused-vars:0*/
+/*eslint no-eval:0*/
+/*eslint no-undef:0*/
 var jsdom = require('jsdom').jsdom,
     expect = require('chai').expect,
     transpileTemplate = require('../../src/transpiler/templates').transpileTemplate;
@@ -17,7 +21,7 @@ function checkTranspilation(template) {
 
 describe('Template transpilation', function() {
     beforeEach(function() {
-        document = jsdom("<html><body></body></html>");
+        document = jsdom('<html><body></body></html>');
         window = document.parentWindow;
     });
 

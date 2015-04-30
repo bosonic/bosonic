@@ -1,3 +1,5 @@
+'use strict';
+
 var Syntax = require('esprima-fb').Syntax,
     utils = require('jstransform/src/utils'),
     tools = require('../tools');
@@ -25,7 +27,7 @@ visitSuperCallExpression.test = function(node, path, state) {
     if (node.type === Syntax.CallExpression) {
         var callee = node.callee;
         if (callee.type === Syntax.Identifier && callee.name === 'super'
-            || callee.type == Syntax.MemberExpression
+            || callee.type === Syntax.MemberExpression
             && callee.object.name === 'super') {
             return true;
         }

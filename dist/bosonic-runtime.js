@@ -1753,6 +1753,8 @@ if (document.readyState === 'complete' ||
 
 })(HTMLImports);
 
+'use strict';
+
 (function() {
 
     if (!window.Platform || !window.Platform.name) {
@@ -1761,12 +1763,12 @@ if (document.readyState === 'complete' ||
 
     function buildShadowRegexes(elementName) {
         return [
-            [/:host\(([^:]+)\)/g, elementName+'$1'],
-            [/:host(:hover|:active|:focus)/g, elementName+'$1'],
-            [/:host(\[[^:]+\])/g, elementName+'$1'],
+            [/:host\(([^:]+)\)/g, elementName + '$1'],
+            [/:host(:hover|:active|:focus)/g, elementName + '$1'],
+            [/:host(\[[^:]+\])/g, elementName + '$1'],
             [/:host/g, elementName],
-            [/:ancestor\(([^:]+)\)/g, '$1 '+elementName], // deprecated; replaced by :host-context
-            [/:host-context\(([^:]+)\)/g, '$1 '+elementName],
+            [/:ancestor\(([^:]+)\)/g, '$1 ' + elementName], // deprecated; replaced by :host-context
+            [/:host-context\(([^:]+)\)/g, '$1 ' + elementName],
             [/::content/g, elementName],
         ];
     }
@@ -1782,11 +1784,11 @@ if (document.readyState === 'complete' ||
 
     function parseCSS(str) {
         var doc = document.implementation.createHTMLDocument(''),
-            styleElt = document.createElement("style");
-        
+            styleElt = document.createElement('style');
+
         styleElt.textContent = str;
         doc.body.appendChild(styleElt);
-        
+
         return styleElt.sheet.cssRules;
     }
 
@@ -1814,7 +1816,7 @@ if (document.readyState === 'complete' ||
 
     function getExtendeeClass(extendee) {
         if (!extendee) {
-            return 'HTMLElement'
+            return 'HTMLElement';
         } else if (extendsNativeElement(extendee)) {
             if (['thead', 'tbody', 'tfoot'].indexOf(extendee) !== -1) {
                 return 'HTMLTableSectionElement';
@@ -1851,8 +1853,10 @@ if (document.readyState === 'complete' ||
 
     function getFragmentFromNode(node) {
         var fragment = document.createDocumentFragment();
-        while (child = node.firstChild) {
+        var child = node.firstChild;
+        while (child) {
             fragment.appendChild(child);
+            child = node.firstChild;
         }
         return fragment;
     }
@@ -1861,7 +1865,7 @@ if (document.readyState === 'complete' ||
         var script = document._currentScript;
         var element = script && script.parentNode ? script.parentNode : null;
         if (!element || element.tagName.toUpperCase() !== 'ELEMENT') {
-            throw 'Surrounding <element> tag could not be found.'
+            throw 'Surrounding <element> tag could not be found.';
         }
         var name = element.getAttribute('name');
         if (!name) {
@@ -1922,10 +1926,10 @@ if (document.readyState === 'complete' ||
         var elementDef = {
             prototype: Object.create(window[extendeeClass].prototype, prototype)
         };
-        if (extendee && extendsNativeElt) { 
+        if (extendee && extendsNativeElt) {
             elementDef.extends = extendee;
         }
 
         window[elementClass] = document.registerElement(name, elementDef);
-    }
+    };
 })();

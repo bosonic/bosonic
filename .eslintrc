@@ -1,0 +1,24 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+
+  "rules": {
+    "camelcase": [0],
+    "curly": [0],
+    "quotes": [1, "single"],
+    "eol-last": [0],
+    "key-spacing": [0],
+    "no-alert": [0],
+    "no-comma-dangle": [0],
+    "no-mixed-requires": [0],
+    "no-multi-spaces": [0],
+    "no-new": [0],
+    "no-shadow": [1],
+    "no-trailing-spaces": [2],
+    "no-underscore-dangle": [0],
+    "no-unused-vars": [1],
+    "no-use-before-define": [0]
+  }
+}

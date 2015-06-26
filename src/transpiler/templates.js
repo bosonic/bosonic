@@ -35,7 +35,10 @@ function visitTag(traverse, object, path, state) {
         utils.append('var ' + eltVar + ' = document.createElement("' + name + '");\n', state);
 
         attributes.forEach(function(attr) {
-            utils.append(eltVar + '.setAttribute("' + attr.name.name + '", ' + attr.value.raw + ');\n', state);
+            var attrName = (typeof attr.name.name === 'object') ? attr.name.namespace.name + ':' + attr.name.name.name : attr.name.name,
+                attrValue = attr.value.raw;
+            
+            utils.append(eltVar + '.setAttribute("' + attrName + '", ' + attrValue + ');\n', state);
         });
 
         if (!openingElement.selfClosing) {

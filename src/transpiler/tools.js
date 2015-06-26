@@ -49,10 +49,12 @@ function extendsNativeElement(extendee) {
 
 function getExtendeeClass(extendee) {
     if (!extendee) {
-        return 'HTMLElement'
+        return 'HTMLElement';
     } else if (extendsNativeElement(extendee)) {
         if (['thead', 'tbody', 'tfoot'].indexOf(extendee) !== -1) {
             return 'HTMLTableSectionElement';
+        } else if (extendee === 'nav') {
+            return 'HTMLElement';
         } else {
             return 'HTML' + camelize(extendee) + 'Element';
         }

@@ -751,25 +751,4 @@ if (HTMLElement.prototype.createShadowRoot) {
             }
         }
     });
-
-    Object.defineProperties(HTMLUnknownElement.prototype, {
-        shadowRoot: {
-            get: function() {
-                if (!this.__shadowRoots__ || this.__shadowRoots__.length === 0) return undefined;
-                return this.__shadowRoots__[0];
-            }
-        },
-        createShadowRoot: {
-            value: function() {
-                var that = this;
-                if (!this.__shadowRoots__) {
-                    this.__shadowRoots__ = [];
-                }
-                
-                var root = new ShadowRoot(this);
-                this.__shadowRoots__.push(root);
-                return root;
-            }
-        }
-    });
 }

@@ -27,6 +27,17 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
 
+    connect: {
+      sample: {
+        options: {
+          port: 8020,
+          base: ['.', 'sample'],
+          hostname: '*',
+          keepalive: true
+        }
+      }
+    },
+
     concat: {
       platform: {
         src: platformFiles,

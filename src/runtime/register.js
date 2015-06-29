@@ -1,7 +1,11 @@
 (function() {
 
-    if (!window.Platform || !window.Platform.name) {
-        throw 'Bosonic runtime needs the Bosonic platform to be loaded first.';
+    if (!window.WebComponents) {
+        throw 'Bosonic runtime needs the WebComponents polyfills to be loaded first.';
+    }
+
+    if (!window.Bosonic) {
+        window.Bosonic = {};
     }
 
     function buildShadowRegexes(elementName) {
@@ -33,10 +37,6 @@
         doc.body.appendChild(styleElt);
         
         return styleElt.sheet.cssRules;
-    }
-
-    if (!window.Bosonic) {
-        window.Bosonic = {};
     }
 
     function ucfirst(str) {
@@ -88,7 +88,7 @@
             s.textContent = css;
             document.head.appendChild(s);
             // if we have a prefixed (and therefore flaky) native impl., we keep the <style> in the shadow root, just in case
-            if (Platform.shadowDOM !== 'prefixed') {
+            if (WebComponents.flags.shadow !== 'prefixed') {
                 style.parentNode.removeChild(style);
             }
         });
@@ -133,7 +133,7 @@
                     this.createShadowRoot();
                     var content = template.content ? template.content : getFragmentFromNode(template);
                     this.shadowRoot.appendChild(document.importNode(content, true));
-                    if (Platform.shadowDOM !== 'native') {
+                    if (WebComponents.flags.shadow !== false) {
                         scopeShadowStyles(this.shadowRoot, name);
                     }
                     return created ? created.apply(this, arguments) : null;

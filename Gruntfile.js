@@ -21,8 +21,7 @@ module.exports = function (grunt) {
         options: {
           port: 8020,
           base: ['.', 'sample'],
-          hostname: '*',
-          keepalive: true
+          hostname: '*'
         }
       }
     },
@@ -49,6 +48,6 @@ module.exports = function (grunt) {
 
   require('load-grunt-tasks')(grunt);
 
-  grunt.registerTask('default', ['concat', 'watch']);
+  grunt.registerTask('default', ['concat', 'connect', 'watch']);
 
 };

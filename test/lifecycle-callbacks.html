@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Lifecycle callbacks</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../dist/bosonic-runtime.js"></script>
+
+        <script src="../node_modules/web-component-tester/browser.js"></script>
+        
+        <link rel="import" href="../sample/test-elements/callbacks.html">
+    </head>
+
+    <body>
+        <script type="text/javascript">
+            describe("Lifecycle callbacks", function() {
+                it("should called createdCallback when created", function() {
+                    var elt = document.createElement('foo-bar');
+                    expect(elt.createdCallbackCalled).to.be.true;
+                    expect(elt.attachedCallbackCalled).to.be.undefined;
+                });
+
+                it("should called attachedCallback when appended", function() {
+                    var elt = document.createElement('foo-bar');
+                    document.body.appendChild(elt);
+                    setTimeout(function() {
+                        expect(elt.attachedCallbackCalled).to.be.true;
+                        expect(elt.detachedCallbackCalled).to.be.undefined;
+                    }, 500);
+                });
+
+                it("should called detachedCallback when removed", function() {
+                    var elt = document.createElement('foo-bar');
+                    document.body.appendChild(elt);
+                    document.body.removeChild(elt);
+                    setTimeout(function() {
+                        expect(elt.detachedCallbackCalled).to.be.true;
+                    }, 500);
+                });
+            });
+        </script>
+    </body>
+</html>

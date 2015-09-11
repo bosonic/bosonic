@@ -1,0 +1,15 @@
+<element name="foo-bar">
+    <script>
+    Bosonic.register({
+        createdCallback: function() {
+            this.createdCallbackCalled = true;
+        },
+        attachedCallback: function() {
+            this.attachedCallbackCalled = true;
+        },
+        detachedCallback: function() {
+            this.detachedCallbackCalled = true;
+        }
+    });
+    </script>
+</element>

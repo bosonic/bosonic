@@ -1,13 +1,13 @@
 {
   "name": "bosonic",
   "version": "0.4.0",
-  "description": "Web Components development toolkit",
-  "main": "index.js",
+  "description": "Everyday UI elements as Web Components - library & polyfills package",
+  "main": "dist/bosonic-runtime.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "wct"
   },
   "repository": {
     "type": "git",
@@ -19,33 +19,13 @@
     "url": "https://github.com/bosonic/bosonic/issues"
   },
   "dependencies": {
-    "cheerio": "~0.17.0",
-    "escodegen": "~1.2.0",
-    "css": "^1.6.0",
-    "jstransform": "^6.3.2",
-    "esprima-fb": "^6001.1001.0-dev-harmony-fb"
+    "webcomponents.js": "^0.7.2"
   },
   "devDependencies": {
-    "chai": "^1.9.2",
     "grunt": "^0.4.5",
     "grunt-contrib-concat": "^0.5.0",
     "grunt-contrib-connect": "^0.10.1",
-    "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-jsonlint": "^1.0.4",
-    "grunt-karma": "^0.9.0",
-    "grunt-mocha-test": "^0.12.1",
-    "jsdom": "^1.0.1",
-    "jshint-stylish": "^1.0.0",
-    "karma": "^0.12.24",
-    "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^0.1.5",
-    "karma-effroi": "0.0.0",
-    "karma-firefox-launcher": "^0.1.3",
-    "karma-mocha": "^0.1.9",
-    "karma-sauce-launcher": "^0.2.10",
-    "load-grunt-tasks": "^0.6.0",
-    "mocha": "^1.21.4",
-    "webcomponents.js": "^0.7.2"
+    "load-grunt-tasks": "^0.6.0"
   }
 }

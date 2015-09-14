@@ -1,0 +1,22 @@
+{
+  "name": "bosonic",
+  "main": "dist/bosonic-runtime.js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/bosonic/bosonic",
+  "authors": [
+    "Raphaël Rougeron <goldoraf@gmail.com>"
+  ],
+  "description": "Everyday UI elements as Web Components - library & polyfills package",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "iron-test-helpers": "polymerelements/iron-test-helpers#~1.0.3",
+    "test-fixture": "PolymerElements/test-fixture#~1.0.0"
+  }
+}

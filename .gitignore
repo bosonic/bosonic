@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/*
+bower_components/*
 
 # Editors config folders
 .idea

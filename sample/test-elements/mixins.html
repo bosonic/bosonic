@@ -1,0 +1,14 @@
+<element name="elt-with-mixins">
+    <script>
+    var Foo = {
+        bar: 42,
+        baz: function() {
+            this.foo = this.bar;
+        }
+    };
+
+    Bosonic.register({
+        mixins: [Foo]
+    });
+    </script>
+</element>

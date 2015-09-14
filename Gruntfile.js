@@ -2,7 +2,8 @@
 
 module.exports = function (grunt) {
   var runtimeFiles = [
-    'src/runtime/register.js'
+    'src/runtime/register.js',
+    'src/mixins/custom_attributes.js'
   ];
 
   // var platformFiles = [
@@ -39,7 +40,7 @@ module.exports = function (grunt) {
 
     watch: {
       runtime: {
-        files: ['src/runtime/*.js'],
+        files: ['src/runtime/*.js', 'src/mixins/*.js'],
         tasks: ['concat:runtime']
       }
     }

@@ -158,6 +158,15 @@
             };
         }
 
+        if (options.mixins) {
+            options.mixins.forEach(function(mixin) {
+                for (var key in mixin) {
+                    prototype[key] = Object.getOwnPropertyDescriptor(mixin, key);
+                }
+            });
+            delete options.mixins;
+        }
+
         for (var key in options) {
             if (options.hasOwnProperty(key)) {
                 prototype[key] = Object.getOwnPropertyDescriptor(options, key);

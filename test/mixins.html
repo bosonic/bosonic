@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Mixins</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../dist/bosonic-runtime.js"></script>
+
+        <script src="../node_modules/web-component-tester/browser.js"></script>
+        <script src="../bower_components/test-fixture/test-fixture-mocha.js"></script>
+
+        <link rel="import" href="../bower_components/test-fixture/test-fixture.html">
+        
+        <link rel="import" href="../sample/test-elements/mixins.html">
+    </head>
+
+    <body>
+        <test-fixture id="element">
+            <template>
+                <elt-with-mixins></elt-with-mixins>
+            </template>
+        </test-fixture>
+
+        <script type="text/javascript">
+            describe("Mixins", function() {
+                var elt;
+
+                beforeEach(function() {
+                    elt = fixture('element');
+                });
+
+                it("should add properties to an element's prototype", function() {
+                    expect(elt.bar).to.equal(42);
+                });
+
+                it("should add methods to an element's prototype", function() {
+                    expect(elt).to.have.property('baz');
+                });
+
+                it("should add correctly scoped methods", function() {
+                    elt.baz();
+                    expect(elt).to.have.property('foo', 42);
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Custom Attributes</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../dist/bosonic-runtime.js"></script>
+
+        <script src="../node_modules/web-component-tester/browser.js"></script>
+        <script src="../bower_components/test-fixture/test-fixture-mocha.js"></script>
+
+        <link rel="import" href="../bower_components/test-fixture/test-fixture.html">
+        
+        <link rel="import" href="../sample/test-elements/custom_attributes.html">
+    </head>
+
+    <body>
+        <test-fixture id="element">
+            <template>
+                <custom-attributes></custom-attributes>
+            </template>
+        </test-fixture>
+
+        <script type="text/javascript">
+            describe("Custom attributes mixin", function() {
+                var elt;
+
+                beforeEach(function() {
+                    elt = fixture('element');
+                });
+
+                describe("hasCustomAttribute()", function() {
+                    it("should work with normal attributes", function() {
+                        elt.setAttribute('opened', '');
+                        expect(elt.hasCustomAttribute('opened')).to.be.true;
+                    });
+
+                    it("should work with data-prefixed attributes", function() {
+                        elt.setAttribute('data-opened', '');
+                        expect(elt.hasCustomAttribute('opened')).to.be.true;
+                    });
+                });
+
+                describe("getCustomAttribute()", function() {
+                    it("should work with normal attributes", function() {
+                        elt.setAttribute('orientation', 'vertical');
+                        expect(elt.getCustomAttribute('orientation')).to.equal('vertical');
+                    });
+
+                    it("should work with data-prefixed attributes", function() {
+                        elt.setAttribute('data-orientation', 'vertical');
+                        expect(elt.getCustomAttribute('orientation')).to.equal('vertical');
+                    });
+                });
+
+                describe("setCustomAttribute()", function() {
+                    it("should work with normal attributes", function() {
+                        elt.setCustomAttribute('orientation', 'vertical');
+                        expect(elt.getAttribute('orientation')).to.equal('vertical');
+                    });
+
+                    it("should work with data-prefixed attributes", function() {
+                        elt.setAttribute('data-orientation', 'horizontal');
+                        elt.setCustomAttribute('orientation', 'vertical');
+                        expect(elt.getAttribute('data-orientation')).to.equal('vertical');
+                    });
+                });
+
+                describe("removeCustomAttribute()", function() {
+                    it("should work with normal attributes", function() {
+                        elt.setAttribute('orientation', 'vertical');
+                        elt.removeCustomAttribute('orientation');
+                        expect(elt.hasAttribute('orientation')).to.be.false;
+                    });
+
+                    it("should work with data-prefixed attributes", function() {
+                        elt.setAttribute('data-orientation', 'vertical');
+                        elt.removeCustomAttribute('orientation');
+                        expect(elt.hasAttribute('data-orientation')).to.be.false;
+                    });
+                });
+
+                describe("toggleCustomAttribute()", function() {
+                    it("should work with normal attributes when present", function() {
+                        elt.setAttribute('opened', '');
+                        elt.toggleCustomAttribute('opened');
+                        expect(elt.hasAttribute('opened')).to.be.false;
+                    });
+
+                    it("should work with data-prefixed attributes when present", function() {
+                        elt.setAttribute('data-opened', '');
+                        elt.toggleCustomAttribute('opened');
+                        expect(elt.hasAttribute('data-opened')).to.be.false;
+                    });
+
+                    it("should work with normal attributes when absent", function() {
+                        elt.toggleCustomAttribute('opened');
+                        expect(elt.hasAttribute('opened')).to.be.true;
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

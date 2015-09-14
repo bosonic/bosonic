@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Attribute changed</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../dist/bosonic-runtime.js"></script>
+
+        <script src="../node_modules/web-component-tester/browser.js"></script>
+        <script src="../bower_components/test-fixture/test-fixture-mocha.js"></script>
+
+        <link rel="import" href="../bower_components/test-fixture/test-fixture.html">
+        
+        <link rel="import" href="../sample/test-elements/attribute-changed.html">
+    </head>
+
+    <body>
+        <test-fixture id="element">
+            <template>
+                <attribute-changed></attribute-changed>
+            </template>
+        </test-fixture>
+
+        <script type="text/javascript">
+            describe("Automatic attribute changed callback", function() {
+                var elt;
+
+                beforeEach(function() {
+                    elt = fixture('element');
+                });
+
+                it("should call the callback", function() {
+                    elt.setAttribute('duration', 100);
+                    expect(elt.durationChangedCalled).to.be.true;
+                });
+
+                it("should call the callback even if the attribute is data-prefixed", function() {
+                    elt.setAttribute('data-duration', 100);
+                    expect(elt.durationChangedCalled).to.be.true;
+                });
+            });
+        </script>
+    </body>
+</html>

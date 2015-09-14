@@ -150,6 +150,9 @@
                 enumerable: true,
                 writable: true,
                 value: function(name, oldValue, newValue) {
+                    if (name.indexOf('data-') === 0) {
+                        name = name.substr(5);
+                    }
                     if (attrs.indexOf(name) !== -1 && this[name + 'Changed']) {
                         this[name + 'Changed'].call(this, oldValue, newValue);
                     }

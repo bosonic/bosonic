@@ -1,0 +1,11 @@
+<element name="attribute-changed" attributes="duration">
+    <script>
+    Bosonic.register({
+        durationChangedCalled: false,
+
+        durationChanged: function(oldValue, newValue) {
+            this.durationChangedCalled = true;
+        }
+    });
+    </script>
+</element>

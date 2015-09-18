@@ -20,21 +20,24 @@
                     expect(elt.attachedCallbackCalled).to.be.undefined;
                 });
 
-                it("should called attachedCallback when appended", function() {
+                it("should called attachedCallback when appended", function(done) {
                     var elt = document.createElement('foo-bar');
                     document.body.appendChild(elt);
                     setTimeout(function() {
                         expect(elt.attachedCallbackCalled).to.be.true;
                         expect(elt.detachedCallbackCalled).to.be.undefined;
+                        done();
                     }, 500);
                 });
 
-                it("should called detachedCallback when removed", function() {
+                it("should called detachedCallback when removed", function(done) {
                     var elt = document.createElement('foo-bar');
                     document.body.appendChild(elt);
+                    CustomElements.takeRecords();
                     document.body.removeChild(elt);
                     setTimeout(function() {
                         expect(elt.detachedCallbackCalled).to.be.true;
+                        done();
                     }, 500);
                 });
             });

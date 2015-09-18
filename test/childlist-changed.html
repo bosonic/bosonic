@@ -50,6 +50,7 @@
                     elt.appendChild(div);
                     setTimeout(function() {
                         expect(elt.added.length).to.equal(1);
+                        expect(elt.added[0]).to.be.an.instanceof(HTMLElement);
                         done();
                     }, 500);
                 });
@@ -59,6 +60,7 @@
                     elt.removeChild(elt.querySelector('div'));
                     setTimeout(function() {
                         expect(elt.removed.length).to.equal(1);
+                        expect(elt.removed[0]).to.be.an.instanceof(HTMLElement);
                         done();
                     }, 500);
                 });

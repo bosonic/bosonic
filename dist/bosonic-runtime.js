@@ -108,8 +108,8 @@
             removed: []
         };
         mutations.forEach(function(record) {
-            nodes.added = nodes.added.concat(record.addedNodes);
-            nodes.removed = nodes.removed.concat(record.removedNodes);
+            nodes.added = nodes.added.concat([].slice.call(record.addedNodes));
+            nodes.removed = nodes.removed.concat([].slice.call(record.removedNodes));
         });
         return nodes;
     }

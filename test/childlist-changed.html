@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Childlist changed</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../dist/bosonic-runtime.js"></script>
+
+        <script src="../node_modules/web-component-tester/browser.js"></script>
+        <script src="../bower_components/test-fixture/test-fixture-mocha.js"></script>
+
+        <link rel="import" href="../bower_components/test-fixture/test-fixture.html">
+        
+        <link rel="import" href="../sample/test-elements/childlist-changed.html">
+    </head>
+
+    <body>
+        <test-fixture id="element">
+            <template>
+                <childlist-changed></childlist-changed>
+            </template>
+        </test-fixture>
+
+        <test-fixture id="element-with-children">
+            <template>
+                <childlist-changed>
+                    <div>Foo</div>
+                    <div>Bar</div>
+                </childlist-changed>
+            </template>
+        </test-fixture>
+
+        <script type="text/javascript">
+            describe("Childlist changed callback", function() {
+                var elt;
+
+                it("should call the callback", function(done) {
+                    elt = fixture('element');
+                    var div = document.createElement('div');
+                    elt.appendChild(div);
+                    setTimeout(function() {
+                        expect(elt.childListChangedCalled).to.be.true;
+                        done();
+                    }, 500);
+                });
+
+                it("should pass the added nodes as an argument", function(done) {
+                    elt = fixture('element');
+                    var div = document.createElement('div');
+                    elt.appendChild(div);
+                    setTimeout(function() {
+                        expect(elt.added.length).to.equal(1);
+                        done();
+                    }, 500);
+                });
+
+                it("should pass the removed nodes as an argument", function(done) {
+                    elt = fixture('element-with-children');
+                    elt.removeChild(elt.querySelector('div'));
+                    setTimeout(function() {
+                        expect(elt.removed.length).to.equal(1);
+                        done();
+                    }, 500);
+                });
+            });
+        </script>
+    </body>
+</html>

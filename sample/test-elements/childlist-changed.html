@@ -1,0 +1,15 @@
+<element name="childlist-changed">
+    <script>
+    Bosonic.register({
+        childListChangedCalled: false,
+        added: null,
+        removed: null,
+
+        childListChangedCallback: function(removedNodes, addedNodes) {
+            this.childListChangedCalled = true;
+            this.removed = removedNodes;
+            this.added = addedNodes;
+        }
+    });
+    </script>
+</element>

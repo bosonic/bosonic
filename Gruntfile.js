@@ -2,6 +2,7 @@
 
 module.exports = function (grunt) {
   var runtimeFiles = [
+    'node_modules/handjs/hand.js',
     'src/runtime/register.js',
     'src/mixins/custom_attributes.js'
   ];

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Automatic templating</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../dist/bosonic-runtime.js"></script>
+
+        <script src="../node_modules/web-component-tester/browser.js"></script>
+        <script src="../bower_components/test-fixture/test-fixture-mocha.js"></script>
+
+        <link rel="import" href="../bower_components/test-fixture/test-fixture.html">
+        
+        <link rel="import" href="../sample/test-elements/automatic-templating.html">
+    </head>
+
+    <body>
+        <test-fixture id="element">
+            <template>
+                <automatic-templating></automatic-templating>
+            </template>
+        </test-fixture>
+
+        <script type="text/javascript">
+            describe("Automatic templating", function() {
+                var elt;
+
+                beforeEach(function() {
+                    elt = fixture('element');
+                });
+
+                it("should create the shadowRoot", function() {
+                    expect(elt.shadowRoot).to.not.be.undefined;
+                });
+
+                it("should import the template into the shadowRoot", function() {
+                    expect(elt.shadowRoot.querySelectorAll('div')).to.have.length(2);
+                });
+            });
+        </script>
+    </body>
+</html>

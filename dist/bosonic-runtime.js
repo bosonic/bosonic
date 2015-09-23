@@ -1011,6 +1011,10 @@ Bosonic.Selection = {
         return this.hasAttribute('selected') ? Number(this.getAttribute('selected')) : null;
     },
 
+    get selectedItem() {
+        return this.getItem(this.selectedItemIndex);
+    },
+
     select: function(index) {
         if (index !== this.selectedItemIndex) {
             this.setAttribute('selected', index);

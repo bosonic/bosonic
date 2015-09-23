@@ -46,6 +46,14 @@ module.exports = function (grunt) {
       }
     },
 
+    uglify: {
+      runtime: {
+        files: {
+          'dist/bosonic-runtime.min.js': ['dist/bosonic-runtime.js']
+        }
+      }
+    },
+
     watch: {
       runtime: {
         files: ['src/runtime/*.js', 'src/mixins/*.js'],
@@ -57,6 +65,7 @@ module.exports = function (grunt) {
 
   require('load-grunt-tasks')(grunt);
 
-  grunt.registerTask('default', ['concat', 'connect', 'watch']);
+  grunt.registerTask('build', ['concat', 'uglify']);
+  grunt.registerTask('default', ['build', 'connect', 'watch']);
 
 };

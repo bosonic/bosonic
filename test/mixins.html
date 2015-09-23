@@ -41,6 +41,22 @@
                     elt.baz();
                     expect(elt).to.have.property('foo', 42);
                 });
+
+                it('should provide a created callback', function() {
+                    expect(elt.mixinCreatedCalled).to.be.true;
+                });
+
+                it('should provide an attached callback', function() {
+                    expect(elt.mixinAttachedCalled).to.be.true;
+                });
+
+                it('should provide a detached callback', function(done) {
+                    elt.parentElement.removeChild(elt);
+                    setTimeout(function() {
+                        expect(elt.mixinDetachedCalled).to.be.true;
+                        done();
+                    }, 500);
+                });
             });
         </script>
     </body>

@@ -4,6 +4,20 @@
         bar: 42,
         baz: function() {
             this.foo = this.bar;
+        },
+
+        mixinCreatedCalled: false,
+        mixinAttachedCalled: false,
+        mixinDetachedCalled: false,
+
+        created: function() {
+            this.mixinCreatedCalled = true;
+        },
+        attached: function() {
+            this.mixinAttachedCalled = true;
+        },
+        detached: function() {
+            this.mixinDetachedCalled = true;
         }
     };
 

@@ -876,16 +876,19 @@ var HANDJS = HANDJS || {};
                     });
                 observer.observe(this, { childList: true, subtree: true, characterData: true });
             }
+            this.__callMixins('created');
             var created = this.__lifecycle.created;
             return created ? created.apply(this, arguments) : null;
         },
 
         attachedCallback: function() {
+            this.__callMixins('attached');
             var attached = this.__lifecycle.attached;
             return attached ? attached.apply(this, arguments) : null;
         },
 
         detachedCallback: function() {
+            this.__callMixins('detached');
             var detached = this.__lifecycle.detached;
             return detached ? detached.apply(this, arguments) : null;
         },
@@ -901,6 +904,15 @@ var HANDJS = HANDJS || {};
             }
             var changed = this.__lifecycle.attributeChanged;
             return changed ? changed.apply(this, arguments) : null;
+        },
+
+        __callMixins: function(callbackName, args) {
+            if (!this.mixins) return;
+            this.mixins.forEach(function(mixin) {
+                if (mixin[callbackName]) {
+                    args ? mixin[callbackName].apply(this, args) : mixin[callbackName].call(this);
+                }
+            }, this);
         }
     }
 
@@ -924,10 +936,13 @@ var HANDJS = HANDJS || {};
         return options;
     }
 
-    Bosonic.extend = function(prototype, api) {
+    function extendPrototype(prototype, api, exclude) {
+        exclude = exclude || [];
         if (prototype && api) {
             Object.getOwnPropertyNames(api).forEach(function(n) {
-                prototype[n] = Object.getOwnPropertyDescriptor(api, n);
+                if (exclude.indexOf(n) === -1) {
+                    prototype[n] = Object.getOwnPropertyDescriptor(api, n);
+                }
             });
         }
         return prototype;
@@ -956,16 +971,15 @@ var HANDJS = HANDJS || {};
         if (template) options.__template = template;
         if (attributes) options.__attributes = attributes.split(' ');
 
-        var prototype = Bosonic.extend({}, Bosonic.Base);
+        var prototype = extendPrototype({}, Bosonic.Base);
 
         if (options.mixins) {
             options.mixins.forEach(function(mixin) {
-                prototype = Bosonic.extend(prototype, mixin);
+                prototype = extendPrototype(prototype, mixin, ['created', 'attached', 'detached']);
             });
-            delete options.mixins;
         }
 
-        prototype = Bosonic.extend(prototype, options);
+        prototype = extendPrototype(prototype, options);
 
         var elementDef = {
             prototype: Object.create(window[extendeeClass].prototype, prototype)

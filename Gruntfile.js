@@ -3,6 +3,8 @@
 module.exports = function (grunt) {
   var runtimeFiles = [
     'node_modules/handjs/hand.js',
+    'src/runtime/bootstrap.js',
+    'src/runtime/base.js',
     'src/runtime/register.js',
     'src/mixins/*.js'
   ];
@@ -29,6 +31,11 @@ module.exports = function (grunt) {
     },
 
     concat: {
+      options: {
+        banner: '(function() {\n',
+        //separator: '})(); (function() {',
+        footer: '\n})();'
+      },
       // platform: {
       //   src: platformFiles,
       //   dest: 'dist/bosonic-platform.js'

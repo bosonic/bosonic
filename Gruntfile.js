@@ -4,7 +4,7 @@ module.exports = function (grunt) {
   var runtimeFiles = [
     'node_modules/handjs/hand.js',
     'src/runtime/register.js',
-    'src/mixins/custom_attributes.js'
+    'src/mixins/*.js'
   ];
 
   // var platformFiles = [
@@ -21,7 +21,7 @@ module.exports = function (grunt) {
     connect: {
       sample: {
         options: {
-          port: 8020,
+          port: 8021,
           base: ['.', 'sample'],
           hostname: '*'
         }

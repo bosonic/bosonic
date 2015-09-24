@@ -57,7 +57,7 @@ module.exports = function (grunt) {
     watch: {
       runtime: {
         files: ['src/runtime/*.js', 'src/mixins/*.js'],
-        tasks: ['concat:runtime']
+        tasks: ['build']
       }
     }
 

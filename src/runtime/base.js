@@ -122,8 +122,7 @@ Bosonic.Base = {
     },
 
     __callMixins: function(callbackName, args) {
-        if (!this.mixins) return;
-        this.mixins.forEach(function(mixin) {
+        this.__mixins.forEach(function(mixin) {
             if (mixin[callbackName]) {
                 args ? mixin[callbackName].apply(this, args) : mixin[callbackName].call(this);
             }

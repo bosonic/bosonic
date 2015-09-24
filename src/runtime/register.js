@@ -87,11 +87,17 @@ Bosonic.register = function(options) {
 
     var prototype = extendPrototype({}, Bosonic.Base);
 
+    var features = [Bosonic.Events, Bosonic.CustomAttributes],
+        mixins = features;
+
     if (options.mixins) {
-        options.mixins.forEach(function(mixin) {
-            prototype = extendPrototype(prototype, mixin, ['created', 'attached', 'detached']);
-        });
+        mixins = mixins.concat(options.mixins);
     }
+
+    mixins.forEach(function(mixin) {
+        prototype = extendPrototype(prototype, mixin, ['created', 'attached', 'detached']);
+    });
+    options.__mixins = mixins;
 
     prototype = extendPrototype(prototype, options);
 

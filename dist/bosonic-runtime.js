@@ -1045,6 +1045,39 @@ var MODIFIER_KEYS = {
     'meta': 'metaKey'
 };
 
+function getKeyCombos(bindings) {
+    return bindings.split(' ').map(function(binding) {
+        var keys = binding.split('+').reverse(),
+            key = keys[0],
+            modifierKeys = {};
+            modifiers = keys.slice(1);
+
+        Object.keys(MODIFIER_KEYS).forEach(function(k) {
+            modifierKeys[MODIFIER_KEYS[k]] = (modifiers.indexOf(k) !== -1)
+        });
+        return {
+            key: key,
+            modifiers: modifierKeys
+        };
+    });
+}
+
+function combosMatchesEvent(combos, event) {
+    return combos.some(function(combo) {
+        return comboMatchesEvent(combo, event);
+    });
+}
+
+function comboMatchesEvent(combo, event) {
+    return KEYS[event.keyCode] && KEYS[event.keyCode] === combo.key && modifiersMatchesEvent(combo, event);
+}
+
+function modifiersMatchesEvent(combo, event) {
+    return Object.keys(combo.modifiers).every(function(modifier) {
+        return !!combo.modifiers[modifier] === !!event[modifier];
+    });
+}
+
 Bosonic.Events = {
     __boundHandlers: {},
     __boundKeyListener: null,
@@ -1102,11 +1135,11 @@ Bosonic.Events = {
     },
 
     _keyListener: function(event) {
-        for (var k in this.keyBindings) {
-            keys = k.split(' ');
-            var handlerName = this.keyBindings[k];
-            var pressedKey = KEYS[event.keyCode] ? KEYS[event.keyCode] : event.keyCode;
-            if (!event.defaultPrevented && keys.indexOf(pressedKey) !== -1) {
+        for (var binding in this.keyBindings) {
+            var handlerName = this.keyBindings[binding];
+            var combos = getKeyCombos(binding);
+
+            if (!event.defaultPrevented && combosMatchesEvent(combos, event)) {
                 this[handlerName].call(this, event);
             }
         }

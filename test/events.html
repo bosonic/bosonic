@@ -64,6 +64,15 @@
                     expect(elt.opened).to.equal(2);
                     expect(elt.closed).to.equal(0);
                 });
+
+                it("should support modifier keys", function() {
+                    var event = new CustomEvent('keydown');
+                    event.ctrlKey = true;
+                    event.shiftKey = true;
+                    event.keyCode = event.code = 9;
+                    elt.dispatchEvent(event);
+                    expect(elt.switched).to.equal(1);
+                });
             });
         </script>
     </body>

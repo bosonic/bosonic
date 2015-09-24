@@ -7,13 +7,15 @@
 
         keyBindings: {
             'up down': 'open',
-            'esc': 'close'
+            'esc': 'close',
+            'ctrl+shift+tab': 'switchTab'
         },
 
         clickHandled: 0,
         pointerdownHandled: 0,
         opened: 0,
         closed: 0,
+        switched: 0,
 
         createdCallback: function() {
             this.listen(this, 'click', 'handleClick');
@@ -33,6 +35,10 @@
 
         close: function(e) {
             this.closed++;
+        },
+
+        switchTab: function(e) {
+            this.switched++;
         }
     });
     </script>

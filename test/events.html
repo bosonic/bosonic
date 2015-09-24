@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Events</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../dist/bosonic-runtime.js"></script>
+
+        <script src="../node_modules/web-component-tester/browser.js"></script>
+        <script src="../bower_components/test-fixture/test-fixture-mocha.js"></script>
+        <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
+
+        <link rel="import" href="../bower_components/test-fixture/test-fixture.html">
+        
+        <link rel="import" href="../sample/test-elements/events-element.html">
+    </head>
+
+    <body>
+        <test-fixture id="element">
+            <template>
+                <events-element>
+                    <button>Go</button>
+                </events-element>
+            </template>
+        </test-fixture>
+
+        <script type="text/javascript">
+            describe("Events mixin", function() {
+                var elt, btn;
+
+                beforeEach(function() {
+                    elt = fixture('element');
+                    btn = elt.querySelector('button');
+                });
+
+                it("should listen to events", function() {
+                    MockInteractions.tap(btn);
+                    expect(elt.clickHandled).to.equal(1);
+                });
+
+                it("should unlisten events", function() {
+                    elt.unlisten(elt, 'click', 'handleClick');
+                    MockInteractions.tap(btn);
+                    expect(elt.clickHandled).to.equal(0);
+                });
+
+                it("should setup automatically listeners defined in the `listeners` property", function() {
+                    MockInteractions.tap(btn);
+                    expect(elt.pointerdownHandled).to.equal(1);
+                });
+            });
+        </script>
+    </body>
+</html>

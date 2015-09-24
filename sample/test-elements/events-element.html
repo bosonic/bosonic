@@ -1,0 +1,26 @@
+<element name="events-element">
+    <script>
+    Bosonic.register({
+        mixins: [Bosonic.Events],
+
+        listeners: {
+            pointerdown: 'handlePointerdown'
+        },
+
+        clickHandled: 0,
+        pointerdownHandled: 0,
+
+        createdCallback: function() {
+            this.listen(this, 'click', 'handleClick');
+        },
+
+        handleClick: function(e) {
+            this.clickHandled++;
+        },
+
+        handlePointerdown: function(e) {
+            this.pointerdownHandled++;
+        }
+    });
+    </script>
+</element>

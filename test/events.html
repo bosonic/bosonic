@@ -8,6 +8,10 @@
 
         <script src="../node_modules/web-component-tester/browser.js"></script>
         <script src="../bower_components/test-fixture/test-fixture-mocha.js"></script>
+        
+        <!-- This import is here because MockInteractions doesn't declare its dep to Polymer.Base
+             TODO: remove this when https://github.com/PolymerElements/iron-test-helpers/pull/16 gets fixed -->
+        <link rel="import" href="../bower_components/polymer/polymer.html">
         <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
 
         <link rel="import" href="../bower_components/test-fixture/test-fixture.html">
@@ -47,6 +51,18 @@
                 it("should setup automatically listeners defined in the `listeners` property", function() {
                     MockInteractions.tap(btn);
                     expect(elt.pointerdownHandled).to.equal(1);
+                });
+
+                it("should setup automatically keyboard listeners defined by the `keyBindings` property", function() {
+                    MockInteractions.pressAndReleaseKeyOn(elt, 27); // ESC
+                    expect(elt.closed).to.equal(1);
+                });
+
+                it("should support multiple keys per handler in the `keyBindings` property", function() {
+                    MockInteractions.pressAndReleaseKeyOn(elt, 38); // UP
+                    MockInteractions.pressAndReleaseKeyOn(elt, 40); // DOWN
+                    expect(elt.opened).to.equal(2);
+                    expect(elt.closed).to.equal(0);
                 });
             });
         </script>

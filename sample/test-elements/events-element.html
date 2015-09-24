@@ -5,8 +5,15 @@
             pointerdown: 'handlePointerdown'
         },
 
+        keyBindings: {
+            'up down': 'open',
+            'esc': 'close'
+        },
+
         clickHandled: 0,
         pointerdownHandled: 0,
+        opened: 0,
+        closed: 0,
 
         createdCallback: function() {
             this.listen(this, 'click', 'handleClick');
@@ -18,6 +25,14 @@
 
         handlePointerdown: function(e) {
             this.pointerdownHandled++;
+        },
+
+        open: function(e) {
+            this.opened++;
+        },
+
+        close: function(e) {
+            this.closed++;
         }
     });
     </script>

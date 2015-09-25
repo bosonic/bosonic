@@ -13,5 +13,22 @@ Bosonic.Dom = {
             bool = !node.classList.contains(name);
         }
         bool ? node.classList.add(name) : node.classList.remove(name);
-    }
+    },
+
+    toggleAttribute: function(name, bool, node) {
+        node = node || this;
+        if (arguments.length == 1) {
+            bool = !node.hasAttribute(name);
+        }
+        bool ? node.setAttribute(name, '') : node.removeAttribute(name);
+    },
+
+    // for ARIA state properties
+    toggleStateAttribute: function(name, bool, node) {
+        node = node || this;
+        if (arguments.length == 1) {
+            bool = !node.hasAttribute(name) || node.getAttribute(name) == 'false';
+        }
+        bool ? node.setAttribute(name, 'true') : node.setAttribute(name, 'false');
+    },
 };

@@ -44,6 +44,34 @@
                     elt.toggleClass('foo');
                     expect(elt.classList.contains('foo')).to.be.false;
                 });
+
+                it("should toggle an attribute when the attribute is absent", function() {
+                    elt.toggleAttribute('foo');
+                    expect(elt.hasAttribute('foo')).to.be.true;
+                });
+
+                it("should toggle an attribute when the attribute is present", function() {
+                    elt.setAttribute('foo', '')
+                    elt.toggleAttribute('foo');
+                    expect(elt.hasAttribute('foo')).to.be.false;
+                });
+
+                it("should toggle a state attribute when the attribute is absent", function() {
+                    elt.toggleStateAttribute('aria-checked');
+                    expect(elt.getAttribute('aria-checked')).to.equal('true');
+                });
+
+                it("should toggle a state attribute when the attribute is set to false", function() {
+                    elt.setAttribute('aria-checked', 'false');
+                    elt.toggleStateAttribute('aria-checked');
+                    expect(elt.getAttribute('aria-checked')).to.equal('true');
+                });
+
+                it("should toggle a state attribute when the attribute is set to true", function() {
+                    elt.setAttribute('aria-checked', 'true');
+                    elt.toggleStateAttribute('aria-checked');
+                    expect(elt.getAttribute('aria-checked')).to.equal('false');
+                });
             });
         </script>
     </body>

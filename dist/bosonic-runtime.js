@@ -969,7 +969,7 @@ Bosonic.register = function(options) {
 
     var prototype = extendPrototype({}, Bosonic.Base);
 
-    var features = [Bosonic.Events, Bosonic.CustomAttributes],
+    var features = [Bosonic.Dom, Bosonic.Events, Bosonic.CustomAttributes],
         mixins = features;
 
     if (options.mixins) {
@@ -1019,6 +1019,15 @@ Bosonic.CustomAttributes = {
 
     _getRealAttribute: function(name) {
         return this._hasPrefixedAttribute(name) ? 'data-' + name : name;
+    }
+};
+Bosonic.Dom = {
+    created: function() {
+        if (this.hostAttributes) {
+            for (var attrName in this.hostAttributes) {
+                this.setAttribute(attrName, this.hostAttributes[attrName]);
+            }
+        }
     }
 };
 var KEYS = {

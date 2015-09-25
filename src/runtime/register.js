@@ -87,7 +87,7 @@ Bosonic.register = function(options) {
 
     var prototype = extendPrototype({}, Bosonic.Base);
 
-    var features = [Bosonic.Events, Bosonic.CustomAttributes],
+    var features = [Bosonic.Dom, Bosonic.Events, Bosonic.CustomAttributes],
         mixins = features;
 
     if (options.mixins) {

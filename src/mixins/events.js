@@ -77,6 +77,18 @@ Bosonic.Events = {
         }
     },
 
+    fire: function(type, detail, options) {
+        detail = detail || {};
+        options = options || {};
+        var event = new CustomEvent(type, {
+            bubbles: options.bubbles === false ? false : true,
+            cancelable: options.cancelable === true ? true : false,
+            detail: detail
+        });
+        this.dispatchEvent(event);
+        return event;
+    },
+
     listen: function(node, eventName, methodName) {
         node.addEventListener(eventName, this._registerHandler(eventName, methodName));
     },

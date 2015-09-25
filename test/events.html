@@ -73,6 +73,15 @@
                     elt.dispatchEvent(event);
                     expect(elt.switched).to.equal(1);
                 });
+
+                it("should fire events", function(done) {
+                    var details = { foo: 'bar' };
+                    elt.addEventListener('foo', function(e) {
+                        expect(e.detail).to.equal(details);
+                        done();
+                    });
+                    elt.fire('foo', details);
+                });
             });
         </script>
     </body>

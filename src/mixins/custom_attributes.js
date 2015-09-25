@@ -15,8 +15,11 @@ Bosonic.CustomAttributes = {
         this.removeAttribute(this._getRealAttribute(name));
     },
 
-    toggleCustomAttribute: function(name) {
-        this.hasCustomAttribute(name) ? this.removeCustomAttribute(name) : this.setCustomAttribute(name, '');
+    toggleCustomAttribute: function(name, bool) {
+        if (arguments.length == 1) {
+            bool = !this.hasCustomAttribute(name);
+        }
+        bool ? this.setCustomAttribute(name, '') : this.removeCustomAttribute(name);
     },
 
     _hasPrefixedAttribute: function(name) {

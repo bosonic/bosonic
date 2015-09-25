@@ -30,5 +30,5 @@ Bosonic.Dom = {
             bool = !node.hasAttribute(name) || node.getAttribute(name) == 'false';
         }
         bool ? node.setAttribute(name, 'true') : node.setAttribute(name, 'false');
-    },
+    }
 };

@@ -57,14 +57,14 @@ function modifiersMatchesEvent(combo, event) {
 
 Bosonic.Events = {
     __boundHandlers: {},
-    __boundKeyListener: null,
+    __boundKeyHandlers: [],
 
     created: function() {
         for (var eventName in this.listeners) {
             this.listen(this, eventName, this.listeners[eventName]);
         }
         if (this.keyBindings) {
-            this._setupKeyListener();
+            this._setupKeyListeners();
         }
     },
 
@@ -73,7 +73,7 @@ Bosonic.Events = {
             this.unlisten(this, eventName, this.listeners[eventName]);
         }
         if (this.keyBindings) {
-            this._removeKeyListener();
+            this._removeKeyListeners();
         }
     },
 
@@ -102,23 +102,26 @@ Bosonic.Events = {
         return eventName + ':' + methodName;
     },
 
-    _setupKeyListener: function() {
-        this.__boundKeyListener = this._keyListener.bind(this);
-        this.addEventListener('keydown', this.__boundKeyListener);
-    },
-
-    _removeKeyListener: function() {
-        this.removeEventListener('keydown', this.__boundKeyListener);
-    },
-
-    _keyListener: function(event) {
+    _setupKeyListeners: function() {
         for (var binding in this.keyBindings) {
-            var handlerName = this.keyBindings[binding];
-            var combos = getKeyCombos(binding);
+            var handlerName = this.keyBindings[binding],
+                combos = getKeyCombos(binding),
+                boundHandler = this._keydownHandler.bind(this, combos, handlerName);
 
-            if (!event.defaultPrevented && combosMatchesEvent(combos, event)) {
-                this[handlerName].call(this, event);
-            }
+            this.__boundKeyHandlers.push(boundHandler);
+            this.addEventListener('keydown', boundHandler);
+        }
+    },
+
+    _removeKeyListeners: function() {
+        this.__boundKeyHandlers.forEach(function(handler) {
+            this.removeEventListener('keydown', handler);
+        }, this);
+    },
+    
+    _keydownHandler: function(keyCombos, handlerName, event) {
+        if (!event.defaultPrevented && combosMatchesEvent(keyCombos, event)) {
+            this[handlerName].call(this, event);
         }
     }
 };

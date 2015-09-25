@@ -33,6 +33,17 @@
                     expect(elt.getAttribute('role')).to.equal('checkbox');
                     expect(elt.getAttribute('tabindex')).to.equal('0');
                 });
+
+                it("should toggle a class when the class is absent", function() {
+                    elt.toggleClass('foo');
+                    expect(elt.classList.contains('foo')).to.be.true;
+                });
+
+                it("should toggle a class when the class is present", function() {
+                    elt.classList.add('foo')
+                    elt.toggleClass('foo');
+                    expect(elt.classList.contains('foo')).to.be.false;
+                });
             });
         </script>
     </body>

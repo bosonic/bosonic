@@ -5,5 +5,13 @@ Bosonic.Dom = {
                 this.setAttribute(attrName, this.hostAttributes[attrName]);
             }
         }
+    },
+
+    toggleClass: function(name, bool, node) {
+        node = node || this;
+        if (arguments.length == 1) {
+            bool = !node.classList.contains(name);
+        }
+        bool ? node.classList.add(name) : node.classList.remove(name);
     }
 };

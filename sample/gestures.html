@@ -15,6 +15,10 @@
                         height: 200px;
                         border: 1px solid #ccc;
                         background-color: #ddd;
+                        -webkit-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        user-select: none;
                     }
                 </style>
                 <h1>test</h1>
@@ -23,11 +27,13 @@
                 Bosonic.register({
                     listeners: {
                         'tap': 'handleGesture',
-                        'hold': 'handleGesture'
+                        'hold': 'handleGesture',
+                        'track': 'handleGesture'
                     },
 
                     handleGesture: function(e) {
                         this.shadowRoot.querySelector('h1').innerHTML = e.type;
+                        console.log(e.detail);
                     }
                 });
             </script>

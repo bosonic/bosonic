@@ -1199,12 +1199,14 @@ Bosonic.Events = {
 };
 var GESTURE_FLAG = '__bosonicGestures';
 
+var TRACK_DISTANCE = 10;
+
 var GESTURES = {
     tap: {
         condition: function(state, event) {
             return event.type === 'pointerup' &&
-                Math.abs(state.startX - event.clientX) < 10 &&
-                Math.abs(state.startY - event.clientY) < 10;
+                Math.abs(state.startX - event.clientX) < TRACK_DISTANCE &&
+                Math.abs(state.startY - event.clientY) < TRACK_DISTANCE;
         }
     },
 
@@ -1219,8 +1221,35 @@ var GESTURES = {
                 that._removeDocumentListeners(state);
             }, 1000);
         },
+        condition: function(state, event) {
+            if (Math.abs(state.startX - event.clientX) >= TRACK_DISTANCE
+                || Math.abs(state.startY - event.clientY) >= TRACK_DISTANCE) {
+                clearTimeout(state.__timer);
+            }
+        },
         teardown: function(state) {
             clearTimeout(state.__timer);
+        }
+    },
+
+    track: {
+        condition: function(state, event) {
+            var hasMovedEnough = Math.abs(state.startX - event.clientX) >= TRACK_DISTANCE
+                              || Math.abs(state.startY - event.clientY) >= TRACK_DISTANCE;
+            if (!hasMovedEnough) return;
+            
+            if (event.type === 'pointermove') {
+                var x = event.clientX,
+                    y = event.clientY;
+                state.dx = x - state.startX;
+                state.dy = y - state.startY;
+                state.ddx = state.lastX ? x - state.lastX : 0;
+                state.ddy = state.lastY ? y - state.lastY : 0;
+                this.fire('track', state, {
+                    bubbles: true,
+                    cancelable: true
+                });
+            } else if (event.type === 'pointerup') return true;
         }
     }
 };

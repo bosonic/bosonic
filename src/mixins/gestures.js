@@ -2,26 +2,32 @@ var GESTURE_FLAG = '__bosonicGestures';
 
 var GESTURES = {
     tap: {
-        condition: function(start, event) {
+        condition: function(state, event) {
             return event.type === 'pointerup' &&
-                Math.abs(start.startX - event.clientX) < 10 &&
-                Math.abs(start.startY - event.clientY) < 10;
+                Math.abs(state.startX - event.clientX) < 10 &&
+                Math.abs(state.startY - event.clientY) < 10;
+        }
+    },
+
+    hold: {
+        setup: function(state) {
+            var that = this;
+            state.__timer = setTimeout(function() {
+                that.fire('hold', state, {
+                    bubbles: true,
+                    cancelable: true
+                });
+                that._removeDocumentListeners(state);
+            }, 1000);
+        },
+        teardown: function(state) {
+            clearTimeout(state.__timer);
         }
     }
 };
 
 function isGestureEvent(eventName) {
     return GESTURES.hasOwnProperty(eventName);
-}
-
-function addDocumentListeners(handler) {
-    document.addEventListener('pointermove', handler);
-    document.addEventListener('pointerup', handler);
-}
-
-function removeDocumentListeners(handler) {
-    document.removeEventListener('pointermove', handler);
-    document.removeEventListener('pointerup', handler);
 }
 
 Bosonic.Gestures = {
@@ -59,28 +65,50 @@ Bosonic.Gestures = {
     },
 
     _handlePointerdown: function(event) {
-        var start = {
+        var state = {
             startX: event.clientX,
             startY: event.clientY
         };
 
-        this.__documentEventsHandler = this._handleDocumentEvent.bind(this, start);
-        addDocumentListeners(this.__documentEventsHandler);
-    },
-
-    _handleDocumentEvent: function(startState, event) {
         Object.keys(GESTURES).forEach(function(gesture) {
-            var condition = GESTURES[gesture].condition;
-            if (condition.call(this, startState, event) === true) {
-                this.fire(gesture, startState, {
-                    bubbles: true,
-                    cancelable: true
-                });
+            var setup = GESTURES[gesture].setup;
+            if (setup) {
+                setup.call(this, state);
             }
         }, this);
 
-        if (event.type === 'pointerup') {
-            removeDocumentListeners(this.__documentEventsHandler);
+        
+        this._addDocumentListeners(state);
+    },
+
+    _handleDocumentEvent: function(state, event) {
+        for (var gesture in GESTURES) {
+            var condition = GESTURES[gesture].condition;
+            if (condition && condition.call(this, state, event) === true) {
+                this.fire(gesture, state, {
+                    bubbles: true,
+                    cancelable: true
+                });
+                this._removeDocumentListeners(state);
+                break;
+            }
         }
+    },
+
+    _addDocumentListeners: function(state) {
+        this.__documentEventsHandler = this._handleDocumentEvent.bind(this, state);
+        document.addEventListener('pointermove', this.__documentEventsHandler);
+        document.addEventListener('pointerup', this.__documentEventsHandler);
+    },
+
+    _removeDocumentListeners: function(state) {
+        Object.keys(GESTURES).forEach(function(gesture) {
+            var teardown = GESTURES[gesture].teardown;
+            if (teardown) {
+                teardown.call(this, state);
+            }
+        }, this);
+        document.removeEventListener('pointermove', this.__documentEventsHandler);
+        document.removeEventListener('pointerup', this.__documentEventsHandler);
     }
 };

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Gestures tests</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../dist/bosonic-runtime.js"></script>
+    </head>
+    <body>
+        <element name="gestures-tests">
+            <template>
+                <style>
+                    h1 {
+                        width: 300px;
+                        height: 200px;
+                        border: 1px solid #ccc;
+                        background-color: #ddd;
+                    }
+                </style>
+                <h1>test</h1>
+            </template>
+            <script>
+                Bosonic.register({
+                    listeners: {
+                        'tap': 'handleGesture',
+                        'hold': 'handleGesture'
+                    },
+
+                    handleGesture: function(e) {
+                        this.shadowRoot.querySelector('h1').innerHTML = e.type;
+                    }
+                });
+            </script>
+        </element>
+
+        <gestures-tests></gestures-tests>
+    </body>
+</html>

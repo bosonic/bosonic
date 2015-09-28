@@ -17,7 +17,8 @@ var GESTURES = {
             state.__timer = setTimeout(function() {
                 that.fire('hold', state, {
                     bubbles: true,
-                    cancelable: true
+                    cancelable: true,
+                    node: state.target
                 });
                 that._removeDocumentListeners(state);
             }, 1000);
@@ -46,9 +47,12 @@ var GESTURES = {
                 state.dy = y - state.startY;
                 state.ddx = state.lastX ? x - state.lastX : 0;
                 state.ddy = state.lastY ? y - state.lastY : 0;
+                state.lastX = x;
+                state.lastY = y;
                 this.fire('track', state, {
                     bubbles: true,
-                    cancelable: true
+                    cancelable: true,
+                    node: state.target
                 });
             } else if (event.type === 'pointerup') return true;
         }
@@ -75,7 +79,7 @@ Bosonic.Gestures = {
     // override Bosonic.Events unlisten()
     unlisten: function(node, eventName, methodName) {
         if (isGestureEvent(eventName) && node[GESTURE_FLAG] === true && this.__pointerdownHandler) {
-            node.addEventListener('pointerdown', this.__pointerdownHandler);
+            node.removeEventListener('pointerdown', this.__pointerdownHandler);
             delete node[GESTURE_FLAG];
         }
         node.removeEventListener(eventName, this._getHandler(eventName, methodName));
@@ -95,6 +99,7 @@ Bosonic.Gestures = {
 
     _handlePointerdown: function(event) {
         var state = {
+            target: event.target,
             startX: event.clientX,
             startY: event.clientY
         };
@@ -116,7 +121,8 @@ Bosonic.Gestures = {
             if (condition && condition.call(this, state, event) === true) {
                 this.fire(gesture, state, {
                     bubbles: true,
-                    cancelable: true
+                    cancelable: true,
+                    node: state.target
                 });
                 this._removeDocumentListeners(state);
                 break;

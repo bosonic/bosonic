@@ -85,7 +85,8 @@ Bosonic.Events = {
             cancelable: options.cancelable === true ? true : false,
             detail: detail
         });
-        this.dispatchEvent(event);
+        var node = options.node || this;
+        node.dispatchEvent(event);
         return event;
     },
 

@@ -130,11 +130,17 @@
                 enumerable: true,
                 writable: true,
                 value: function() {
-                    this.createShadowRoot();
                     var content = template.content ? template.content : getFragmentFromNode(template);
-                    this.shadowRoot.appendChild(document.importNode(content, true));
-                    if (WebComponents.flags.shadow !== false) {
-                        scopeShadowStyles(this.shadowRoot, name);
+                    if (!options.useShadow)
+                    {
+                        this.appendChild(document.importNode(content, true));
+                    }
+                    else {
+                        this.createShadowRoot();
+                        this.shadowRoot.appendChild(document.importNode(content, true));
+                        if (WebComponents.flags.shadow !== false) {
+                            scopeShadowStyles(this.shadowRoot, name);
+                        }
                     }
                     return created ? created.apply(this, arguments) : null;
                 }

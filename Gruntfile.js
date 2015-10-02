@@ -2,7 +2,7 @@
 
 module.exports = function (grunt) {
   var runtimeFiles = [
-    'node_modules/handjs/hand.js',
+    'bower_components/pepjs/dist/pep.js',
     'src/runtime/bootstrap.js',
     'src/runtime/base.js',
     'src/runtime/register.js',

@@ -8,6 +8,8 @@ This repository hosts Bosonic's thin library and various WIPs.
 
 ## Develop
 
+__PRs related to new features or enhancements must be made against `dev` branch. `master` branch is for bugfixes only.__
+
 ```
 cd bosonic
 npm install

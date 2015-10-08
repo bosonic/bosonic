@@ -1843,11 +1843,7 @@ var GESTURES = {
         setup: function(state) {
             var that = this;
             state.__timer = setTimeout(function() {
-                that.fire('hold', state, {
-                    bubbles: true,
-                    cancelable: true,
-                    node: state.target
-                });
+                that.fireCustomEvent('hold', state);
                 that._removeDocumentListeners(state);
             }, 1000);
         },
@@ -1877,11 +1873,7 @@ var GESTURES = {
                 state.ddy = state.lastY ? y - state.lastY : 0;
                 state.lastX = x;
                 state.lastY = y;
-                this.fire('track', state, {
-                    bubbles: true,
-                    cancelable: true,
-                    node: state.target
-                });
+                this.fireCustomEvent('track', state, event);
             } else if (event.type === 'pointerup') return true;
         }
     }
@@ -1913,6 +1905,24 @@ Bosonic.Gestures = {
         node.removeEventListener(eventName, this._getHandler(eventName, methodName));
     },
 
+    fireCustomEvent: function(gesture, state, originalEvent) {
+        if (originalEvent) {
+            state.originalEvent = originalEvent;
+        }
+        var ev = this.fire(gesture, state, {
+            bubbles: true,
+            cancelable: true,
+            node: state.target
+        });
+        // preventDefault() forwarding
+        if (ev.defaultPrevented) {
+            if (originalEvent && originalEvent.preventDefault) {
+                originalEvent.preventDefault();
+                originalEvent.stopImmediatePropagation();
+            }
+        }
+    },
+
     _listenToGesture: function(node, eventName, methodName) {
         if (node[GESTURE_FLAG] === undefined) {
             if (!this.__pointerdownHandler) {
@@ -1938,7 +1948,6 @@ Bosonic.Gestures = {
                 setup.call(this, state);
             }
         }, this);
-
         
         this._addDocumentListeners(state);
     },
@@ -1947,11 +1956,7 @@ Bosonic.Gestures = {
         for (var gesture in GESTURES) {
             var condition = GESTURES[gesture].condition;
             if (condition && condition.call(this, state, event) === true) {
-                this.fire(gesture, state, {
-                    bubbles: true,
-                    cancelable: true,
-                    node: state.target
-                });
+                this.fireCustomEvent(gesture, state, event);
                 this._removeDocumentListeners(state);
                 break;
             }

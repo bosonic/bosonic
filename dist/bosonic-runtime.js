@@ -1376,6 +1376,7 @@ Bosonic.Base = {
             observer.observe(this, { childList: true, subtree: true, characterData: true });
         }
         this.__callMixins('created');
+        this.classList.add('resolved');
         var created = this.__lifecycle.created;
         return created ? created.apply(this, arguments) : null;
     },

@@ -1336,60 +1336,6 @@ if (!window.WebComponents) {
 if (!window.Bosonic) {
     window.Bosonic = {};
 }
-function buildShadowRegexes(elementName) {
-    return [
-        [/:host\(([^:]+)\)/g, elementName+'$1'],
-        [/:host(:hover|:active|:focus)/g, elementName+'$1'],
-        [/:host(\[[^:]+\])/g, elementName+'$1'],
-        [/:host/g, elementName],
-        [/:ancestor\(([^:]+)\)/g, '$1 '+elementName], // deprecated; replaced by :host-context
-        [/:host-context\(([^:]+)\)/g, '$1 '+elementName],
-        [/::content/g, elementName],
-    ];
-}
-
-function shimStyles(styles, elementName) {
-    var selectorRegexes = buildShadowRegexes(elementName);
-    for (var i = 0; i < selectorRegexes.length; i++) {
-        var re = selectorRegexes[i];
-        styles = styles.replace(re[0], re[1]);
-    }
-    return styles;
-}
-
-function parseCSS(str) {
-    var doc = document.implementation.createHTMLDocument(''),
-        styleElt = document.createElement("style");
-    
-    styleElt.textContent = str;
-    doc.body.appendChild(styleElt);
-    
-    return styleElt.sheet.cssRules;
-}
-
-function scopeShadowStyles(root, name) {
-    var styles = root.querySelectorAll('style');
-    Array.prototype.forEach.call(styles, function(style) {
-        var rules = parseCSS(shimStyles(style.textContent, name));
-        var css = '';
-        Array.prototype.forEach.call(rules, function(rule) {
-            if (!rule.selectorText.match(new RegExp(name))) {
-                css += name + ' ' + rule.cssText + '\n';
-                css += name + '::shadow ' + rule.cssText + '\n';
-            } else {
-                css += rule.cssText + '\n';
-            }
-        });
-        var s = document.createElement('style');
-        s.textContent = css;
-        document.head.appendChild(s);
-        // if we have a prefixed (and therefore flaky) native impl., we keep the <style> in the shadow root, just in case
-        if (WebComponents.flags.shadow !== 'prefixed') {
-            style.parentNode.removeChild(style);
-        }
-    });
-}
-
 function getFragmentFromNode(node) {
     var fragment = document.createDocumentFragment();
     while (child = node.firstChild) {
@@ -1415,10 +1361,10 @@ Bosonic.Base = {
         if (this.__template) {
             this.createShadowRoot();
             var content = this.__template.content ? this.__template.content : getFragmentFromNode(this.__template);
-            this.shadowRoot.appendChild(document.importNode(content, true));
             if (WebComponents.flags.shadow !== false) {
-                scopeShadowStyles(this.shadowRoot, name);
+                WebComponents.ShadowCSS.shimStyling(content, this.__elementName);
             }
+            this.shadowRoot.appendChild(document.importNode(content, true));
         }
         var childListChanged = this.__lifecycle.childListChanged;
         if (childListChanged) {
@@ -1551,6 +1497,7 @@ Bosonic.register = function(options) {
     var template = script && script.parentNode ? script.parentNode.querySelector('template') : null;
 
     options = extractLifecycleCallbacks(options);
+    options.__elementName = name;
     if (template) options.__template = template;
     if (attributes) options.__attributes = attributes.split(' ');
 

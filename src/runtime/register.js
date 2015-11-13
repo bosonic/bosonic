@@ -82,6 +82,7 @@ Bosonic.register = function(options) {
     var template = script && script.parentNode ? script.parentNode.querySelector('template') : null;
 
     options = extractLifecycleCallbacks(options);
+    options.__elementName = name;
     if (template) options.__template = template;
     if (attributes) options.__attributes = attributes.split(' ');
 

@@ -1,0 +1,60 @@
+{
+    "sections": [
+        {
+            "path": "getting-started",
+            "lib": "Getting started",
+            "pages": [
+                {
+                    "path": "getting-the-code",
+                    "lib": "Getting the code"
+                },
+                {
+                    "path": "using-elements",
+                    "lib": "Using elements"
+                },
+                {
+                    "path": "working-with-frameworks",
+                    "lib": "Working with frameworks"
+                },
+                {
+                    "path": "putting-into-production",
+                    "lib": "Putting into production"
+                },
+                {
+                    "path": "faq",
+                    "lib": "FAQ"
+                },
+                {
+                    "path": "contribute",
+                    "lib": "Contribute"
+                }
+            ]
+        },
+        {
+            "path": "reference",
+            "lib": "Reference",
+            "pages": [
+                {
+                    "path": "introduction",
+                    "lib": "Introduction"
+                },
+                {
+                    "path": "creating-elements",
+                    "lib": "Creating elements"
+                },
+                {
+                    "path": "lifecycle-callbacks",
+                    "lib": "Lifecycle callbacks"
+                },
+                {
+                    "path": "shadow-dom",
+                    "lib": "Shadow DOM"
+                },
+                {
+                    "path": "shadow-css",
+                    "lib": "Shadow CSS"
+                }
+            ]
+        }
+    ]
+}

@@ -1632,19 +1632,23 @@ var MODIFIER_KEYS = {
 
 function getKeyCombos(bindings) {
     return bindings.split(' ').map(function(binding) {
-        var keys = binding.split('+').reverse(),
-            key = keys[0],
-            modifierKeys = {};
-            modifiers = keys.slice(1);
-
-        Object.keys(MODIFIER_KEYS).forEach(function(k) {
-            modifierKeys[MODIFIER_KEYS[k]] = (modifiers.indexOf(k) !== -1)
-        });
-        return {
-            key: key,
-            modifiers: modifierKeys
-        };
+        return getKeyCombo(binding);
     });
+}
+
+function getKeyCombo(binding) {
+    var keys = binding.split('+').reverse(),
+        key = keys[0],
+        modifierKeys = {};
+        modifiers = keys.slice(1);
+
+    Object.keys(MODIFIER_KEYS).forEach(function(k) {
+        modifierKeys[MODIFIER_KEYS[k]] = (modifiers.indexOf(k) !== -1)
+    });
+    return {
+        key: key,
+        modifiers: modifierKeys
+    };
 }
 
 function combosMatchesEvent(combos, event) {
@@ -1721,6 +1725,10 @@ Bosonic.Events = {
         this.__boundStopTrackingHandler = this._onTrackingPointerUp.bind(this, state, stopCallbackName);
         document.addEventListener('pointermove', this.__boundTrackingHandler);
         document.addEventListener('pointerup', this.__boundStopTrackingHandler);
+    },
+
+    keyMatchesEvent: function(key, event) {
+        return comboMatchesEvent(getKeyCombo(key), event);
     },
 
     _onTrackingPointerMove: function(state, callbackName, event) {

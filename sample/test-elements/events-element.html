@@ -2,7 +2,8 @@
     <script>
     Bosonic.register({
         listeners: {
-            pointerdown: 'handlePointerdown'
+            pointerdown: 'handlePointerdown',
+            tap: 'handleTap'
         },
 
         keyBindings: {
@@ -12,6 +13,7 @@
         },
 
         clickHandled: 0,
+        tapHandled: 0,
         pointerdownHandled: 0,
         opened: 0,
         closed: 0,
@@ -23,6 +25,10 @@
 
         handleClick: function(e) {
             this.clickHandled++;
+        },
+
+        handleTap: function(e) {
+            this.tapHandled++;
         },
 
         handlePointerdown: function(e) {

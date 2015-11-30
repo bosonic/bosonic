@@ -53,6 +53,17 @@
                     expect(elt.pointerdownHandled).to.equal(1);
                 });
 
+                it("should listen to custom events", function() {
+                    MockInteractions.tap(btn);
+                    expect(elt.tapHandled).to.equal(1);
+                });
+
+                it("should unlisten custom events", function() {
+                    elt.unlisten(elt, 'tap', 'handleTap');
+                    MockInteractions.tap(btn);
+                    expect(elt.tapHandled).to.equal(0);
+                });
+
                 it("should setup automatically keyboard listeners defined by the `keyBindings` property", function() {
                     MockInteractions.pressAndReleaseKeyOn(elt, 27); // ESC
                     expect(elt.closed).to.equal(1);

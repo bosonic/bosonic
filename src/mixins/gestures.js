@@ -26,11 +26,17 @@ function inherit(base, properties) {
 }
 
 var Recognizer = {
-    init: function() {
+    init: function(name, manager) {
         this.state = 'possible';
+        this.name = name;
+        this.manager = manager;
     },
-    transitionTo: function(state) {
-        this.state = state;
+    transitionTo: function(newState) {
+        this.state = newState;
+        if (this.shouldFire(newState)) this.manager.tryFire(this.name);
+    },
+    shouldFire: function(newState) {
+        return [STATE_RECOGNIZED, STATE_STARTED, STATE_CHANGED, STATE_ENDED].indexOf(newState) !== -1;
     }
 };
 
@@ -122,6 +128,7 @@ GesturesManager.prototype = {
 
     listen: function(gestureName) {
         var recognizer = Object.create(Bosonic.Gestures.recognizers[gestureName]);
+        recognizer.init(gestureName, this);
         this.recognizers[gestureName] = recognizer;
     },
 
@@ -188,9 +195,13 @@ GesturesManager.prototype = {
     },
 
     recognize: function(e, detail) {
+        // we store that here because recognizers may want to fire event during recognition
+        // TODO: use this.sequence instead ?
+        this.currentEvent = e;
+        this.currentDetail = detail;
+
         Object.keys(this.recognizers).forEach(function(gestureName) {
-            var recognizer = this.recognizers[gestureName],
-                previousState = recognizer.state;
+            var recognizer = this.recognizers[gestureName];
             
             switch(e.type) {
                 case 'pointerdown':
@@ -203,9 +214,6 @@ GesturesManager.prototype = {
                     recognizer.up(detail);
                     break;
             }
-            if (previousState !== STATE_RECOGNIZED && recognizer.state === STATE_RECOGNIZED) {
-                this.fire(this.node, gestureName, detail, e);
-            }
         }, this);
     },
 
@@ -214,6 +222,10 @@ GesturesManager.prototype = {
             pointerIds: [],
             pointers: []
         };
+    },
+
+    tryFire: function(gesture) {
+        this.fire(this.node, gesture, this.currentDetail, this.currentEvent);
     },
 
     fire: function(node, gesture, detail, originalEvent) {

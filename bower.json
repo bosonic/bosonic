@@ -17,7 +17,7 @@
   ],
   "devDependencies": {
     "iron-test-helpers": "polymerelements/iron-test-helpers#~1.0.3",
-    "pepjs": "~0.3.0",
+    "pepjs": "~0.4.0",
     "test-fixture": "PolymerElements/test-fixture#~1.0.0"
   }
 }

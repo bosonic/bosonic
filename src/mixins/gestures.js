@@ -39,15 +39,15 @@ var SwipeRecognizer = inherit(Recognizer, {
     minDistance: 10,
     minVelocity: 0.3,
     down: function(detail) {
-        this.state = detail.pointers === this.maxPointers ? STATE_POSSIBLE : STATE_FAILED;
+        detail.pointers === this.maxPointers ? this.transitionTo(STATE_POSSIBLE) : this.transitionTo(STATE_FAILED);
     },
     move: function(detail) {
         if (detail.pointers !== this.maxPointers) return;
         if (this.state !== STATE_RECOGNIZED && (this.direction && detail.direction === this.direction || detail.direction !== DIRECTION_NONE)
-            && detail.distance > this.minDistance && detail.velocity > this.minVelocity) this.state = STATE_RECOGNIZED;
+            && detail.distance > this.minDistance && detail.velocity > this.minVelocity) this.transitionTo(STATE_RECOGNIZED);
     },
     up: function(detail) {
-        if (this.state !== STATE_RECOGNIZED) this.state = STATE_FAILED;
+        if (this.state !== STATE_RECOGNIZED) this.transitionTo(STATE_FAILED);
     }
 });
 var SwipeLeftRecognizer = inherit(SwipeRecognizer, { direction: DIRECTION_LEFT }),

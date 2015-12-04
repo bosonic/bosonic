@@ -10,35 +10,47 @@
         <element name="gestures-tests">
             <template>
                 <style>
-                    h1 {
-                        width: 300px;
+                    :host {
+                        display: block;
                         height: 200px;
                         border: 1px solid #ccc;
                         background-color: #ddd;
+                        text-align: center;
                         -webkit-user-select: none;
                         -moz-user-select: none;
                         -ms-user-select: none;
                         user-select: none;
                     }
                 </style>
-                <h1>test</h1>
+                <h1></h1>
             </template>
             <script>
                 Bosonic.register({
                     listeners: {
                         'tap': 'handleGesture',
-                        // 'hold': 'handleGesture',
-                        // 'track': 'handleGesture'
+                        'swipe': 'handleGesture'
                     },
 
                     handleGesture: function(e) {
-                        this.shadowRoot.querySelector('h1').innerHTML = e.type;
-                        console.log(e.detail);
+                        var gesture = e.type;
+                        if (gesture === 'swipe') gesture+= ' '+e.detail.direction;
+                        this.shadowRoot.querySelector('h1').innerHTML = gesture;
+                        console.log(e.type, e.detail);
                     }
                 });
             </script>
         </element>
 
-        <gestures-tests></gestures-tests>
+        <gestures-tests touch-action="none"></gestures-tests>
+
+        <style>
+        #log {
+            display: block;
+            height: 200px;
+            border: 1px solid #ccc;
+            background-color: #bbb;
+        }
+        </style>
+        <div id="log"></div>
     </body>
 </html>

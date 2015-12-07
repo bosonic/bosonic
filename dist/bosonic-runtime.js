@@ -2005,6 +2005,8 @@ var Recognizer = {
     },
     transitionTo: function(newState, optionalDetail) {
         this.state = newState;
+        optionalDetail = optionalDetail || {};
+        optionalDetail.state = newState;
         if (this.shouldFire(newState)) this.manager.tryFire(this.name, optionalDetail);
     },
     shouldFire: function(newState) {
@@ -2012,18 +2014,34 @@ var Recognizer = {
     }
 };
 
+var TrackRecognizer = inherit(Recognizer, {
+    maxPointers: 1,
+    down: function(pointers) {
+        pointers.ids.length === this.maxPointers ? this.transitionTo(STATE_STARTED) : this.transitionTo(STATE_FAILED);
+    },
+    move: function(pointers) {
+        if (this.state === STATE_STARTED || this.state === STATE_CHANGED) this.transitionTo(STATE_CHANGED, processDelta(pointers));
+    },
+    up: function(pointers) {
+        if (this.state === STATE_CHANGED) {
+            var detail = processDisplacement(pointers);
+            this.transitionTo(STATE_ENDED, detail);
+        } else this.transitionTo(STATE_FAILED);
+    }
+});
+
 var SwipeRecognizer = inherit(Recognizer, {
     maxPointers: 1,
     minDistance: 10,
     minVelocity: 0.3,
-    down: function(detail) {
-        detail.pointers === this.maxPointers ? this.transitionTo(STATE_POSSIBLE) : this.transitionTo(STATE_FAILED);
+    down: function(pointers) {
+        pointers.ids.length === this.maxPointers ? this.transitionTo(STATE_POSSIBLE) : this.transitionTo(STATE_FAILED);
     },
-    move: function(detail) {},
-    up: function(detail) {
-        var data = processDisplacement(detail);
-        if (this.state !== STATE_FAILED && (this.direction && data.direction === this.direction || data.direction !== DIRECTION_NONE)
-            && data.distance > this.minDistance && data.velocity > this.minVelocity) this.transitionTo(STATE_RECOGNIZED, data);
+    move: function(pointers) {},
+    up: function(pointers) {
+        var detail = processDisplacement(pointers);
+        if (this.state !== STATE_FAILED && (this.direction && detail.direction === this.direction || detail.direction !== DIRECTION_NONE)
+            && detail.distance > this.minDistance && detail.velocity > this.minVelocity) this.transitionTo(STATE_RECOGNIZED, detail);
         else this.transitionTo(STATE_FAILED);
     }
 });
@@ -2035,16 +2053,19 @@ var SwipeLeftRecognizer = inherit(SwipeRecognizer, { direction: DIRECTION_LEFT }
 var PanRecognizer = inherit(Recognizer, {
     maxPointers: 1,
     minDistance: 10,
-    down: function(detail) {
-        detail.pointers === this.maxPointers ? this.transitionTo(STATE_POSSIBLE) : this.transitionTo(STATE_FAILED);
+    down: function(pointers) {
+        pointers.ids.length === this.maxPointers ? this.transitionTo(STATE_POSSIBLE) : this.transitionTo(STATE_FAILED);
     },
-    move: function(detail) {
-        if (this.state !== STATE_STARTED && detail.distance > this.minDistance) this.transitionTo(STATE_STARTED);
-        else if (this.state === STATE_STARTED) this.transitionTo(STATE_CHANGED);
+    move: function(pointers) {
+        var detail = processDisplacement(pointers);
+        if (this.state === STATE_POSSIBLE && detail.distance > this.minDistance) this.transitionTo(STATE_STARTED, detail);
+        else if (this.state === STATE_STARTED || this.state === STATE_CHANGED) this.transitionTo(STATE_CHANGED, detail);
     },
-    up: function(detail) {
-        if (this.state === STATE_CHANGED) this.transitionTo(STATE_ENDED);
-        else this.transitionTo(STATE_FAILED);
+    up: function(pointers) {
+        if (this.state === STATE_CHANGED) {
+            var detail = processDisplacement(pointers);
+            this.transitionTo(STATE_ENDED, detail);
+        } else this.transitionTo(STATE_FAILED);
     }
 });
 var PanLeftRecognizer = inherit(PanRecognizer, { direction: DIRECTION_LEFT }),
@@ -2054,6 +2075,7 @@ var PanLeftRecognizer = inherit(PanRecognizer, { direction: DIRECTION_LEFT }),
 
 Bosonic.Gestures = {
     recognizers: {
+        track: TrackRecognizer,
         pan: PanRecognizer,
         panLeft: PanLeftRecognizer,
         panRight: PanRightRecognizer,
@@ -2098,11 +2120,11 @@ Bosonic.Gestures = {
 function GesturesManager(node) {
     this.node = node;
     this.recognizers = {};
-    this.resetSequence();
+    this.resetPointers();
 
     var self = this;
     this.mainHandler = function(e) {
-        self.process(e);
+        self.handleEvent(e);
     }
 
     this.setup();
@@ -2132,97 +2154,82 @@ GesturesManager.prototype = {
         delete this.recognizers[gestureName];
     },
 
-    process: function(e) {
-        var isFirst = false,
-            isFirstMulti = false, // first event for the second pointer of a multi-touch gesture
-            willRemovePointer = false;
+    handleEvent: function(e) {
+        this.updatePointers(e);
 
-        var pointerIndex = this.sequence.pointerIds.indexOf(e.pointerId),
-            pointerCount = this.sequence.pointerIds.length;
+        // This is either a hover or the user uses more than 2 fingers
+        if (!this.pointers.changed) return;
 
-        if (e.type === 'pointerdown' && (e.button === 0 || e.pointerType !== 'mouse')) {
-            if (pointerIndex < 0) {
-                if (pointerCount === 0) {
-                    // it is the first event of a new sequence...
-                    this.resetSequence();
-                    isFirst = true;
-                } else if (pointerCount === 1) {
-                    isFirstMulti = true;
-                } else if (pointerCount === 1){
-                    // more than 2 pointers is probably a user's mistake, ignore it
-                    return;
-                }
-                // store the pointer
-                this.sequence.pointerIds.push(e.pointerId);
-                this.sequence.pointers.push(e);
-                pointerCount++;
-            } else {
-                this.sequence.pointers[pointerIndex] = e;
-            }
-        } else if (e.type === 'pointerup') {
-            willRemovePointer = true;
-        }
-
-        if (pointerCount === 0) return;
-
-        var detail = this.processEventDetail(e, this.sequence);
-        this.processSampleData(e, detail, this.sequence);
-
-        if (isFirst) this.sequence.firstDetail = detail;
-        if (isFirstMulti) this.sequence.firstMultiDetail = detail;
-        this.sequence.lastDetail = detail;
-
-        if (willRemovePointer) {
-            this.sequence.pointerIds.splice(pointerIndex, 1);
-            this.sequence.pointers.splice(pointerIndex, 1);
-        }
-
-        // 
-        document.getElementById('log').innerHTML = 
-        'type: '+e.type
-        +'<br>dts: '+detail.dts
-        +'<br>dx: '+detail.dx+'<br>dy: '+detail.dy
-        +'<br>velx: '+detail.velx+'<br>vely: '+detail.vely
-        +'<br>dir: '+detail.direction
-        +'<br>dist: '+detail.distance
-        +'<br>vel: '+detail.velocity;
-
-        this.recognize(e, detail);
+        this.recognize();
+        this.persistLastEvent();
     },
 
-    recognize: function(e, detail) {
-        // we store that here because recognizers may want to fire event during recognition
-        // TODO: use this.sequence instead ?
-        this.currentEvent = e;
-        this.currentDetail = detail;
+    persistLastEvent: function() {
+        this.pointers.lastEvents[this.pointers.changedIndex] = this.pointers.changed;
 
+        this.pointers.changed = null;
+        this.pointers.changedIndex = null;
+    },
+
+    updatePointers: function(e) {
+        var pointerIndex;
+
+        e.ts = Date.now();
+
+        if (e.type === 'pointerdown' && (e.button === 0 || e.pointerType !== 'mouse')) {
+            var pointerCount = this.pointers.ids.length;
+            if (pointerCount === 0) {
+                // it is the first event of a new sequence...
+                this.resetPointers();
+            } else if (pointerCount === 2) {
+                // more than 2 pointers is probably a user's mistake, ignore it
+                return;
+            }
+            // store the new pointer
+            var pointerIndex = this.pointers.ids.push(e.pointerId) - 1;
+            this.pointers.firstEvents.push(e);
+        } else if (e.type === 'pointerup' || e.type === 'pointermove') {
+            var pointerIndex = this.pointers.ids.indexOf(e.pointerId);
+            if (pointerIndex < 0) {
+                // it's a pointer we don't track
+                return;
+            }
+            if (e.type === 'pointerup') this.pointers.ids.splice(pointerIndex, 1);
+        }
+
+        this.pointers.changed = e;
+        this.pointers.changedIndex = pointerIndex;
+    },
+
+    recognize: function() {
         Object.keys(this.recognizers).forEach(function(gestureName) {
             var recognizer = this.recognizers[gestureName];
             
-            switch(e.type) {
+            switch(this.pointers.changed.type) {
                 case 'pointerdown':
-                    recognizer.down(detail);
+                    recognizer.down(this.pointers);
                     break;
                 case 'pointermove':
-                    recognizer.move(detail);
+                    recognizer.move(this.pointers);
                     break;
                 case 'pointerup':
-                    recognizer.up(detail);
+                    recognizer.up(this.pointers);
                     break;
             }
         }, this);
     },
 
-    resetSequence: function(e) {
-        this.sequence = {
-            pointerIds: [],
-            pointers: []
+    resetPointers: function() {
+        this.pointers = {
+            ids: [],
+            firstEvents: [],
+            lastEvents: []
         };
     },
 
     tryFire: function(gesture, optionalDetail) {
-        var detail = optionalDetail || this.currentDetail;
-        this.fire(this.node, gesture, detail, this.currentEvent);
+        var detail = optionalDetail || {};
+        this.fire(this.node, gesture, detail, this.pointers.changed);
     },
 
     fire: function(node, gesture, detail, originalEvent) {
@@ -2241,73 +2248,37 @@ GesturesManager.prototype = {
                 originalEvent.stopImmediatePropagation();
             }
         }
-    },
-
-    processEventDetail: function(e, sequence) {
-        var firstDetail = sequence.firstDetail,
-            lastDetail = sequence.lastDetail;
-
-        var detail = {
-            pointers: sequence.pointers.length,
-            ts: Date.now(),
-            dts: 0,
-            ddts: 0,
-            x: e.clientX,
-            y: e.clientY,
-            dx: 0,
-            dy: 0,
-            ddx: 0,
-            ddy: 0
-        };
-        if (firstDetail) {
-            detail.dts = detail.ts - firstDetail.ts;
-            detail.dx = detail.x - firstDetail.x;
-            detail.dy = detail.y - firstDetail.y;
-        }
-        if (lastDetail) {
-            detail.ddts = detail.ts - lastDetail.ts;
-            detail.ddx = detail.x - lastDetail.x;
-            detail.ddy = detail.y - lastDetail.y;
-        }
-        return detail;
-    },
-
-    processSampleData: function(e, detail, sequence) {
-        var last = sequence.lastSample;
-
-        var dx = last ? detail.dx - last.dx : detail.dx,
-            dy = last ? detail.dy - last.dy : detail.dy,
-            dts = last ? (detail.dts - last.dts) : detail.dts;
-
-        if (!last || dts > SAMPLE_INTERVAL) {
-            detail.velx = Math.abs(dx) / dts;
-            detail.vely = Math.abs(dy) / dts;
-            detail.direction = getDirection(dx, dy);
-
-            sequence.lastSample = detail;
-        } else {
-            detail.velx = last.velx;
-            detail.vely = last.vely;
-            detail.direction = last.direction;
-        }
-
-        detail.distance = getDistance(dx, dy, detail.direction);
-        detail.velocity = getOverallVelocity(detail.velx, detail.vely, detail.direction)
     }
 };
 
-function processDisplacement(detail) {
-    var dx = detail.dx,
-        dy = detail.dy,
-        dts = detail.dts,
-        velx = Math.abs(dx) / dts,
-        vely = Math.abs(dy) / dts,
-        direction = getDirection(dx, dy);
+function processDelta(pointers) {
+    var changed = pointers.changed,
+        first = pointers.firstEvents[pointers.changedIndex],
+        last = pointers.lastEvents[pointers.changedIndex];
+        
     return {
-        direction: direction,
-        distance: getDistance(dx, dy, direction),
-        velocity: getOverallVelocity(velx, vely, direction)
+        dx: changed.clientX - first.clientX,
+        dy: changed.clientY - first.clientY,
+        dts: changed.ts - first.ts,
+        ddx: changed.clientX - last.clientX,
+        ddy: changed.clientY - last.clientY,
+        ddts: changed.ts - last.ts
     };
+}
+
+// TODO: processInstantDisplacement (with SAMPLE_INTERVAL) so that we return "instant" velocity for pan gesture
+function processDisplacement(pointers) {
+    var delta = processDelta(pointers),
+        dx = delta.dx,
+        dy = delta.dy,
+        velx = delta.velx = Math.abs(dx) / delta.dts,
+        vely = delta.vely = Math.abs(dy) / delta.dts,
+        direction = delta.direction = getDirection(dx, dy);
+
+    delta.distance = getDistance(dx, dy, direction);
+    delta.velocity = getOverallVelocity(velx, vely, direction);
+        
+    return delta;
 }
 
 function getDirection(dx, dy) {

@@ -2,7 +2,7 @@
 
 module.exports = function (grunt) {
   var runtimeFiles = [
-    'bower_components/pepjs/dist/pep.js',
+    'lib/pep-0.4.1-pre.js',
     'src/runtime/bootstrap.js',
     'src/runtime/base.js',
     'src/runtime/register.js',

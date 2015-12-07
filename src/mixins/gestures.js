@@ -31,9 +31,9 @@ var Recognizer = {
         this.name = name;
         this.manager = manager;
     },
-    transitionTo: function(newState) {
+    transitionTo: function(newState, optionalDetail) {
         this.state = newState;
-        if (this.shouldFire(newState)) this.manager.tryFire(this.name);
+        if (this.shouldFire(newState)) this.manager.tryFire(this.name, optionalDetail);
     },
     shouldFire: function(newState) {
         return [STATE_RECOGNIZED, STATE_STARTED, STATE_CHANGED, STATE_ENDED].indexOf(newState) !== -1;
@@ -47,13 +47,12 @@ var SwipeRecognizer = inherit(Recognizer, {
     down: function(detail) {
         detail.pointers === this.maxPointers ? this.transitionTo(STATE_POSSIBLE) : this.transitionTo(STATE_FAILED);
     },
-    move: function(detail) {
-        if (detail.pointers !== this.maxPointers) return;
-        if (this.state !== STATE_RECOGNIZED && (this.direction && detail.direction === this.direction || detail.direction !== DIRECTION_NONE)
-            && detail.distance > this.minDistance && detail.velocity > this.minVelocity) this.transitionTo(STATE_RECOGNIZED);
-    },
+    move: function(detail) {},
     up: function(detail) {
-        if (this.state !== STATE_RECOGNIZED) this.transitionTo(STATE_FAILED);
+        var data = processDisplacement(detail);
+        if (this.state !== STATE_FAILED && (this.direction && data.direction === this.direction || data.direction !== DIRECTION_NONE)
+            && data.distance > this.minDistance && data.velocity > this.minVelocity) this.transitionTo(STATE_RECOGNIZED, data);
+        else this.transitionTo(STATE_FAILED);
     }
 });
 var SwipeLeftRecognizer = inherit(SwipeRecognizer, { direction: DIRECTION_LEFT }),
@@ -61,8 +60,33 @@ var SwipeLeftRecognizer = inherit(SwipeRecognizer, { direction: DIRECTION_LEFT }
     SwipeUpRecognizer = inherit(SwipeRecognizer, { direction: DIRECTION_UP }),
     SwipeDownRecognizer = inherit(SwipeRecognizer, { direction: DIRECTION_DOWN });
 
+var PanRecognizer = inherit(Recognizer, {
+    maxPointers: 1,
+    minDistance: 10,
+    down: function(detail) {
+        detail.pointers === this.maxPointers ? this.transitionTo(STATE_POSSIBLE) : this.transitionTo(STATE_FAILED);
+    },
+    move: function(detail) {
+        if (this.state !== STATE_STARTED && detail.distance > this.minDistance) this.transitionTo(STATE_STARTED);
+        else if (this.state === STATE_STARTED) this.transitionTo(STATE_CHANGED);
+    },
+    up: function(detail) {
+        if (this.state === STATE_CHANGED) this.transitionTo(STATE_ENDED);
+        else this.transitionTo(STATE_FAILED);
+    }
+});
+var PanLeftRecognizer = inherit(PanRecognizer, { direction: DIRECTION_LEFT }),
+    PanRightRecognizer = inherit(PanRecognizer, { direction: DIRECTION_RIGHT }),
+    PanUpRecognizer = inherit(PanRecognizer, { direction: DIRECTION_UP }),
+    PanDownRecognizer = inherit(PanRecognizer, { direction: DIRECTION_DOWN });
+
 Bosonic.Gestures = {
     recognizers: {
+        pan: PanRecognizer,
+        panLeft: PanLeftRecognizer,
+        panRight: PanRightRecognizer,
+        panUp: PanUpRecognizer,
+        panDown: PanDownRecognizer,
         swipe: SwipeRecognizer,
         swipeLeft: SwipeLeftRecognizer,
         swipeRight: SwipeRightRecognizer,
@@ -224,8 +248,9 @@ GesturesManager.prototype = {
         };
     },
 
-    tryFire: function(gesture) {
-        this.fire(this.node, gesture, this.currentDetail, this.currentEvent);
+    tryFire: function(gesture, optionalDetail) {
+        var detail = optionalDetail || this.currentDetail;
+        this.fire(this.node, gesture, detail, this.currentEvent);
     },
 
     fire: function(node, gesture, detail, originalEvent) {
@@ -299,13 +324,27 @@ GesturesManager.prototype = {
     }
 };
 
-function getDirection(x, y) {
-    if (x === y) return DIRECTION_NONE;
+function processDisplacement(detail) {
+    var dx = detail.dx,
+        dy = detail.dy,
+        dts = detail.dts,
+        velx = Math.abs(dx) / dts,
+        vely = Math.abs(dy) / dts,
+        direction = getDirection(dx, dy);
+    return {
+        direction: direction,
+        distance: getDistance(dx, dy, direction),
+        velocity: getOverallVelocity(velx, vely, direction)
+    };
+}
 
-    if (Math.abs(x) >= Math.abs(y)) {
-        return x < 0 ? DIRECTION_LEFT : DIRECTION_RIGHT;
+function getDirection(dx, dy) {
+    if (dx === dy) return DIRECTION_NONE;
+
+    if (Math.abs(dx) >= Math.abs(dy)) {
+        return dx < 0 ? DIRECTION_LEFT : DIRECTION_RIGHT;
     }
-    return y < 0 ? DIRECTION_UP : DIRECTION_DOWN;
+    return dy < 0 ? DIRECTION_UP : DIRECTION_DOWN;
 }
 
 function getDistance(dx, dy, direction) {

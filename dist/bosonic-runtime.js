@@ -2133,12 +2133,14 @@ function GesturesManager(node) {
 GesturesManager.prototype = {
     setup: function() {
         // TODO: handle pointerout & pointercancel
+        this.node.setAttribute('touch-action', 'none'); // this is needed by the PE polyfill
         this.node.addEventListener('pointerdown', this.mainHandler);
         document.addEventListener('pointermove', this.mainHandler);
         document.addEventListener('pointerup', this.mainHandler);
     },
 
     teardown: function() {
+        this.node.removeAttribute('touch-action', 'none');
         this.node.removeEventListener('pointerdown', this.mainHandler);
         document.removeEventListener('pointermove', this.mainHandler);
         document.removeEventListener('pointerup', this.mainHandler);

@@ -2,6 +2,9 @@ var TAP_TRESHOLD = 10;
 
 Bosonic.Events = {
     created: function() {
+        if (this.shadowRoot) {
+            PointerEventsPolyfill.dispatcher.register(this.shadowRoot);
+        }
         for (var eventName in this.listeners) {
             this.listen(this, eventName, this.listeners[eventName]);
         }

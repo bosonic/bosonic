@@ -29,6 +29,15 @@ Bosonic.Events = {
         return event;
     },
 
+    listenOnce: function(node, eventName, fn, args) {
+        var host = this;
+        var handler = function() {
+            fn.apply(host, args);
+            node.removeEventListener(eventName, handler, false);
+        };
+        node.addEventListener(eventName, handler, false);
+    },
+
     listen: function(node, eventName, methodName) {
         var listener = this._findListener(this, node, eventName, methodName);
         if (!listener) {

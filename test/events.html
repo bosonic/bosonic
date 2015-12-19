@@ -48,6 +48,14 @@
                     expect(elt.clickHandled).to.equal(0);
                 });
 
+                it("should listen once", function(){
+                    elt.dummyCount = 0;
+                    elt.listenOnce(elt, 'hello', function(e) { elt.dummyCount++; });
+                    elt.fire('hello');
+                    elt.fire('hello');
+                    expect(elt.dummyCount).to.equal(1);
+                });
+
                 it("should setup automatically listeners defined in the `listeners` property", function() {
                     MockInteractions.tap(btn);
                     expect(elt.pointerdownHandled).to.equal(1);

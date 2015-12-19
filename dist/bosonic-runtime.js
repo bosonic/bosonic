@@ -1799,6 +1799,12 @@ Bosonic.Dom = {
 };
 var TAP_TRESHOLD = 10;
 
+var TRANSITION_END = (function() {
+    var el = document.createElement('div');
+    return el.style.WebkitTransition !== undefined // Safari 6 & Android Browser < 4.3
+        ? 'webkitTransitionEnd' : 'transitionend';
+})();
+
 Bosonic.Events = {
     created: function() {
         if (this.shadowRoot) {
@@ -1829,12 +1835,20 @@ Bosonic.Events = {
     },
 
     listenOnce: function(node, eventName, fn, args) {
-        var host = this;
-        var handler = function() {
-            fn.apply(host, args);
-            node.removeEventListener(eventName, handler, false);
-        };
+        var host = this,
+            handler = function() {
+                fn.apply(host, args);
+                node.removeEventListener(eventName, handler, false);
+            };
         node.addEventListener(eventName, handler, false);
+    },
+
+    transition: function(node, beforeFn, afterFn) {
+        var host = this,
+            afterHandler = function() { afterFn.call(host, node); };
+
+        this.listenOnce(node, TRANSITION_END, afterHandler);
+        beforeFn.call(host, node);
     },
 
     listen: function(node, eventName, methodName) {

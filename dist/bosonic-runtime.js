@@ -1949,7 +1949,7 @@ Bosonic.Events = {
             pointerup: function(detail, e) {
                 if (e.button === 0 &&
                    Math.abs(detail.x - e.clientX) < TAP_TRESHOLD &&
-                   Math.abs(detail.y - e.clientY) < TAP_TRESHOLD) Bosonic.Events.fire('tap', detail, { node: e.currentTarget });
+                   Math.abs(detail.y - e.clientY) < TAP_TRESHOLD) Bosonic.Events.fire('tap', detail, { node: e.target });
             }
         }
     }

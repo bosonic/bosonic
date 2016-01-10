@@ -1784,6 +1784,17 @@ Bosonic.Dom = {
             bool = !node.hasAttribute(name) || node.getAttribute(name) == 'false';
         }
         bool ? node.setAttribute(name, 'true') : node.setAttribute(name, 'false');
+    },
+
+    async: function(callback, time) {
+        var host = this;
+        return setTimeout(function() {
+            callback.call(host);
+        }, time);
+    },
+
+    cancelAsync: function(handle) {
+        clearTimeout(handle);
     }
 };
 var TAP_TRESHOLD = 10;

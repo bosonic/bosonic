@@ -1642,14 +1642,8 @@ var MODIFIER_KEYS = {
     'meta': 'metaKey'
 };
 
-function getKeyCombos(bindings) {
-    return bindings.split(' ').map(function(binding) {
-        return getKeyCombo(binding);
-    });
-}
-
-function getKeyCombo(binding) {
-    var keys = binding.split('+').reverse(),
+function parseCombo(combo) {
+    var keys = combo.split('+').reverse(),
         key = keys[0],
         modifierKeys = {};
         modifiers = keys.slice(1);
@@ -1663,12 +1657,6 @@ function getKeyCombo(binding) {
     };
 }
 
-function combosMatchesEvent(combos, event) {
-    return combos.some(function(combo) {
-        return comboMatchesEvent(combo, event);
-    });
-}
-
 function comboMatchesEvent(combo, event) {
     return KEYS[event.keyCode] && KEYS[event.keyCode] === combo.key && modifiersMatchesEvent(combo, event);
 }
@@ -1679,23 +1667,27 @@ function modifiersMatchesEvent(combo, event) {
     });
 }
 
-Bosonic.A11y = {
-    __boundKeyHandlers: [],
+function findMatchingCombo(binding, event) {
+    var combos = binding.split(' ');
+    for (var i = 0; i < combos.length; i++) {
+        if (comboMatchesEvent(parseCombo(combos[i]), event)) {
+            return combos[i];
+        }
+    }
+    return false;
+}
 
+Bosonic.A11y = {
     created: function() {
         if (this.keyBindings) {
-            this._setupKeyListeners();
+            this._setupKeyListener(this);
         }
     },
 
     detached: function() {
         if (this.keyBindings) {
-            this._removeKeyListeners();
+            this._removeKeyListener(this);
         }
-    },
-
-    keyMatchesEvent: function(key, event) {
-        return comboMatchesEvent(getKeyCombo(key), event);
     },
 
     getFocusableElements: function(container) {
@@ -1708,27 +1700,24 @@ Bosonic.A11y = {
         return container.querySelector(focusableElementsSelector);
     },
 
-    _setupKeyListeners: function() {
-        for (var binding in this.keyBindings) {
-            var handlerName = this.keyBindings[binding],
-                combos = getKeyCombos(binding),
-                boundHandler = this._keydownHandler.bind(this, combos, handlerName);
+    _setupKeyListener: function(host) {
+        var handler = function(event) {
+            for (var binding in host.keyBindings) {
+                var combo = findMatchingCombo(binding, event);
+                if (combo && !event.defaultPrevented) {
+                    var handlerName = host.keyBindings[binding];
+                    host[handlerName](event, combo);
+                    return;
+                }
+            }
+        };
 
-            this.__boundKeyHandlers.push(boundHandler);
-            this.addEventListener('keydown', boundHandler);
-        }
+        host.__keyListener = handler;
+        this._listen(host, 'keydown', handler);
     },
 
-    _removeKeyListeners: function() {
-        this.__boundKeyHandlers.forEach(function(handler) {
-            this.removeEventListener('keydown', handler);
-        }, this);
-    },
-    
-    _keydownHandler: function(keyCombos, handlerName, event) {
-        if (!event.defaultPrevented && combosMatchesEvent(keyCombos, event)) {
-            this[handlerName].call(this, event);
-        }
+    _removeKeyListener: function(host) {
+        this._unlisten(host, 'keydown', host.__keyListener);
     }
 };
 Bosonic.CustomAttributes = {

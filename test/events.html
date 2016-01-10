@@ -84,6 +84,14 @@
                     expect(elt.closed).to.equal(0);
                 });
 
+                it("should pass the used combo to the keydown handler", function(done) {
+                    elt.open = function(e, key) {
+                        expect(key).to.equal('down');
+                        done();
+                    };
+                    MockInteractions.pressAndReleaseKeyOn(elt, 40); // DOWN
+                });
+
                 it("should support modifier keys", function() {
                     var event = new CustomEvent('keydown');
                     event.ctrlKey = true;

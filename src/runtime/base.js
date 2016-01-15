@@ -68,6 +68,15 @@ Bosonic.Base = {
         return changed ? changed.apply(this, arguments) : null;
     },
 
+    inject: function(mixin) {
+        for (var key in mixin) {
+            if (key !== 'injected' && mixin.hasOwnProperty(key)) {
+                this[key] = mixin[key];
+            }
+        }
+        if (mixin.injected) mixin.injected.call(this);
+    },
+
     __callMixins: function(callbackName, args) {
         this.__mixins.forEach(function(mixin) {
             if (mixin[callbackName]) {

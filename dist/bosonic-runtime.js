@@ -1495,6 +1495,15 @@ Bosonic.Base = {
         return changed ? changed.apply(this, arguments) : null;
     },
 
+    inject: function(mixin) {
+        for (var key in mixin) {
+            if (key !== 'injected' && mixin.hasOwnProperty(key)) {
+                this[key] = mixin[key];
+            }
+        }
+        if (mixin.injected) mixin.injected.call(this);
+    },
+
     __callMixins: function(callbackName, args) {
         this.__mixins.forEach(function(mixin) {
             if (mixin[callbackName]) {
@@ -2286,6 +2295,19 @@ function getOverallVelocity(velx, vely, direction) {
 }
 
 
+Bosonic.Removable = {
+    injected: function() {
+        var btn = document.createElement('button');
+        btn.classList.add(this.__elementName + '-remove');
+        btn.textContent = '×';
+        this.insertBefore(btn, this.firstChild);
+        this.listenOnce(btn, 'pointerup', this.__onRemoveButtonTap);
+    },
+
+    __onRemoveButtonTap: function() {
+        this.parentNode.removeChild(this);
+    }
+};
 Bosonic.Selection = {
     get selectedItemIndex() {
         return this.hasAttribute('selected') ? Number(this.getAttribute('selected')) : null;

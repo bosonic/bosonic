@@ -1,0 +1,132 @@
+<element name="b-notification">
+    <style>
+        b-notification {
+            display: none;
+            font-size: var(--b-notification-font-size);
+            padding: var(--b-notification-padding);
+            border: 1px solid transparent;
+            border-radius: var(--b-notification-border-radius);
+            min-height: 19px;
+            opacity: 1;
+        }
+
+        b-notification[type=success] {
+            background-color: var(--b-notification-success-bg);
+            border-color: var(--b-notification-success-border);
+            color: var(--b-notification-success-color);
+        }
+
+        b-notification[type=info] {
+            background-color: var(--b-notification-info-bg);
+            border-color: var(--b-notification-info-border);
+            color: var(--b-notification-info-color);
+        }
+
+        b-notification[type=warning] {
+            background-color: var(--b-notification-warning-bg);
+            border-color: var(--b-notification-warning-border);
+            color: var(--b-notification-warning-color);
+        }
+
+        b-notification[type=error] {
+            background-color: var(--b-notification-error-bg);
+            border-color: var(--b-notification-error-border);
+            color: var(--b-notification-error-color);
+        }
+
+        b-notification[visible] {
+            display: block;
+        }
+
+        b-notification[visible][closing] {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        b-notification[position], b-notification[data-position] {
+            position: fixed;
+            z-index: 1000;
+            margin: 0 auto;
+            width: 33.3%;
+        }
+
+        b-notification[visible][position], b-notification[visible][data-position] {
+            display: inline-block;
+        }
+
+        b-notification[position=top], b-notification[data-position=top] {
+            top: var(--b-notification-margin);
+            left: 0;
+            right: 0;
+        }
+        b-notification[position=bottom], b-notification[data-position=bottom] {
+            bottom: var(--b-notification-margin);
+            left: 0;
+            right: 0;
+        }
+        b-notification[position=top-left], b-notification[data-position=top-left] {
+            top: var(--b-notification-margin);
+            left: var(--b-notification-margin);
+        }
+        b-notification[position=top-right], b-notification[data-position=top-right] {
+            top: var(--b-notification-margin);
+            right: var(--b-notification-margin);
+        }
+        b-notification[position=bottom-left], b-notification[data-position=bottom-left] {
+            bottom: var(--b-notification-margin);
+            left: var(--b-notification-margin);
+        }
+        b-notification[position=bottom-right], b-notification[data-position=bottom-right] {
+            bottom: var(--b-notification-margin);
+            right: var(--b-notification-margin);
+        }
+        b-notification > button.b-notification-remove {
+            float:right;
+            opacity:.4;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+    </style>
+    <script>
+        (function(){
+            Bosonic.register({
+                get duration() {
+                    return parseInt(this.getCustomAttribute('duration')) || null;
+                },
+
+                attachedCallback: function() {
+                    if (this.hasCustomAttribute('dismissable')) this.inject(Bosonic.Removable);
+                    if (this.hasCustomAttribute('visible')) this.show();
+                },
+
+                detachedCallback: function() {
+                    this.dispatchEvent(new CustomEvent('b-notification-close'));
+                },
+
+                show: function() {
+                    if (!this.hasCustomAttribute('visible')) this.toggleCustomAttribute('visible');
+                    if (this.duration) {
+                        this.async(function() {
+                            this.transition(this, function() {
+                                this.setAttribute('closing', '');
+                            }, function() {
+                                this.close();
+                            });
+                        }, this.duration)
+                    }
+                    this.dispatchEvent(new CustomEvent('b-notification-show'));
+                },
+
+                hide: function() {
+                    this.removeCustomAttribute('visible');
+                    this.dispatchEvent(new CustomEvent('b-notification-hide'));
+                },
+
+                close: function() {
+                    this.parentNode.removeChild(this);
+                }
+            });
+        })();
+    </script>
+</element>

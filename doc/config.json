@@ -65,6 +65,12 @@
                     "lib": "Dialog",
                     "import": ["b-dialog"],
                     "demos": "b-dialog"
+                },
+                {
+                    "path": "notification",
+                    "lib": "Notification",
+                    "import": ["b-notification"],
+                    "demos": "b-notification"
                 }
             ]
         }

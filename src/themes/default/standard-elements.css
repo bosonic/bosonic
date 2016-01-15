@@ -186,9 +186,4 @@
     box-shadow: var(--bosonic-3d-effect);
 }
 
-.b-flash-message-close {
-    float:right;
-    opacity:.4;
-    cursor: pointer;
-}
 

@@ -196,12 +196,6 @@
     color: #fff;
     box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 1px 0 rgba(255, 255, 255, .3) inset;
 }
-
-.b-flash-message-close {
-    float:right;
-    opacity:.4;
-    cursor: pointer;
-}
 /* FOUC prevention */
 b-segmented-controls:not(.resolved) {
     opacity: 0;

@@ -107,6 +107,23 @@
     --b-list-border-radius: var(--bosonic-border-radius);
     --b-list-shadow: var(--bosonic-shadow-light);
 
+    --b-notification-font-size: var(--bosonic-font-size-base);
+    --b-notification-border-radius: var(--bosonic-border-radius);
+    --b-notification-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-notification-margin: 20px;
+    --b-notification-info-bg: color(var(--bosonic-primary-color) lightness(+30%));
+    --b-notification-info-border: color(var(--b-notification-info-bg) blackness(var(--bosonic-active-border-blackness)));
+    --b-notification-info-color: color(var(--bosonic-primary-color) blackness(+80%));
+    --b-notification-success-bg: color(var(--bosonic-success-color) lightness(+30%));
+    --b-notification-success-border: color(var(--b-notification-success-bg) blackness(var(--bosonic-active-border-blackness)));
+    --b-notification-success-color: color(var(--bosonic-success-color) blackness(+80%));
+    --b-notification-warning-bg: color(var(--bosonic-warning-color) lightness(+30%));
+    --b-notification-warning-border: color(var(--b-notification-warning-bg) blackness(var(--bosonic-active-border-blackness)));
+    --b-notification-warning-color: color(var(--bosonic-warning-color) blackness(+80%));
+    --b-notification-error-bg: color(var(--bosonic-danger-color) lightness(+30%));
+    --b-notification-error-border: color(var(--b-notification-error-bg) blackness(var(--bosonic-active-border-blackness)));
+    --b-notification-error-color: color(var(--bosonic-danger-color) blackness(+80%));
+
     --b-spinner-dots-color: var(--bosonic-primary-color);
     --b-spinner-dots-size: 1.5em;
     --b-spinner-dots-spacing: 0.5em;

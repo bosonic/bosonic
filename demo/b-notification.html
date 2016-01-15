@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Notifications</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="dist/webcomponents.js"></script>
+        <script type="text/javascript" src="dist/bosonic-runtime.js"></script>
+
+        <link rel="import" href="dist/default/b-notification.html">
+
+        <link rel="stylesheet" href="dist/default/theme.css">
+    </head>
+
+    <body>
+        <h1>Notifications</h1>
+        <div class="element-demo" id="basic-demos">
+            <button class="b-button" data-type="success" data-position="top">Show success on top</button>
+            <button class="b-button" data-type="info" data-position="bottom">Show info at bottom</button>
+            <button class="b-button" data-type="warning" data-position="bottom-left">Show warning at bottom left</button>
+            <button class="b-button" data-type="error" data-position="bottom-right">Show error at bottom right</button>
+            <script type="text/javascript">
+                function createNotification(type, msg, position) {
+                    var notif = document.createElement('b-notification');
+                    notif.setAttribute('type', type);
+                    if (position) notif.setAttribute('position', position);
+                    notif.setAttribute('duration', 2000);
+                    notif.setAttribute('dismissable', '');
+                    notif.setAttribute('visible', '');
+                    notif.innerHTML = msg;
+                    document.body.appendChild(notif);
+                }
+
+                var messages = {
+                    info: "Happiness shared successfully.",
+                    success: "Something went <strong>right</strong>!",
+                    warning: "This is strange... <a>Retry</a>",
+                    error: "Something went <strong>wrong</strong>!"
+                };
+
+                function bindDemoButtons(btnSelector) {
+                    var btns = document.querySelectorAll(btnSelector);
+                    [].forEach.call(btns, function(btn) {
+                        btn.addEventListener('pointerdown', function(e) {
+                            createNotification(btn.dataset.type, messages[btn.dataset.type], btn.dataset.position);
+                        });
+                    });
+                }
+
+                window.addEventListener('WebComponentsReady', function() {
+                    bindDemoButtons('#basic-demos button');
+                });
+            </script>
+        </div>
+    </body>
+</html>

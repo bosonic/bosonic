@@ -55,6 +55,18 @@
                     "lib": "Shadow CSS"
                 }
             ]
+        },
+        {
+            "path": "elements",
+            "lib": "Elements",
+            "pages": [
+                {
+                    "path": "dialog",
+                    "lib": "Dialog",
+                    "import": ["b-dialog"],
+                    "demos": "b-dialog"
+                }
+            ]
         }
     ]
 }

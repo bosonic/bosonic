@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>b-notification</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../../dist/bosonic-runtime.js"></script>
+
+        <script src="../../node_modules/web-component-tester/browser.js"></script>
+        <script src="../../bower_components/test-fixture/test-fixture-mocha.js"></script>
+        <script src="../../bower_components/iron-test-helpers/mock-interactions.js"></script>
+
+        <link rel="import" href="../../bower_components/test-fixture/test-fixture.html">
+
+        <link rel="import" href="../../dist/default/b-notification.html">
+    </head>
+
+    <body>
+        <test-fixture id="simple-notification">
+            <template>
+                <b-notification type="info">
+                    Hello, World!
+                </b-notification>
+            </template>
+        </test-fixture>
+
+        <test-fixture id="dismissable-notification">
+            <template>
+                <b-notification type="info" dismissable>
+                    Hello, World!
+                </b-notification>
+            </template>
+        </test-fixture>
+
+        <test-fixture id="autoclose-notification">
+            <template>
+                <b-notification type="info" duration="100">
+                    Hello, World!
+                </b-notification>
+            </template>
+        </test-fixture>
+        
+        <script type="text/javascript">
+            describe("Notification component", function() {
+                var notif;
+
+                it('should stay hidden when created', function() {
+                    notif = fixture('simple-notification');
+                    expect(notif.hasAttribute('visible')).to.be.false;
+                    expect(window.getComputedStyle(notif).display).to.equal('none');
+                });
+
+                it('should show up when requested', function() {
+                    notif = fixture('simple-notification');
+                    notif.show();
+                    expect(notif.hasAttribute('visible')).to.be.true;
+                    expect(window.getComputedStyle(notif).display).to.equal('block');
+                });
+
+                it('should hide when requested', function() {
+                    notif = fixture('simple-notification');
+                    notif.show();
+                    notif.hide();
+                    expect(notif.hasAttribute('visible')).to.be.false;
+                });
+
+                it('should be dismissable', function() {
+                    notif = fixture('dismissable-notification');
+                    notif.show();
+                    var dismissBtn = notif.querySelector('button.b-notification-remove');
+                    expect(dismissBtn).to.exist;
+                    MockInteractions.tap(dismissBtn);
+                    expect(document.querySelectorAll('b-notification')).to.be.empty;
+                });
+
+                it('should close automatically when a duration is provided', function(done) {
+                    notif = fixture('autoclose-notification');
+                    notif.show();
+                    setTimeout(function() {
+                        expect(document.querySelectorAll('b-notification')).to.be.empty;
+                        done();
+                    }, 700);
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,313 @@
+.b-button {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0.5em 1em;
+    font-size: 1em;
+    font-weight: 500;
+    color: #333;
+    background-color: #e0e0e0;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    border-color: rgb(214, 214, 214);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 1px 0 rgba(255, 255, 255, .3) inset;
+}
+.b-button[disabled] {
+    color: #bbb;
+    background-color: #e0e0e0;
+    border-color: #e0e0e0;
+}
+.b-button:active, .b-button.active {
+    box-shadow: 0 3px 5px rgba(0,0,0,.125) inset;
+    background-color: rgb(204, 204, 204);
+    border-color: rgb(191, 191, 191);
+}
+.b-button--primary, .b-button.active {
+    color: #fff;
+    background-color: #689caf;
+    border-color: rgb(105, 148, 163);
+}
+.b-button--primary:active, .b-button.active {
+    background-color: rgb(105, 138, 150);
+    border-color: rgb(105, 125, 133);
+}
+.b-button--success {
+    color: #fff;
+    background-color: #49a96d;
+    border-color: rgb(74, 156, 105);
+}
+.b-button--success:active {
+    background-color: rgb(74, 143, 100);
+    border-color: rgb(74, 125, 94);
+}
+.b-button--warning {
+    color: #fff;
+    background-color: #e67e22;
+    border-color: rgb(217, 119, 33);
+}
+.b-button--warning:active {
+    background-color: rgb(204, 113, 33);
+    border-color: rgb(186, 105, 33);
+}
+.b-button--danger {
+    color: #fff;
+    background-color: #c13421;
+    border-color: rgb(181, 50, 33);
+}
+.b-button--danger:active {
+    background-color: rgb(168, 49, 33);
+    border-color: rgb(150, 47, 33);
+}
+
+@-webkit-keyframes b-spinner-dots {
+  0%, 80%, 100% { 
+    box-shadow: 0 1.5em 0 -1.3em #689caf;
+  } 40% {
+    box-shadow: 0 1.5em 0 0 #689caf;
+  }
+}
+
+@keyframes b-spinner-dots {
+  0%, 80%, 100% { 
+    box-shadow: 0 1.5em 0 -1.3em #689caf;
+  } 40% {
+    box-shadow: 0 1.5em 0 0 #689caf;
+  }
+}
+.b-spinner, .b-spinner:before, .b-spinner:after {
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 100%;
+    -webkit-animation: b-spinner-dots 1.4s infinite ease-in-out both;
+            animation: b-spinner-dots 1.4s infinite ease-in-out both;
+}
+.b-spinner {
+    text-indent: 999em;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    top: calc(-0em - 1.5em);
+    -webkit-animation-delay: -0.32s;
+            animation-delay: -0.32s;
+}
+.b-spinner:before, .b-spinner:after {
+    content: ' ';
+    position: absolute;
+    top: 0;
+}
+.b-spinner:before {
+    left: calc(1.5em + 0.5em);
+    -webkit-animation-delay: -0.16s;
+            animation-delay: -0.16s;
+}
+.b-spinner:after {
+    left: calc(2 * 1.5em + 2 * 0.5em);
+}
+
+.b-card {
+    border: 1px solid transparent;
+    border-color: rgb(214, 214, 214);
+    border-radius: 2px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+.b-card-title {
+    padding: 0.5em 1em;
+    margin: 0;
+    font-size: 1em;
+    font-weight: 500;
+    line-height: 1.5;
+    background-color: #e0e0e0;
+    color: #333;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 1px 0 rgba(255, 255, 255, .3) inset;
+}
+.b-card-content {
+    padding: 0.5em 1em;
+    margin: 1px 0 0 0;
+    font-size: 1em;
+    background-color: #fff;
+    color: #333;
+}
+
+.b-accordion, .b-collapsible {
+    display: block;
+    border: 1px solid transparent;
+    border-color: rgb(214, 214, 214);
+    border-bottom: 1px solid transparent;
+    border-radius: 2px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+.b-accordion-title, .b-collapsible-toggle {
+    display: block;
+    width: 100%;
+    border: none;
+    text-align: left;
+    padding: 0.5em 1em;
+    margin: 0;
+    font-size: 1em;
+    font-weight: 500;
+    line-height: 1.5;
+    background-color: #e0e0e0;
+    color: #333;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 1px 0 rgba(255, 255, 255, .3) inset;
+}
+.b-accordion .b-accordion-title:not(:first-child) {
+    border-top: 1px solid transparent;
+    border-color: rgb(214, 214, 214);
+}
+.b-accordion-content, .b-collapsible-content {
+    padding: 0.5em 1em;
+    margin: 1px 0 0 0;
+    font-size: 1em;
+    background-color: #fff;
+    color: #333;
+}
+
+.b-list {
+    margin: 0.5em 0 1em 0;
+    border: 1px solid rgb(214, 214, 214);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    list-style-type: none;
+    padding: 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,.1);
+}
+.b-list > * {
+    background-color: #fff;
+    line-height: 1.5;
+    padding: 0.5em 1em;
+    margin: 0;
+    border-bottom: 1px solid rgb(214, 214, 214);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.b-list > *:last-child {
+    border-bottom: none;
+}
+.b-list .b-icon {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 2px;
+    margin-right: 5px;
+}
+
+.b-selectable-selected {
+    background-color: #689caf;
+    color: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 1px 0 rgba(255, 255, 255, .3) inset;
+}
+
+.b-flash-message-close {
+    float:right;
+    opacity:.4;
+    cursor: pointer;
+}
+/* FOUC prevention */
+b-segmented-controls:not(.resolved) {
+    opacity: 0;
+}
+b-tooltip:not(.resolved) {
+    display: none;
+}
+b-dialog:not(.resolved) {
+    display: none;
+}
+b-dropdown:not(.resolved) > ul {
+    display: none;
+}
+*[transition] {
+    -webkit-transition: opacity 0.15s cubic-bezier(0.25, 0.5, 0.5, 0.9), -webkit-transform 0.3s ease;
+    transition: opacity 0.15s cubic-bezier(0.25, 0.5, 0.5, 0.9), -webkit-transform 0.3s ease;
+    transition: opacity 0.15s cubic-bezier(0.25, 0.5, 0.5, 0.9), transform 0.3s ease;
+    transition: opacity 0.15s cubic-bezier(0.25, 0.5, 0.5, 0.9), transform 0.3s ease, -webkit-transform 0.3s ease;
+}
+*[transition~="fade-in"] {
+    opacity: 0;
+}
+*[transition~="fade-in"][visible] {
+    opacity: 1;
+}
+*[transition~="scale"] {
+    -webkit-transform: scale(0.8);
+            transform: scale(0.8);
+}
+*[transition~="scale"][visible] {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+}
+*[transition~="slide-in-left"] {
+    -webkit-transform: translateX(-20%);
+            transform: translateX(-20%);
+}
+*[transition~="slide-in-right"] {
+    -webkit-transform: translateX(20%);
+            transform: translateX(20%);
+}
+*[transition~="slide-in-top"] {
+    -webkit-transform: translateY(-20%);
+            transform: translateY(-20%);
+}
+*[transition~="slide-in-bottom"] {
+    -webkit-transform: translateY(20%);
+            transform: translateY(20%);
+}
+*[transition~="slide-in-left"][visible],
+*[transition~="slide-in-right"][visible],
+*[transition~="slide-in-top"][visible],
+*[transition~="slide-in-bottom"][visible] {
+    -webkit-transform: translateX(0);
+            transform: translateX(0);
+}
+*[transition~="flip-horizontal"] {
+    -webkit-transform: rotateY(-70deg);
+            transform: rotateY(-70deg);
+    -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+}
+*[transition~="flip-horizontal"][visible] {
+    -webkit-transform: rotateY(0deg);
+            transform: rotateY(0deg);
+}
+*[transition~="flip-vertical"] {
+    -webkit-transform: rotateX(-70deg);
+            transform: rotateX(-70deg);
+    -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+}
+*[transition~="flip-vertical"][visible] {
+    -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg);
+}
+/* Some transitions must be overriden for b-dialog because of the translate(-50%, -50%) positioning "hack" */
+b-dialog[transition~="scale"][visible] {
+    -webkit-transform: translate(-50%, -50%) scale(1);
+            transform: translate(-50%, -50%) scale(1);
+}
+b-dialog[transition~="scale"] {
+    -webkit-transform: translate(-50%, -50%) scale(0.8);
+            transform: translate(-50%, -50%) scale(0.8);
+}
+b-dialog[transition~="slide-in-left"] {
+    -webkit-transform: translate(-70%, -50%);
+            transform: translate(-70%, -50%);
+}
+b-dialog[transition~="slide-in-right"] {
+    -webkit-transform: translate(-30%, -50%);
+            transform: translate(-30%, -50%);
+}
+b-dialog[transition~="slide-in-bottom"] {
+    -webkit-transform: translate(-50%, -30%);
+            transform: translate(-50%, -30%);
+}
+b-dialog[transition~="slide-in-top"] {
+    -webkit-transform: translate(-50%, -70%);
+            transform: translate(-50%, -70%);
+}
+b-dialog[transition~="slide-in-left"][visible],
+b-dialog[transition~="slide-in-right"][visible],
+b-dialog[transition~="slide-in-top"][visible],
+b-dialog[transition~="slide-in-bottom"][visible] {
+    -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+}
+

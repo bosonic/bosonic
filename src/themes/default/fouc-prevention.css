@@ -1,0 +1,13 @@
+/* FOUC prevention */
+b-segmented-controls:not(.resolved) {
+    opacity: 0;
+}
+b-tooltip:not(.resolved) {
+    display: none;
+}
+b-dialog:not(.resolved) {
+    display: none;
+}
+b-dropdown:not(.resolved) > ul {
+    display: none;
+}

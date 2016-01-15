@@ -1,0 +1,149 @@
+:root {
+    --bosonic-gray-color: #e0e0e0;
+    --bosonic-primary-color: #689caf;
+    --bosonic-success-color: #49a96d;
+    --bosonic-warning-color: #e67e22;
+    --bosonic-danger-color: #c13421;
+
+    --bosonic-default-font-color: #333;
+
+    --bosonic-active-blackness: +10%;
+
+    --bosonic-border-radius: 2px;
+    --bosonic-border-blackness: +5%;
+    --bosonic-active-border-blackness: +12%;
+
+    --bosonic-shadow-light: 0 1px 4px rgba(0,0,0,.1);
+    --bosonic-shadow-medium: 0 5px 10px rgba(0,0,0,.2);
+    --bosonic-shadow-heavy: 0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.4);
+
+    --bosonic-font-size-base: 1em;
+    --bosonic-line-height-base: 1.5;
+    --bosonic-padding-base-horizontal: 1em;
+    --bosonic-padding-base-vertical: 0.5em;
+
+    --bosonic-3d-effect-shadow-size: 1px;
+    --bosonic-3d-effect-shadow-color: rgba(0, 0, 0, .3);
+    --bosonic-3d-effect-shadow: 0 var(--bosonic-3d-effect-shadow-size) 0 var(--bosonic-3d-effect-shadow-color);
+    --bosonic-3d-effect-reflect-size: 1px;
+    --bosonic-3d-effect-reflect-color: rgba(255, 255, 255, .3);
+    --bosonic-3d-effect-reflect: 0 var(--bosonic-3d-effect-reflect-size) 0 var(--bosonic-3d-effect-reflect-color) inset;
+    --bosonic-3d-effect: var(--bosonic-3d-effect-shadow), var(--bosonic-3d-effect-reflect);
+    --bosonic-pressed-effect: 0 3px 5px rgba(0,0,0,.125) inset;
+
+    --b-accordion-font-size: var(--bosonic-font-size-base);
+    --b-accordion-border: color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
+    --b-accordion-border-radius: var(--bosonic-border-radius);
+    --b-accordion-shadow: var(--bosonic-shadow-medium);
+    --b-accordion-title-font-size: var(--bosonic-font-size-base);
+    --b-accordion-title-font-weight: 500;
+    --b-accordion-title-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-accordion-title-bg: var(--bosonic-gray-color);
+    --b-accordion-title-color: var(--bosonic-default-font-color);
+    --b-accordion-title-3d-effect: var(--bosonic-3d-effect);
+    --b-accordion-content-bg: #fff;
+    --b-accordion-content-font-size: var(--bosonic-font-size-base);
+    --b-accordion-content-color: var(--bosonic-default-font-color);
+    --b-accordion-content-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+
+    --b-button-font-size: var(--bosonic-font-size-base);
+    --b-button-font-weight: 500;
+    --b-button-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-button-border-radius: var(--bosonic-border-radius);
+    --b-button-3d-effect: var(--bosonic-3d-effect);
+    --b-button-pressed-effect: var(--bosonic-pressed-effect);
+    --b-button-default-bg: var(--bosonic-gray-color);
+    --b-button-default-border: color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
+    --b-button-default-color: var(--bosonic-default-font-color);
+    --b-button-disabled-color: #bbb;
+    --b-button-primary-bg: var(--bosonic-primary-color);
+    --b-button-primary-border: color(var(--bosonic-primary-color) blackness(var(--bosonic-border-blackness)));
+    --b-button-primary-color: #fff;
+    --b-button-success-bg: var(--bosonic-success-color);
+    --b-button-success-border: color(var(--bosonic-success-color) blackness(var(--bosonic-border-blackness)));
+    --b-button-success-color: #fff;
+    --b-button-warning-bg: var(--bosonic-warning-color);
+    --b-button-warning-border: color(var(--bosonic-warning-color) blackness(var(--bosonic-border-blackness)));
+    --b-button-warning-color: #fff;
+    --b-button-danger-bg: var(--bosonic-danger-color);
+    --b-button-danger-border: color(var(--bosonic-danger-color) blackness(var(--bosonic-border-blackness)));
+    --b-button-danger-color: #fff;
+
+    --b-card-font-size: var(--bosonic-font-size-base);
+    --b-card-border: color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
+    --b-card-border-radius: var(--bosonic-border-radius);
+    --b-card-shadow: var(--bosonic-shadow-medium);
+    --b-card-title-font-size: var(--bosonic-font-size-base);
+    --b-card-title-font-weight: 500;
+    --b-card-title-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-card-title-bg: var(--bosonic-gray-color);
+    --b-card-title-color: var(--bosonic-default-font-color);
+    --b-card-title-3d-effect: var(--bosonic-3d-effect);
+    --b-card-content-bg: #fff;
+    --b-card-content-font-size: var(--bosonic-font-size-base);
+    --b-card-content-color: var(--bosonic-default-font-color);
+    --b-card-content-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+
+    --b-dialog-border: 1px solid color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
+    --b-dialog-border-radius: var(--bosonic-border-radius);
+    --b-dialog-padding-vertical: var(--bosonic-padding-base-vertical);
+    --b-dialog-padding-horizontal: var(--bosonic-padding-base-horizontal);
+    --b-dialog-shadow: var(--bosonic-shadow-medium);
+    --b-dialog-title-font-size: var(--bosonic-font-size-base);
+    --b-dialog-title-font-weight: 500;
+    --b-dialog-title-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-dialog-title-bg: var(--bosonic-gray-color);
+    --b-dialog-title-color: var(--bosonic-default-font-color);
+    --b-dialog-title-3d-effect: var(--bosonic-3d-effect);
+
+    --b-dropdown-border: 1px solid color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
+    --b-dropdown-border-radius: var(--bosonic-border-radius);
+    --b-dropdown-shadow: var(--bosonic-shadow-light);
+    --b-dropdown-item-font-size: var(--bosonic-font-size-base);
+    --b-dropdown-item-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-dropdown-item-hover-bg: color(var(--bosonic-gray-color) lightness(+5%));
+
+    --b-list-border: color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
+    --b-list-border-radius: var(--bosonic-border-radius);
+    --b-list-shadow: var(--bosonic-shadow-light);
+
+    --b-spinner-dots-color: var(--bosonic-primary-color);
+    --b-spinner-dots-size: 1.5em;
+    --b-spinner-dots-spacing: 0.5em;
+
+    --b-progress-bar-color: var(--bosonic-success-color);
+    --b-progress-bar-secondary-color: color(var(--bosonic-success-color) lightness(+25%));
+    --b-progress-bar-container-color: color(var(--bosonic-gray-color) lightness(+5%));
+    --b-progress-bar-height: 4px;
+
+    --b-slider-knob-color: color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
+    --b-slider-knob-3d-effect: var(--bosonic-3d-effect);
+
+    --b-selectable-selected-color: var(--bosonic-primary-color);
+
+    --b-switch-thumb-color: var(--bosonic-gray-color);
+    --b-switch-on-bg: var(--bosonic-primary-color);
+    --b-switch-on-border: color(var(--bosonic-primary-color) blackness(var(--bosonic-border-blackness)));
+    --b-switch-on-color: #fff;
+    --b-switch-off-bg: #bfbfbf;
+    --b-switch-off-border: color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
+    --b-switch-off-color: var(--bosonic-default-font-color);
+    --b-switch-thumb-3d-effect: var(--bosonic-3d-effect);
+    --b-switch-pressed-effect: var(--bosonic-pressed-effect);
+    --b-switch-height: 24px;
+    --b-switch-border-radius: 2px;
+
+    --b-tabs-shadow: 0 3px 3px -2px rgba(0,0,0,.1);
+    --b-tabs-border-bottom: 1px solid #ddd;
+    --b-tabs-bg: #fff;
+
+    --b-tab-bar-color: var(--bosonic-primary-color);
+    --b-tab-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-tab-color: var(--bosonic-default-font-color);
+    --b-tab-inactive-color: color(var(--b-tab-color) lightness(+15%));
+    --b-tab-active-color: var(--b-tab-color);
+
+    --b-tooltip-background: rgba(0,0,0,0.8);
+    --b-tooltip-color: white;
+    --b-tooltip-shadow: var(--bosonic-shadow-medium);
+}

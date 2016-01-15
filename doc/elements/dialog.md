@@ -2,7 +2,7 @@
 
 You may not love them, but modals are sometimes requested by customers...
 
-## Example
+## Demo
 <div class="element-demo" id="example"></div>
 
 ## Usage

@@ -1,0 +1,81 @@
+<element name="b-progress" attributes="value secondary">
+    <template>
+        <style>
+            :host {
+                display: block;
+                width: 200px;
+                position: relative;
+                overflow: hidden;
+            }
+            .progress-container {
+                background-color: var(--b-progress-bar-container-color);
+                height: var(--b-progress-bar-height);
+                position: relative;
+            }
+            .progress-bar, .secondary-progress-bar {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+            .progress-bar {
+                background-color: var(--b-progress-bar-color);
+            }
+            .secondary-progress-bar {
+                background-color: var(--b-progress-bar-secondary-color);
+            }
+        </style>
+        <div class="progress-container">
+            <div class="secondary-progress-bar"></div>
+            <div class="progress-bar"></div>
+        </div>
+    </template>
+    <script>
+        Bosonic.register({
+            hostAttributes: {
+                role: 'progressbar',
+                'aria-valuemin': 0,
+                'aria-valuemax': 100
+            },
+
+            get bar() {
+                return this.shadowRoot.querySelector('.progress-bar');
+            },
+
+            get secondaryBar() {
+                return this.shadowRoot.querySelector('.secondary-progress-bar');
+            },
+
+            get value() {
+                return this.getAttribute('value') || 0;
+            },
+
+            set value(val) {
+                this.setAttribute('value', val);
+            },
+
+            get secondaryValue() {
+                return this.getCustomAttribute('secondary') || 0;
+            },
+
+            set secondaryValue(val) {
+                this.setCustomAttribute('secondary', val);
+            },
+
+            createdCallback: function() {
+                this.valueChanged();
+                this.secondaryChanged();
+            },
+
+            valueChanged: function() {
+                this.bar.style.width = this.value + '%';
+                this.setAttribute('aria-valuenow', this.value);
+            },
+
+            secondaryChanged: function() {
+                this.secondaryBar.style.width = this.secondaryValue + '%';
+            }
+        });
+    </script>
+</element>

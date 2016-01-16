@@ -71,6 +71,12 @@
                     "lib": "Notification",
                     "import": ["b-notification"],
                     "demos": "b-notification"
+                },
+                {
+                    "path": "progress",
+                    "lib": "Progress bar",
+                    "import": ["b-progress"],
+                    "demos": "b-progress"
                 }
             ]
         }

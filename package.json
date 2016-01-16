@@ -19,7 +19,7 @@
     "url": "https://github.com/bosonic/bosonic/issues"
   },
   "dependencies": {
-    "webcomponents.js": "^0.7.2"
+    "webcomponents.js": "^0.7.20"
   },
   "devDependencies": {
     "autoprefixer": "^6.2.3",

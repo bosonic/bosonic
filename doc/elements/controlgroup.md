@@ -1,10 +1,12 @@
+# Control group
+
 This element groups a series of controls (buttons, checkboxes or radio buttons) on a single line.
 
-## Demos
-<div class="element-demo" id="example1"></div>
-<div class="element-demo" id="example2"></div>
+## Basic example
 
-## Usage
+<div class="element-demo" id="example1"></div>
+
+Group a series of buttons.
 
 ``` html
 <b-controlgroup>
@@ -12,7 +14,26 @@ This element groups a series of controls (buttons, checkboxes or radio buttons) 
     <button>Center</button>
     <button>Right</button>
 </b-controlgroup>
+```
+## Vertical example
 
+<div class="element-demo" id="example2"></div>
+
+By adding a `vertical` attribute, you can make the buttons appear stacked vertically.
+
+``` html
+<b-controlgroup vertical>
+    <button>Top</button>
+    <button>Middle</button>
+    <button>Bottom</button>
+</b-controlgroup>
+```
+
+## With checkboxes
+
+<div class="element-demo" id="example3"></div>
+
+``` html
 <b-controlgroup>
     <label>
         <input type="checkbox" autocomplete="off" checked> Checkbox 1
@@ -24,7 +45,13 @@ This element groups a series of controls (buttons, checkboxes or radio buttons) 
         <input type="checkbox" autocomplete="off"> Checkbox 3
     </label>
 </b-controlgroup>
+```
 
+## With radio buttons
+
+<div class="element-demo" id="example4"></div>
+
+``` html
 <b-controlgroup>
     <label>
         <input type="radio" autocomplete="off" checked> Radio 1

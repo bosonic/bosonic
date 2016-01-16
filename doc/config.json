@@ -77,6 +77,12 @@
                     "lib": "Progress bar",
                     "import": ["b-progress"],
                     "demos": "b-progress"
+                },
+                {
+                    "path": "controlgroup",
+                    "lib": "Control group",
+                    "import": ["b-controlgroup"],
+                    "demos": "b-controlgroup"
                 }
             ]
         }

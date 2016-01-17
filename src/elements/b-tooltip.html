@@ -1,0 +1,175 @@
+<element name="b-tooltip">
+    <template>
+        <style>
+            :host {
+                position: absolute;
+                display: block;
+                z-index: 1000;
+                opacity: 0;
+            }
+
+            :host([visible]) {
+                opacity: 1;
+            }
+
+            .b-tooltip-inner {
+                padding: 8px;
+                color: var(--b-tooltip-color);
+                background-color: var(--b-tooltip-background);
+                box-sizing: border-box;
+                border-radius: 3px;
+                white-space: nowrap;
+                line-height: 6px;
+                user-select: none;
+                box-shadow: var(--b-tooltip-shadow);
+            }
+
+            .b-tooltip-arrow {
+                position: absolute;
+                width: 0;
+                height: 0;
+                border-color: transparent;
+                border-style: solid;
+            }
+            :host([position=left]), :host([position=right]) {
+                padding: 0 5px;
+            }
+            :host([position=left]) .b-tooltip-arrow {
+                top: 50%;
+                right: 0;
+                margin-top: -5px;
+                border-width: 5px 0 5px 5px;
+                border-left-color: var(--b-tooltip-background);
+            }
+            :host([position=right]) .b-tooltip-arrow {
+                top: 50%;
+                left: 0;
+                margin-top: -5px;
+                border-width: 5px 5px 5px 0;
+                border-right-color: var(--b-tooltip-background);
+            }
+            :host([position=top]), :host([position=bottom]) {
+                padding: 5px 0;
+            }
+            :host([position=top]) .b-tooltip-arrow {
+                bottom: 0;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px 5px 0;
+                border-top-color: var(--b-tooltip-background);
+            }
+            :host([position=bottom]) .b-tooltip-arrow {
+                top: 0;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 0 5px 5px;
+                border-bottom-color: var(--b-tooltip-background);
+            }
+        </style>
+        <div class="b-tooltip-arrow"></div>
+        <div class="b-tooltip-inner">
+            <content></content>
+        </div>
+    </template>
+    <script>
+        (function(){
+            Bosonic.register({
+                spacing: 5,
+                defaultPosition: 'bottom',
+
+                get position() {
+                    return this.getAttribute('position') || this.getAttribute('data-position');
+                },
+
+                get target() {
+                    return this.hasAttribute('for') 
+                        ? document.getElementById(this.getAttribute('for'))
+                        : this.parentNode;
+                },
+
+                get tooltip() {
+                    return this.shadowRoot.querySelector('.b-tooltip');
+                },
+
+                createdCallback: function() {
+                    this.setAttribute('role', 'tooltip');
+                    this.setAttribute('tabindex', '-1');
+                    if (!this.hasAttribute('position') && !this.hasAttribute('data-position')) {
+                        this.setAttribute('position', this.defaultPosition);
+                    }
+
+                    this.enterListener = this.onEnterTarget.bind(this);
+                    this.leaveListener = this.onLeaveTarget.bind(this);
+                    this.target.addEventListener('mouseenter', this.enterListener, false);
+                    this.target.addEventListener('focus', this.enterListener, false);
+                    this.target.addEventListener('mouseleave', this.leaveListener, false);
+                    this.target.addEventListener('blur', this.leaveListener, false);
+                },
+
+                applyPlacement: function() {
+                    var targetOffset = this.getOffset(this.target),
+                        targetRect = this.target.getBoundingClientRect(),
+                        tipRect = this.getBoundingClientRect();
+
+                    var centeringOffset = {
+                        width: (targetRect.width - tipRect.width) / 2,
+                        height: (targetRect.height - tipRect.height) / 2
+                    };
+
+                    switch(this.position) {
+                        // rounding some of the values are necessary for some browsers (FF, IE) so that there is no spacing between the
+                        // arrow and the inner div
+                        case 'left':
+                            this.style.top = targetOffset.top + centeringOffset.height + 'px';
+                            this.style.left = Math.round(targetOffset.left - this.offsetWidth - this.spacing) + 'px';
+                            break;
+                        case 'right':
+                            this.style.top = targetOffset.top + centeringOffset.height + 'px';
+                            this.style.left = Math.round(targetOffset.left + this.target.offsetWidth + this.spacing) + 'px';
+                            break;
+                        case 'top':
+                            this.style.top = Math.ceil(targetOffset.top - this.offsetHeight - this.spacing) + 'px';
+                            this.style.left = targetOffset.left + centeringOffset.width + 'px';
+                            break;
+                        default:
+                            this.style.top = Math.floor(targetOffset.top + this.target.offsetHeight + this.spacing -1) + 'px'; // yes, the -1 is a magic value... for FF
+                            this.style.left = targetOffset.left + centeringOffset.width + 'px';
+                    }
+                },
+
+                show: function() {
+                    this.setAttribute('visible', '');
+                    this.applyPlacement();
+                },
+
+                hide: function() {
+                    this.removeAttribute('visible');
+                },
+
+                onEnterTarget: function(evt) {
+                    this.show();
+                },
+
+                onLeaveTarget: function(evt) {
+                    this.hide();
+                },
+
+                // get the coordinates of the element relative to the document
+                getOffset: function(elt) {
+                    var elt = elt || this,
+                        rect = elt.getBoundingClientRect();
+
+                    return {
+                        top: rect.top + window.pageYOffset - document.documentElement.clientTop,
+                        left: rect.left + window.pageXOffset - document.documentElement.clientLeft
+                    };
+                },
+
+                // get the coordinates of the element relative to the parent element
+                getPosition: function(elt) {
+                    throw "Not implemented yet.";
+                }
+            });
+        })();
+    </script>
+</element>

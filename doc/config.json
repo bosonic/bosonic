@@ -83,6 +83,12 @@
                     "lib": "Control group",
                     "import": ["b-controlgroup"],
                     "demos": "b-controlgroup"
+                },
+                {
+                    "path": "tooltip",
+                    "lib": "Tooltip",
+                    "import": ["b-tooltip"],
+                    "demos": "b-tooltip"
                 }
             ]
         }

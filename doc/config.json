@@ -89,6 +89,12 @@
                     "lib": "Tooltip",
                     "import": ["b-tooltip"],
                     "demos": "b-tooltip"
+                },
+                {
+                    "path": "switch",
+                    "lib": "Switch",
+                    "import": ["b-switch"],
+                    "demos": "b-switch"
                 }
             ]
         }

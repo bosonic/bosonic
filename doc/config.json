@@ -13,6 +13,10 @@
                     "lib": "Using elements"
                 },
                 {
+                    "path": "styling-elements",
+                    "lib": "Styling elements"
+                },
+                {
                     "path": "working-with-frameworks",
                     "lib": "Working with frameworks"
                 },

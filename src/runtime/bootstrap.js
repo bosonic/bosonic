@@ -5,3 +5,7 @@ if (!window.WebComponents) {
 if (!window.Bosonic) {
     window.Bosonic = {};
 }
+
+window.addEventListener('WebComponentsReady', function() {
+    if (document.body.hasAttribute('unresolved')) document.body.removeAttribute('unresolved');
+});

@@ -197,7 +197,7 @@
     box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 1px 0 rgba(255, 255, 255, .3) inset;
 }
 /* FOUC prevention */
-b-segmented-controls:not(.resolved) {
+b-controlgroup:not(.resolved) {
     opacity: 0;
 }
 b-tooltip:not(.resolved) {
@@ -207,6 +207,9 @@ b-dialog:not(.resolved) {
     display: none;
 }
 b-dropdown:not(.resolved) > ul {
+    display: none;
+}
+input[is='b-switch']:not(.resolved) {
     display: none;
 }
 *[transition] {

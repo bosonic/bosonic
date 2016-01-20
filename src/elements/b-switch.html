@@ -1,68 +1,74 @@
-<element name="b-switch">
+<element name="b-switch" extends="input">
+    <style>
+        /* was :host when using shadowDOM */
+        .b-switch-container {
+            display: inline-block;
+            vertical-align: bottom;
+            top: 1px;
+            position: relative;
+            min-width: 60px;
+            height: var(--b-switch-height);
+            overflow: hidden;
+            border: 1px solid var(--b-switch-off-border);
+            border-radius: var(--b-switch-border-radius);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            transition: border 0.130s ease-out;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        .b-switch-container.on {
+            border: 1px solid var(--b-switch-on-border);
+        }
+        .b-switch-container + input[type='checkbox'] {
+            display: none;
+        }
+        .b-switch {
+            position: absolute;
+            left: calc(-100% + var(--b-switch-height));
+            width: calc(200% - var(--b-switch-height));
+            height: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: left 0.130s ease-out;
+        }
+        .b-switch.on {
+            left: 0;
+        }
+        .b-switch > * {
+            float: left;
+        }
+        .b-switch-on, .b-switch-off {
+            width: 50%;
+            height: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            line-height: var(--b-switch-height);
+        }
+        .b-switch-on {
+            padding-right: calc(var(--b-switch-height) / 2);
+            background-color: var(--b-switch-on-bg);
+            color: var(--b-switch-on-color);
+            box-shadow: var(--b-switch-pressed-effect);
+        }
+        .b-switch-off {
+            padding-left: calc(var(--b-switch-height) / 2);
+            background-color: var(--b-switch-off-bg);
+            color: var(--b-switch-off-color);
+            box-shadow: var(--b-switch-pressed-effect);
+        }
+        .b-switch-thumb {
+            position: absolute;
+            left: calc(50% - var(--b-switch-height) / 2);
+            width: var(--b-switch-height);
+            height: 100%;
+            border-radius: 1px;
+            background-color: var(--b-switch-thumb-color);
+            box-shadow: var(--b-switch-thumb-3d-effect);
+        }
+    </style>
     <template>
-        <style>
-            :host {
-                display: inline-block;
-                position: relative;
-                min-width: 60px;
-                height: var(--b-switch-height);
-                overflow: hidden;
-                border: 1px solid var(--b-switch-off-border);
-                border-radius: var(--b-switch-border-radius);
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                transition: border 0.130s ease-out;
-                cursor: pointer;
-                font-size: 10px;
-            }
-            :host(.on) {
-                border: 1px solid var(--b-switch-on-border);
-            }
-            .b-switch {
-                position: absolute;
-                left: calc(-100% + var(--b-switch-height));
-                width: calc(200% - var(--b-switch-height));
-                height: 100%;
-                overflow: hidden;
-                white-space: nowrap;
-                transition: left 0.130s ease-out;
-            }
-            .b-switch.on {
-                left: 0;
-            }
-            .b-switch > * {
-                float: left;
-            }
-            .b-switch-on, .b-switch-off {
-                width: 50%;
-                height: 100%;
-                text-align: center;
-                box-sizing: border-box;
-                line-height: var(--b-switch-height);
-            }
-            .b-switch-on {
-                padding-right: calc(var(--b-switch-height) / 2);
-                background-color: var(--b-switch-on-bg);
-                color: var(--b-switch-on-color);
-                box-shadow: var(--b-switch-pressed-effect);
-            }
-            .b-switch-off {
-                padding-left: calc(var(--b-switch-height) / 2);
-                background-color: var(--b-switch-off-bg);
-                color: var(--b-switch-off-color);
-                box-shadow: var(--b-switch-pressed-effect);
-            }
-            .b-switch-thumb {
-                position: absolute;
-                left: calc(50% - var(--b-switch-height) / 2);
-                width: var(--b-switch-height);
-                height: 100%;
-                border-radius: 1px;
-                background-color: var(--b-switch-thumb-color);
-                box-shadow: var(--b-switch-thumb-3d-effect);
-            }
-        </style>
         <div class="b-switch">
             <span class="b-switch-on"></span>
             <span class="b-switch-thumb"></span>
@@ -72,18 +78,7 @@
     <script>
         (function(){
             Bosonic.register({
-                listeners: {
-                    'tap': 'toggle'
-                },
-
-                keyBindings: {
-                    'enter space': 'toggle'
-                },
-
-                hostAttributes: {
-                    role: 'checkbox',
-                    tabindex: 0
-                },
+                __automaticTemplating: false,
 
                 get noCaption() {
                     return this.hasCustomAttribute('nocaption');
@@ -97,43 +92,60 @@
                     return this.getCustomAttribute('offcaption') || 'OFF';
                 },
 
-                get value() {
-                    return this.checked;
-                },
-
-                get checked() {
-                    return this.hasCustomAttribute('checked');
-                },
-
-                get root() {
-                    return this.shadowRoot;
-                },
-
-                set checked(value) {
-                    this.toggleClass('on', value);
-                    this.toggleClass('on', value, this.root.querySelector('.b-switch'));
-                    this.toggleStateAttribute('aria-checked', value);
-                    this.toggleCustomAttribute('checked', value);
+                get label() {
+                    if (this.parentNode.nodeName === 'LABEL') return this.parentNode;
                 },
 
                 createdCallback: function() {
+                    // As we want to extend a native input element, we can't use shadowDOM because it won't work with 
+                    // non-native ShadowDOM browsers. Therefore we insert our markup before the input and use aria-hidden
+                    // so that our markup will be hidden to users using assistive technologies
+                    var container = document.createElement('div');
+                    container.classList.add('b-switch-container');
+                    container.setAttribute('aria-hidden', 'true');
+                    container.appendChild(document.importNode(this.__template.content, true));
+                    this.parentNode.insertBefore(container, this);
+                    this.root = container;
+
+                    // if there is an englobing label, we let it do its job and we don't touch the checked attribute
+                    if (this.label) {
+                        this.listen(this.label, 'tap', 'onLabelTap');
+                    } else {
+                        this.listen(this.root, 'tap', 'onTap');
+                    }
+
                     if (!this.noCaption) {
                         this.root.querySelector('.b-switch-on').textContent = this.onCaption;
                         this.root.querySelector('.b-switch-off').textContent = this.offCaption;
                     }
-                    this.checked ? this.activate() : this.deactivate();
+                    
+                    if (this.hasAttribute('checked')) this.toggleSwitch(true);
                 },
 
-                activate: function() {
-                    this.checked = true;
+                onTap: function(e) {
+                    this.toggle(!this.checked);
                 },
 
-                deactivate: function() {
-                    this.checked = false;
+                onLabelTap: function(e) {
+                    this.toggleSwitch(!this.checked);
                 },
 
-                toggle: function() {
-                    this.checked = !this.checked;
+                check: function() {
+                    this.toggle(true);
+                },
+
+                uncheck: function() {
+                    this.toggle(false);
+                },
+
+                toggle: function(value) {
+                    this.toggleSwitch(value);
+                    this.checked = value;
+                },
+
+                toggleSwitch: function(value) {
+                    this.toggleClass('on', value);
+                    this.toggleClass('on', value, this.root.querySelector('.b-switch'));
                 }
             });
         })();

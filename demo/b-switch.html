@@ -11,21 +11,14 @@
         <link rel="stylesheet" href="dist/default/theme.css">
     </head>
 
-    <body>
+    <body unresolved>
         <h1>Switch</h1>
         <h3>with caption</h3>
         <div class="element-demo" id="example">
-            <b-switch></b-switch>
+            <label><input type="checkbox" is="b-switch" checked />&nbsp;Engines</label>
         </div>
 
         <h3>without caption</h3>
-        <b-switch nocaption></b-switch>
-
-        <h3>long custom caption</h3>
-        <b-switch style="padding: 0 15px" oncaption="activated" offcaption="deactivated"></b-switch>
-        <p>N.B.: <em>As <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex#Browser_compatibility">compatibility of display: flex</a> is IE10+, we use a simple padding to adapt the switch with long custom caption</em></p>
-
-        <h3>on by default</h3>
-        <b-switch checked></b-switch>
+        <input type="checkbox" is="b-switch" nocaption />
     </body>
 </html>

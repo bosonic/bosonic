@@ -20,7 +20,7 @@ function processMutations(mutations) {
 
 Bosonic.Base = {
     createdCallback: function() {
-        if (this.__template) {
+        if (this.__template && this.__automaticTemplating !== false) {
             this.createShadowRoot();
             var content = this.__template.content ? this.__template.content : getFragmentFromNode(this.__template);
             if (WebComponents.flags.shadow !== false) {

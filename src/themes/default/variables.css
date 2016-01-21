@@ -124,6 +124,18 @@
     --b-notification-error-border: color(var(--b-notification-error-bg) blackness(var(--bosonic-active-border-blackness)));
     --b-notification-error-color: color(var(--bosonic-danger-color) blackness(+80%));
 
+    --b-panel-font-size: var(--bosonic-font-size-base);
+    --b-panel-border: color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
+    --b-panel-border-radius: var(--bosonic-border-radius);
+    --b-panel-shadow: var(--bosonic-shadow-medium);
+    --b-panel-title-font-size: var(--bosonic-font-size-base);
+    --b-panel-title-font-weight: 500;
+    --b-panel-title-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-panel-title-bg: var(--bosonic-gray-color);
+    --b-panel-title-color: var(--bosonic-default-font-color);
+    --b-panel-title-3d-effect: var(--bosonic-3d-effect);
+    --b-panel-content-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+
     --b-spinner-dots-color: var(--bosonic-primary-color);
     --b-spinner-dots-size: 1.5em;
     --b-spinner-dots-spacing: 0.5em;

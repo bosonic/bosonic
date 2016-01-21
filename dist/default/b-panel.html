@@ -1,0 +1,51 @@
+<element name="b-panel">
+    <template>
+        <style>:host {
+                display: block;
+                border: 1px solid transparent;
+                border-color: rgb(214, 214, 214);
+                border-radius: 2px;
+                box-shadow: 0 5px 10px rgba(0,0,0,.2);
+            }
+            .b-panel-content {
+                padding: 0.5em 1em;
+                margin: 1px 0 0 0;
+            }
+        </style>
+        <content select="b-panel-title"></content>
+        <div class="b-panel-content" tabindex="0">
+            <content></content>
+        </div>
+    </template>
+    <script>
+        (function(){
+            Bosonic.register({
+                
+            });
+        })();
+    </script>
+</element>
+
+<element name="b-panel-title">
+    <style>b-panel-title {
+            display: block;
+            padding: 0.5em 1em;
+            margin: 0;
+            font-size: 1em;
+            font-weight: 500;
+            line-height: 1.5;
+            background-color: #e0e0e0;
+            color: #333;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 1px 0 rgba(255, 255, 255, .3) inset;
+        }
+    </style>
+    <script>
+        (function(){
+            Bosonic.register({
+                hostAttributes: {
+                    tabindex: 0
+                }
+            });
+        })();
+    </script>
+</element>

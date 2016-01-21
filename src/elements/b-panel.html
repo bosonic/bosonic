@@ -1,0 +1,53 @@
+<element name="b-panel">
+    <template>
+        <style>
+            :host {
+                display: block;
+                border: 1px solid transparent;
+                border-color: var(--b-panel-border);
+                border-radius: var(--b-panel-border-radius);
+                box-shadow: var(--b-panel-shadow);
+            }
+            .b-panel-content {
+                padding: var(--b-panel-content-padding);
+                margin: var(--bosonic-3d-effect-shadow-size) 0 0 0;
+            }
+        </style>
+        <content select="b-panel-title"></content>
+        <div class="b-panel-content" tabindex="0">
+            <content></content>
+        </div>
+    </template>
+    <script>
+        (function(){
+            Bosonic.register({
+                
+            });
+        })();
+    </script>
+</element>
+
+<element name="b-panel-title">
+    <style>
+        b-panel-title {
+            display: block;
+            padding: var(--b-panel-title-padding);
+            margin: 0;
+            font-size: var(--b-panel-title-font-size);
+            font-weight: var(--b-panel-title-font-weight);
+            line-height: var(--bosonic-line-height-base);
+            background-color: var(--b-panel-title-bg);
+            color: var(--b-panel-title-color);
+            box-shadow: var(--b-panel-title-3d-effect);
+        }
+    </style>
+    <script>
+        (function(){
+            Bosonic.register({
+                hostAttributes: {
+                    tabindex: 0
+                }
+            });
+        })();
+    </script>
+</element>

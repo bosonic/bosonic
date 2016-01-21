@@ -32,7 +32,7 @@
         (function(){
             Bosonic.register({
                 createdCallback: function() {
-                    if (this.hasCustomAttribute('is-removable')) this.inject(Bosonic.Removable);
+                    if (this.hasCustomAttribute('removable')) this.inject(Bosonic.Removable);
                 }
             });
         })();

@@ -144,7 +144,7 @@
                 },
 
                 toggleSwitch: function(value) {
-                    this.toggleClass('on', value);
+                    this.toggleClass('on', value, this.root);
                     this.toggleClass('on', value, this.root.querySelector('.b-switch'));
                 }
             });

@@ -2,6 +2,7 @@
     <template>
         <style>:host {
                 display: block;
+                position: relative;
                 border: 1px solid transparent;
                 border-color: rgb(214, 214, 214);
                 border-radius: 2px;
@@ -10,6 +11,15 @@
             .b-panel-content {
                 padding: 0.5em 1em;
                 margin: 1px 0 0 0;
+            }
+            .b-panel-remove {
+                position: absolute;
+                top: 0.5em;
+                right: 1em;
+                opacity:.4;
+                cursor: pointer;
+                border: none;
+                background: none;
             }
         </style>
         <content select="b-panel-title"></content>
@@ -20,7 +30,9 @@
     <script>
         (function(){
             Bosonic.register({
-                
+                createdCallback: function() {
+                    if (this.hasCustomAttribute('is-removable')) this.inject(Bosonic.Removable);
+                }
             });
         })();
     </script>

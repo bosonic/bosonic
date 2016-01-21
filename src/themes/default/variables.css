@@ -130,7 +130,9 @@
     --b-panel-shadow: var(--bosonic-shadow-medium);
     --b-panel-title-font-size: var(--bosonic-font-size-base);
     --b-panel-title-font-weight: 500;
-    --b-panel-title-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-panel-title-padding-vertical: var(--bosonic-padding-base-vertical);
+    --b-panel-title-padding-horizontal: var(--bosonic-padding-base-horizontal);
+    --b-panel-title-padding: var(--b-panel-title-padding-vertical) var(--b-panel-title-padding-horizontal);
     --b-panel-title-bg: var(--bosonic-gray-color);
     --b-panel-title-color: var(--bosonic-default-font-color);
     --b-panel-title-3d-effect: var(--bosonic-3d-effect);

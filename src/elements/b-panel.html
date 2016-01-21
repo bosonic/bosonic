@@ -3,6 +3,7 @@
         <style>
             :host {
                 display: block;
+                position: relative;
                 border: 1px solid transparent;
                 border-color: var(--b-panel-border);
                 border-radius: var(--b-panel-border-radius);
@@ -11,6 +12,15 @@
             .b-panel-content {
                 padding: var(--b-panel-content-padding);
                 margin: var(--bosonic-3d-effect-shadow-size) 0 0 0;
+            }
+            .b-panel-remove {
+                position: absolute;
+                top: var(--b-panel-title-padding-vertical);
+                right: var(--b-panel-title-padding-horizontal);
+                opacity:.4;
+                cursor: pointer;
+                border: none;
+                background: none;
             }
         </style>
         <content select="b-panel-title"></content>
@@ -21,7 +31,9 @@
     <script>
         (function(){
             Bosonic.register({
-                
+                createdCallback: function() {
+                    if (this.hasCustomAttribute('is-removable')) this.inject(Bosonic.Removable);
+                }
             });
         })();
     </script>

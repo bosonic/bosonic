@@ -1,3 +1,9 @@
+:root {
+
+    /*--b-button-primary-bg-gradient-start: color(var(--bosonic-primary-color) hue(+8deg) saturation(+8%));
+    --b-button-primary-bg-gradient-end: var(--bosonic-primary-color);*/
+}
+
 .b-button {
     display: inline-block;
     vertical-align: middle;
@@ -5,7 +11,7 @@
     font-size: 1em;
     font-weight: 500;
     color: #333;
-    background-color: #e0e0e0;
+    background: #e0e0e0;
     border: 1px solid transparent;
     border-radius: 2px;
     border-color: rgb(214, 214, 214);
@@ -13,48 +19,48 @@
 }
 .b-button[disabled] {
     color: #bbb;
-    background-color: #e0e0e0;
+    background: #e0e0e0;
     border-color: #e0e0e0;
 }
 .b-button:active, .b-button.active {
     box-shadow: 0 3px 5px rgba(0,0,0,.125) inset;
-    background-color: rgb(204, 204, 204);
+    background: rgb(204, 204, 204);
     border-color: rgb(191, 191, 191);
 }
 .b-button--primary, .b-button.active {
     color: #fff;
-    background-color: #689caf;
+    background: #689caf;
     border-color: rgb(105, 148, 163);
 }
 .b-button--primary:active, .b-button.active {
-    background-color: rgb(105, 138, 150);
+    background: rgb(105, 138, 150);
     border-color: rgb(105, 125, 133);
 }
 .b-button--success {
     color: #fff;
-    background-color: #49a96d;
+    background: #49a96d;
     border-color: rgb(74, 156, 105);
 }
 .b-button--success:active {
-    background-color: rgb(74, 143, 100);
+    background: rgb(74, 143, 100);
     border-color: rgb(74, 125, 94);
 }
 .b-button--warning {
     color: #fff;
-    background-color: #e67e22;
+    background: #e67e22;
     border-color: rgb(217, 119, 33);
 }
 .b-button--warning:active {
-    background-color: rgb(204, 113, 33);
+    background: rgb(204, 113, 33);
     border-color: rgb(186, 105, 33);
 }
 .b-button--danger {
     color: #fff;
-    background-color: #c13421;
+    background: #c13421;
     border-color: rgb(181, 50, 33);
 }
 .b-button--danger:active {
-    background-color: rgb(168, 49, 33);
+    background: rgb(168, 49, 33);
     border-color: rgb(150, 47, 33);
 }
 

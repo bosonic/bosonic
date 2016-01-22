@@ -137,6 +137,7 @@
     --b-panel-title-color: var(--bosonic-default-font-color);
     --b-panel-title-3d-effect: var(--bosonic-3d-effect);
     --b-panel-content-padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    --b-panel-content-bg: #fff;
 
     --b-spinner-dots-color: var(--bosonic-primary-color);
     --b-spinner-dots-size: 1.5em;

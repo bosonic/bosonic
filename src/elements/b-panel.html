@@ -16,6 +16,7 @@
             }
             .b-panel-content {
                 display: block;
+                background-color: var(--b-panel-content-bg);
                 padding: var(--b-panel-content-padding);
                 margin: var(--bosonic-3d-effect-shadow-size) 0 0 0;
             }
@@ -49,6 +50,12 @@
 
                 createdCallback: function() {
                     if (this.hasCustomAttribute('removable')) this.inject(Bosonic.Removable);
+                    if (this.hasCustomAttribute('draggable')) {
+                        this.inject(Bosonic.Draggable, { 
+                            handle: this.title,
+                            containment: this.getCustomAttribute('drag-containment')
+                        });
+                    }
                     if (this.hasCustomAttribute('expandable') && this.title) {
                         this.inject(Bosonic.Collapsible, this.wrapper);
                         this.listen(this.title, 'tap', 'toggleExpandable');

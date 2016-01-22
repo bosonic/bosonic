@@ -82,6 +82,14 @@
             color: var(--b-panel-title-color);
             box-shadow: var(--b-panel-title-3d-effect);
         }
+        b-panel[expandable] > b-panel-title:after {
+            float: right;
+            content: "\25B4";
+        }
+        b-panel[expandable='true'] > b-panel-title:after {
+            float: right;
+            content:'\25BE';
+        }
     </style>
     <script>
         (function(){

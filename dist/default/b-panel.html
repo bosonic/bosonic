@@ -80,6 +80,14 @@
             color: #333;
             box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 1px 0 rgba(255, 255, 255, .3) inset;
         }
+        b-panel[expandable] > b-panel-title:after {
+            float: right;
+            content: "\25B4";
+        }
+        b-panel[expandable='true'] > b-panel-title:after {
+            float: right;
+            content:'\25BE';
+        }
     </style>
     <script>
         (function(){

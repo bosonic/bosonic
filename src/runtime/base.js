@@ -74,7 +74,8 @@ Bosonic.Base = {
                 this[key] = mixin[key];
             }
         }
-        if (mixin.injected) mixin.injected.call(this);
+        var args = Array.prototype.slice.call(arguments, 1);
+        if (mixin.injected) mixin.injected.apply(this, args);
     },
 
     __callMixins: function(callbackName, args) {

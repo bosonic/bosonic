@@ -29,6 +29,19 @@
                 border: none;
                 background: none;
             }
+            .b-panel-resize {
+                display: block;
+                border: none;
+                position: absolute;
+                background-color: #ccc;
+                width: 8px;
+                height: 8px;
+                bottom: 0px;
+                right: 0px;
+            }
+            .b-panel-resize:hover {
+                cursor: se-resize;
+            }
         </style>
         <content select="b-panel-title"></content>
         <div class="b-panel-content-wrapper">
@@ -50,6 +63,7 @@
 
                 createdCallback: function() {
                     if (this.hasCustomAttribute('removable')) this.inject(Bosonic.Removable);
+                    if (this.hasCustomAttribute('resizable')) this.inject(Bosonic.Resizable);
                     if (this.hasCustomAttribute('draggable')) {
                         this.inject(Bosonic.Draggable, { 
                             handle: this.title,

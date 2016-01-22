@@ -9,7 +9,13 @@
                 border-radius: var(--b-panel-border-radius);
                 box-shadow: var(--b-panel-shadow);
             }
+            .b-panel-content-wrapper {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
             .b-panel-content {
+                display: block;
                 padding: var(--b-panel-content-padding);
                 margin: var(--bosonic-3d-effect-shadow-size) 0 0 0;
             }
@@ -24,15 +30,39 @@
             }
         </style>
         <content select="b-panel-title"></content>
-        <div class="b-panel-content" tabindex="0">
-            <content></content>
+        <div class="b-panel-content-wrapper">
+            <div class="b-panel-content" tabindex="0">
+                <content></content>
+            </div>
         </div>
     </template>
     <script>
         (function(){
             Bosonic.register({
+                get title() {
+                    return this.querySelector('b-panel-title');
+                },
+
+                get wrapper() {
+                    return this.shadowRoot.querySelector('.b-panel-content-wrapper');
+                },
+
                 createdCallback: function() {
                     if (this.hasCustomAttribute('removable')) this.inject(Bosonic.Removable);
+                    if (this.hasCustomAttribute('expandable') && this.title) {
+                        this.inject(Bosonic.Collapsible, this.wrapper);
+                        this.listen(this.title, 'tap', 'toggleExpandable');
+                    }
+                },
+
+                toggleExpandable: function() {
+                    if (this.getCustomAttribute('expandable') === 'true') {
+                        this.collapse();
+                        this.setCustomAttribute('expandable', '');
+                    } else {
+                        this.expand();
+                        this.setCustomAttribute('expandable', 'true');
+                    }
                 }
             });
         })();

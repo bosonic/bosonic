@@ -57,9 +57,17 @@
     --b-button-default-color: var(--bosonic-default-font-color);
     --b-button-disabled-color: #bbb;
 
-    /*--b-button-primary-bg-gradient-start: color(var(--bosonic-primary-color) hue(+8deg) saturation(+8%));
-    --b-button-primary-bg-gradient-end: var(--bosonic-primary-color);*/
+    --b-button-primary-bg-color: var(--bosonic-primary-color);
+    --b-button-primary-bg-gradient-start: color(var(--b-button-primary-bg-color) hue(-8deg) saturation(+8%));
+    --b-button-primary-bg-gradient-end: var(--b-button-primary-bg-color);
 
+    /* gradient experiment: remove borders & 3d effect for testing; */
+    /*--b-button-primary-bg: linear-gradient(
+        to bottom, 
+        color(var(--b-button-primary-bg-color) hue(-8deg) saturation(+16%)) 0%, 
+        color(var(--b-button-primary-bg-color) hue(-8deg) saturation(+8%)) 4%, 
+        var(--b-button-primary-bg-color) 100%
+    );*/
     --b-button-primary-bg: var(--bosonic-primary-color);
     --b-button-primary-border: color(var(--bosonic-primary-color) blackness(var(--bosonic-border-blackness)));
     --b-button-primary-color: #fff;

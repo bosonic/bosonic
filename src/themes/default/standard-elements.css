@@ -27,7 +27,7 @@
     border-color: var(--b-button-primary-border);
 }
 .b-button--primary:active, .b-button.active {
-    background: color(var(--b-button-primary-bg) blackness(var(--bosonic-active-blackness)));
+    background: color(var(--b-button-primary-bg-color) blackness(var(--bosonic-active-blackness)));
     border-color: color(var(--b-button-primary-border) blackness(var(--bosonic-active-border-blackness)));
 }
 .b-button--success {

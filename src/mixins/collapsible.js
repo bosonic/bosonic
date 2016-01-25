@@ -8,7 +8,7 @@ Bosonic.Collapsible = {
     expand: function(noTransition) {
         if (!this.dispatchEvent(new CustomEvent(this.__elementName + '-expand', { cancelable: true }))) return;
 
-        this.toggleDisplay(false);
+        this.toggleOpenAttribute(false);
         if (!noTransition) {
             this.setSize('auto');
             var s = this.computeSize();
@@ -28,7 +28,7 @@ Bosonic.Collapsible = {
         if (!this.dispatchEvent(new CustomEvent(this.__elementName + '-collapse', { cancelable: true }))) return;
 
         if (noTransition) {
-            this.toggleDisplay(true);
+            this.toggleOpenAttribute(true);
             return;
         }
         this.setSize(this.computeSize());
@@ -39,7 +39,7 @@ Bosonic.Collapsible = {
             }.bind(this));
         }, function(collapsible) {
             this.setTransitionDuration(null);
-            this.toggleDisplay(true);
+            this.toggleOpenAttribute(true);
         });
     },
 
@@ -56,7 +56,7 @@ Bosonic.Collapsible = {
         this.__collapsible.style.webkitTransition = this.__collapsible.style.transition = duration ? (this.__dimension + ' ' + duration + 'ms') : null;
     },
 
-    toggleDisplay: function(collapsed) {
-        collapsed ? this.__collapsible.style.display = 'none' : this.__collapsible.style.display = 'block';
+    toggleOpenAttribute: function(collapsed) {
+        collapsed ? this.removeAttribute('open') : this.setAttribute('open', '');
     }
 };

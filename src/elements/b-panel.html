@@ -10,9 +10,13 @@
                 box-shadow: var(--b-panel-shadow);
             }
             .b-panel-content-wrapper {
+                display: block;
                 margin: 0;
                 padding: 0;
                 overflow: hidden;
+            }
+            :host([expandable]:not([open])) .b-panel-content-wrapper {
+                display: none;
             }
             .b-panel-content {
                 display: block;
@@ -61,7 +65,12 @@
                     return this.shadowRoot.querySelector('.b-panel-content-wrapper');
                 },
 
+                get open() {
+                    return this.hasAttribute('open');
+                },
+
                 createdCallback: function() {
+                    this.inject(Bosonic.Collapsible, this.wrapper);
                     if (this.hasCustomAttribute('removable')) this.inject(Bosonic.Removable);
                     if (this.hasCustomAttribute('resizable')) this.inject(Bosonic.Resizable);
                     if (this.hasCustomAttribute('draggable')) {
@@ -71,19 +80,12 @@
                         });
                     }
                     if (this.hasCustomAttribute('expandable') && this.title) {
-                        this.inject(Bosonic.Collapsible, this.wrapper);
-                        this.listen(this.title, 'tap', 'toggleExpandable');
+                        this.listen(this.title, 'tap', 'toggleExpansion');
                     }
                 },
 
-                toggleExpandable: function() {
-                    if (this.getCustomAttribute('expandable') === 'true') {
-                        this.collapse();
-                        this.setCustomAttribute('expandable', '');
-                    } else {
-                        this.expand();
-                        this.setCustomAttribute('expandable', 'true');
-                    }
+                toggleExpansion: function() {
+                    this.open ? this.collapse() : this.expand();
                 }
             });
         })();

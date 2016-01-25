@@ -1,4 +1,4 @@
-<element name="b-panelset">
+<element name="b-panelset" attributes="selected">
     <style>:root {
 
     /* gradient experiment: remove borders & 3d effect for testing; */
@@ -9,12 +9,68 @@
         var(--b-button-primary-bg-color) 100%
     );*/
 }
-        
+        b-panel:not(:first-child) {
+            border-radius: 0;
+        }
     </style>
     <script>
         (function(){
             Bosonic.register({
-                
+                mixins: [Bosonic.Selection],
+
+                createdCallback: function() {
+                    this.getPanels().forEach(function(panel) { this.registerPanel(panel); }, this);
+                    if (!this.hasAttribute('selected')) {
+                        this.selectFirst();
+                    }
+                    this.getActivePanel().setAttribute('open', '');
+                },
+
+                registerPanel: function(panel) {
+                    panel.setAttribute('expandable', '');
+                    this.listen(panel.querySelector('b-panel-title'), 'tap', 'handleTitleTap');
+                },
+
+                selectedChanged: function (oldIndex, newIndex) {
+                    if (!oldIndex) return;
+                    this.applyDeselection(oldIndex);
+                    this.applySelection(newIndex);
+                },
+
+                applySelection: function(index) {
+                    // header.tabIndex = 0;
+                    // header.setAttribute('aria-expanded', 'true');
+                    var panel = this.getPanel(index);
+                    panel.expand();
+                    //panel.setAttribute('aria-hidden', 'false');
+                },
+
+                applyDeselection: function(index) {
+                    // header.tabIndex = -1;
+                    // header.setAttribute('aria-expanded', 'false');
+                    var panel = this.getPanel(index);
+                    panel.collapse();
+                    //panel.setAttribute('aria-hidden', 'true');
+                },
+
+                handleTitleTap: function(e) {
+                    var panelIndex =  this.getPanels().indexOf(e.target.parentNode);
+                    if (panelIndex !== -1) {
+                        this.select(panelIndex);
+                    }
+                },
+
+                getActivePanel: function() {
+                    return this.selectedItem;
+                },
+
+                getPanel: function(index) {
+                    return this.getItem(index);
+                },
+
+                getPanels: function() {
+                    return this.getItems();
+                }
             });
         })();
     </script>

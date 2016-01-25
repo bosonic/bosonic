@@ -138,7 +138,7 @@
 
     --b-panel-font-size: var(--bosonic-font-size-base);
     --b-panel-border: color(var(--bosonic-gray-color) blackness(var(--bosonic-border-blackness)));
-    --b-panel-border-radius: var(--bosonic-border-radius);
+    --b-panel-border-radius: var(--bosonic-border-radius) var(--bosonic-border-radius) 0 0;
     --b-panel-shadow: var(--bosonic-shadow-medium);
     --b-panel-title-font-size: var(--bosonic-font-size-base);
     --b-panel-title-font-weight: 500;

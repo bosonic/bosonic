@@ -65,6 +65,12 @@
     </template>
     <script>
         (function(){
+            var lastUID = 0;
+
+            function uid() {
+                return 'bp-' + (++lastUID);
+            }
+
             Bosonic.register({
                 get title() {
                     return this.querySelector('b-panel-title');
@@ -87,6 +93,10 @@
                         this.inject(Bosonic.Collapsible, this.wrapper);
                         if (this.title) {
                             this.title.setAttribute('aria-expanded', this.open ? 'true' : 'false');
+                            if (!this.title.id) this.title.id = uid();
+                            if (!this.content.id) this.content.id = uid();
+                            this.content.setAttribute('aria-labelledby', this.title.id);
+                            this.title.setAttribute('aria-controls', this.content.id);
                         }
                         this.content.setAttribute('aria-hidden', this.open ? 'false' : 'true');
                         if (!this.open) this.content.tabIndex = -1;

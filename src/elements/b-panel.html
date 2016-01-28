@@ -47,7 +47,7 @@
                 cursor: se-resize;
             }
         </style>
-        <content select="b-panel-title"></content>
+        <content select="b-panel-title" tabindex="0"></content>
         <div class="b-panel-content-wrapper">
             <div class="b-panel-content" tabindex="0">
                 <content></content>
@@ -61,6 +61,10 @@
                     return this.querySelector('b-panel-title');
                 },
 
+                get content() {
+                    return this.shadowRoot.querySelector('.b-panel-content');
+                },
+
                 get wrapper() {
                     return this.shadowRoot.querySelector('.b-panel-content-wrapper');
                 },
@@ -72,6 +76,12 @@
                 createdCallback: function() {
                     if (this.hasCustomAttribute('expandable')) {
                         this.inject(Bosonic.Collapsible, this.wrapper);
+                        if (this.title) {
+                            this.title.setAttribute('aria-expanded', this.open ? 'true' : 'false');
+                        }
+                        this.content.setAttribute('aria-hidden', this.open ? 'false' : 'true');
+                        if (!this.open) this.content.tabIndex = -1;
+
                         if (this.title && this.parentNode.nodeName !== 'B-PANELSET') {
                             this.listen(this.title, 'tap', 'toggleExpansion');
                         }
@@ -87,7 +97,17 @@
                 },
 
                 toggleExpansion: function() {
-                    this.open ? this.collapse() : this.expand();
+                    if (this.open) {
+                        this.collapse();
+                        this.title.setAttribute('aria-expanded', 'false');
+                        this.content.setAttribute('aria-hidden', 'true');
+                        this.content.tabIndex = -1;
+                    } else {
+                        this.expand();
+                        this.title.setAttribute('aria-expanded', 'true');
+                        this.content.setAttribute('aria-hidden', 'false');
+                        this.content.tabIndex = 0;
+                    }
                 }
             });
         })();

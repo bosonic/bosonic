@@ -2,7 +2,7 @@ Bosonic.Resizable = {
     injected: function() {
         var btn = document.createElement('button');
         btn.classList.add(this.__elementName + '-resize');
-        btn.textContent = '×';
+        btn.textContent = '⊿';
         var container = this.shadowRoot || this;
         container.appendChild(btn);
         this.listen(btn, 'track', '__trackResizeButton');

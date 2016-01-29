@@ -17,19 +17,19 @@
                 border-color: rgb(214, 214, 214);
                 border-radius: 2px 2px 0 0;
                 box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                background-color: #fff;
+                overflow: hidden;
             }
             .b-panel-content-wrapper {
                 display: block;
                 margin: 0;
                 padding: 0;
-                overflow: hidden;
             }
             :host([expandable]:not([open])) .b-panel-content-wrapper {
                 display: none;
             }
             .b-panel-content {
                 display: block;
-                background-color: #fff;
                 padding: 0.5em 1em;
                 margin: 1px 0 0 0;
             }
@@ -46,11 +46,12 @@
                 display: block;
                 border: none;
                 position: absolute;
-                background-color: #ccc;
-                width: 8px;
-                height: 8px;
+                background-color: transparent;
                 bottom: 0px;
                 right: 0px;
+                padding: 0;
+                margin: 0;
+                line-height: 0.8em;
             }
             .b-panel-resize:hover {
                 cursor: se-resize;

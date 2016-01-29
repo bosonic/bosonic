@@ -9,7 +9,13 @@
             Bosonic.register({
                 mixins: [Bosonic.Selection],
 
+                get tabBar() {
+                    return this.querySelector('b-panel-tabs');
+                },
+
                 createdCallback: function() {
+                    var tabBar = document.createElement('b-panel-tabs');
+                    this.insertBefore(tabBar, this.firstChild || null);
                     this.getPanels().forEach(function(panel) { this.registerPanel(panel); }, this);
                     if (!this.hasAttribute('selected')) {
                         this.selectFirst();
@@ -18,8 +24,13 @@
                 },
 
                 registerPanel: function(panel) {
+                    var title = panel.querySelector('b-panel-title'),
+                        tab = title.cloneNode(true);
+                    
+                    this.tabBar.appendChild(tab);
                     panel.setAttribute('expandable', '');
-                    this.listen(panel.querySelector('b-panel-title'), 'tap', 'handleTitleTap');
+                    this.listen(title, 'tap', 'handleTitleTap');
+                    //this.listen(tab, 'tap', 'handleTabTap');
                 },
 
                 selectedChanged: function (oldIndex, newIndex) {
@@ -29,19 +40,13 @@
                 },
 
                 applySelection: function(index) {
-                    // header.tabIndex = 0;
-                    // header.setAttribute('aria-expanded', 'true');
                     var panel = this.getPanel(index);
                     panel.expand();
-                    //panel.setAttribute('aria-hidden', 'false');
                 },
 
                 applyDeselection: function(index) {
-                    // header.tabIndex = -1;
-                    // header.setAttribute('aria-expanded', 'false');
                     var panel = this.getPanel(index);
                     panel.collapse();
-                    //panel.setAttribute('aria-hidden', 'true');
                 },
 
                 handleTitleTap: function(e) {
@@ -50,6 +55,13 @@
                         this.select(panelIndex);
                     }
                 },
+
+                // handleTabTap: function(e) {
+                //     var panelIndex =  this.getPanels().indexOf(e.target.parentNode);
+                //     if (panelIndex !== -1) {
+                //         this.select(panelIndex);
+                //     }
+                // },
 
                 getActivePanel: function() {
                     return this.selectedItem;
@@ -61,6 +73,68 @@
 
                 getPanels: function() {
                     return this.getItems();
+                },
+
+                getItems: function() {
+                    return Array.prototype.slice.call(this.querySelectorAll('b-panel'), 0);
+                }
+            });
+        })();
+    </script>
+</element>
+
+<element name="b-panel-tabs" attributes="selected">
+    <style>
+        b-panel-tabs {
+            display: block;
+            background-color: var(--b-tabs-bg-color);
+            border-bottom: var(--b-tabs-border-bottom);
+            box-shadow: var(--b-tabs-shadow);
+        }
+        /*b-panelset:not([preferreddisplay='tabs']) b-panel-tabs {
+            display: none;
+        }*/
+        b-panel-tabs > b-panel-title {
+            display: inline-block;
+            cursor: default;
+            padding: var(--b-tab-padding);
+            border-bottom: 3px solid transparent;
+            color: var(--b-tab-inactive-color);
+            background-color: white;
+            box-shadow: none;
+        }
+        b-panel-tabs > b-panel-title.active {
+            border-bottom-color: var(--b-tab-bar-color);
+            font-weight: var(--b-tab-active-font-weight);
+            color: var(--b-tab-active-color);
+        }
+    </style>
+    <script>
+        (function(){
+            Bosonic.register({});
+        })();
+    </script>
+</element>
+<element name="b-panel-tab">
+    <style>
+        b-panel-tab {
+            display: inline-block;
+            cursor: default;
+            padding: var(--b-tab-padding);
+            border-bottom: 3px solid transparent;
+            color: var(--b-tab-inactive-color);
+        }
+        b-panel-tab.active {
+            border-bottom-color: var(--b-tab-bar-color);
+            font-weight: var(--b-tab-active-font-weight);
+            color: var(--b-tab-active-color);
+        }
+    </style>
+    <script>
+        (function(){
+            Bosonic.register({
+                hasFocus: function() {
+                    return this === document.activeElement;
                 }
             });
         })();

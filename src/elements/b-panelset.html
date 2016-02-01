@@ -3,6 +3,13 @@
         b-panel:not(:first-child) {
             border-radius: 0;
         }
+        b-panelset b-panel:not([open])::shadow .b-panel-content-wrapper {
+            display: none;
+        }
+        /* For browsers without native shadow DOM */
+        b-panelset b-panel:not([open]) .b-panel-content-wrapper { 
+            display: none;
+        }
     </style>
     <script>
         (function(){
@@ -14,23 +21,37 @@
                 },
 
                 createdCallback: function() {
+                    this.registeredPanels = [];
                     var tabBar = document.createElement('b-panel-tabs');
                     this.insertBefore(tabBar, this.firstChild || null);
-                    this.getPanels().forEach(function(panel) { this.registerPanel(panel); }, this);
+                    
                     if (!this.hasAttribute('selected')) {
-                        this.selectFirst();
+                        this.setAttribute('selected', 0);
                     }
-                    this.getActivePanel().setAttribute('open', '');
                 },
 
                 registerPanel: function(panel) {
                     var title = panel.querySelector('b-panel-title'),
                         tab = title.cloneNode(true);
-                    
+
+                    tab.__panelIndex
+                    tab.tabIndex = -1;
+                    tab.setAttribute('aria-controls', panel.contentElement.id);
+                    tab.setAttribute('aria-selected', 'false');
                     this.tabBar.appendChild(tab);
-                    panel.setAttribute('expandable', '');
+                    
+                    var newLength = this.registeredPanels.push(panel),
+                        newIndex = newLength - 1;
+
+                    tab.__panelIndex = newIndex;
+
+                    if (this.selectedItemIndex === newIndex) {
+                        panel.setAttribute('open', '');
+                        this.activateTab(tab);
+                    }
+                    
                     this.listen(title, 'tap', 'handleTitleTap');
-                    //this.listen(tab, 'tap', 'handleTabTap');
+                    this.listen(tab, 'tap', 'handleTabTap');
                 },
 
                 selectedChanged: function (oldIndex, newIndex) {
@@ -41,12 +62,25 @@
 
                 applySelection: function(index) {
                     var panel = this.getPanel(index);
-                    panel.expand();
+                    panel.open();
                 },
 
                 applyDeselection: function(index) {
                     var panel = this.getPanel(index);
-                    panel.collapse();
+                    panel.close();
+                },
+
+                activateTab: function(tab, mustFocus) {
+                    if (mustFocus) tab.focus();
+                    tab.classList.add('active');
+                    tab.tabIndex = 0;
+                    tab.setAttribute('aria-selected', 'true');
+                },
+
+                disactivateTab: function(tab) {
+                    tab.classList.remove('active');
+                    tab.tabIndex = -1;
+                    tab.setAttribute('aria-selected', 'false');
                 },
 
                 handleTitleTap: function(e) {
@@ -56,12 +90,12 @@
                     }
                 },
 
-                // handleTabTap: function(e) {
-                //     var panelIndex =  this.getPanels().indexOf(e.target.parentNode);
-                //     if (panelIndex !== -1) {
-                //         this.select(panelIndex);
-                //     }
-                // },
+                handleTabTap: function(e) {
+                    var panelIndex =  e.target.__panelIndex;
+                    if (panelIndex !== -1) {
+                        this.select(panelIndex);
+                    }
+                },
 
                 getActivePanel: function() {
                     return this.selectedItem;
@@ -76,7 +110,7 @@
                 },
 
                 getItems: function() {
-                    return Array.prototype.slice.call(this.querySelectorAll('b-panel'), 0);
+                    return this.registeredPanels;
                 }
             });
         })();
@@ -91,9 +125,12 @@
             border-bottom: var(--b-tabs-border-bottom);
             box-shadow: var(--b-tabs-shadow);
         }
-        /*b-panelset:not([preferreddisplay='tabs']) b-panel-tabs {
+        b-panelset:not([preferreddisplay='tabs']) b-panel-tabs {
             display: none;
-        }*/
+        }
+        b-panelset[preferreddisplay='tabs'] > b-panel > b-panel-title {
+            display: none;
+        }
         b-panel-tabs > b-panel-title {
             display: inline-block;
             cursor: default;

@@ -1,4 +1,4 @@
-<element name="b-panel">
+<element name="b-panel" attributes="open">
     <template>
         <style>
             :host {
@@ -64,6 +64,8 @@
             }
 
             Bosonic.register({
+                mixins: [Bosonic.Transitions],
+
                 get titleElement() {
                     return this.querySelector('b-panel-title');
                 },
@@ -77,21 +79,15 @@
                 },
 
                 createdCallback: function() {
-                    this.inject(Bosonic.Collapsible, this.wrapper);
                     if (!this.contentElement.id) this.contentElement.id = uid();
                     if (this.parentNode.nodeName === 'B-PANELSET') {
                         this.parentNode.registerPanel(this);
                         return;
                     }
-                    if (this.hasCustomAttribute('expandable')) {
-                        this.contentElement.setAttribute('aria-hidden', this.open ? 'false' : 'true');
-                        if (!this.open) this.contentElement.tabIndex = -1;
-                        
-                        if (this.titleElement) {
-                            this.titleElement.setAttribute('aria-expanded', this.open ? 'true' : 'false');
-                            this.titleElement.setAttribute('aria-controls', this.contentElement.id);
-                            this.listen(this.titleElement, 'tap', 'toggleExpansion');
-                        }
+                    if (this.hasCustomAttribute('expandable') && this.titleElement) {
+                        this.toggleAriaState();
+                        this.titleElement.setAttribute('aria-controls', this.contentElement.id);
+                        this.listen(this.titleElement, 'tap', 'toggleExpansion');
                     }
                     if (this.hasCustomAttribute('removable')) this.inject(Bosonic.Removable);
                     if (this.hasCustomAttribute('resizable')) this.inject(Bosonic.Resizable);
@@ -108,17 +104,34 @@
                 },
 
                 open: function() {
-                    this.expand();
-                    this.titleElement.setAttribute('aria-expanded', 'true');
-                    this.contentElement.setAttribute('aria-hidden', 'false');
-                    this.contentElement.tabIndex = 0;
+                    if (!this.hasAttribute('open-transition') || !this.hasTransition(this.getAttribute('open-transition'))) {
+                        this.setAttribute('open', '');
+                        return;
+                    }
+                    this.playTransition(this.getAttribute('open-transition'), this.wrapper).end(function() {
+                        this.setAttribute('open', '');
+                    }.bind(this));
                 },
 
                 close: function() {
-                    this.collapse();
-                    this.titleElement.setAttribute('aria-expanded', 'false');
-                    this.contentElement.setAttribute('aria-hidden', 'true');
-                    this.contentElement.tabIndex = -1;
+                    if (!this.hasAttribute('close-transition') || !this.hasTransition(this.getAttribute('close-transition'))) {
+                        this.removeAttribute('open');
+                        return;
+                    }
+                    this.playTransition(this.getAttribute('close-transition'), this.wrapper).end(function() {
+                        this.removeAttribute('open');
+                    }.bind(this));
+                },
+
+                openChanged: function() {
+                    this.toggleAriaState();
+                },
+
+                toggleAriaState: function() {
+                    var open = this.hasAttribute('open');
+                    this.titleElement.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    this.contentElement.setAttribute('aria-hidden', open ? 'false' : 'true');
+                    this.contentElement.tabIndex = open ? 0 : -1;
                 }
             });
         })();

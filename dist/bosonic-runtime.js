@@ -2621,7 +2621,7 @@ Bosonic.Transitions.registerTransition('expand-height', {
         // process node height when displayed
         node.style.display = 'block';
         node.style.height = 'auto';
-        var s = window.getComputedStyle(node).height;console.log(s);
+        var s = window.getComputedStyle(node).height;
         node.style.height = '0px';
         
         return this.set('height', s)

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>b-dialog</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../../node_modules/webcomponents.js/webcomponents.js"></script>
+        <script type="text/javascript" src="../../dist/bosonic-runtime.js"></script>
+
+        <script src="../../node_modules/web-component-tester/browser.js"></script>
+        <script src="../../bower_components/test-fixture/test-fixture-mocha.js"></script>
+        <script src="../../bower_components/iron-test-helpers/mock-interactions.js"></script>
+
+        <link rel="import" href="../../bower_components/test-fixture/test-fixture.html">
+
+        <link rel="import" href="../../dist/default/b-panel.html">
+    </head>
+
+    <body>
+        <test-fixture id="expandable-panel">
+            <template>
+                <b-panel expandable>
+                    <b-panel-title>Lorem ipsum</b-panel-title>
+                    <p>Lorem ipsum dolor</p>
+                </b-panel>
+            </template>
+        </test-fixture>
+
+        <test-fixture id="open-expandable-panel">
+            <template>
+                <b-panel expandable open>
+                    <b-panel-title>Lorem ipsum</b-panel-title>
+                    <p>Lorem ipsum dolor</p>
+                </b-panel>
+            </template>
+        </test-fixture>
+        
+        <script type="text/javascript">
+            describe("Panel component", function() {
+                var panel;
+
+                function getContentStyle() {
+                    return window.getComputedStyle(panel.contentWrapper);
+                }
+
+                describe("with expandable attribute", function() {
+                    it('should hide its content by default', function() {
+                        panel = fixture('expandable-panel');
+                        expect(getContentStyle().display).to.equal('none');
+                    });
+
+                    it('should show its content if the open attribute is present', function() {
+                        panel = fixture('open-expandable-panel');
+                        expect(getContentStyle().display).to.equal('block');
+                    });
+
+                    it('should hide its content when the open property is set to false', function() {
+                        panel = fixture('open-expandable-panel');
+                        panel.open = false;
+                        expect(getContentStyle().display).to.equal('none');
+                    });
+
+                    it('should show its content when the open property is set to true', function() {
+                        panel = fixture('expandable-panel');
+                        panel.open = true;
+                        expect(getContentStyle().display).to.equal('block');
+                    });
+
+                    it('should hide its content when the title is tapped', function() {
+                        panel = fixture('open-expandable-panel');
+                        MockInteractions.tap(panel.titleElement);
+                        expect(getContentStyle().display).to.equal('none');
+                    });
+
+                    it('should show its content when the title is tapped', function() {
+                        panel = fixture('expandable-panel');
+                        MockInteractions.tap(panel.titleElement);
+                        expect(getContentStyle().display).to.equal('block');
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

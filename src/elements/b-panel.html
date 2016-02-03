@@ -1,4 +1,4 @@
-<element name="b-panel" attributes="open">
+<element name="b-panel">
     <template>
         <style>
             :host {
@@ -12,12 +12,8 @@
                 overflow: hidden;
             }
             .b-panel-content-wrapper {
-                display: block;
                 margin: 0;
                 padding: 0;
-            }
-            :host([expandable]:not([open])) .b-panel-content-wrapper {
-                display: none;
             }
             .b-panel-content {
                 display: block;
@@ -78,16 +74,28 @@
                     return this.shadowRoot.querySelector('.b-panel-content-wrapper');
                 },
 
+                set open(value) {
+                    this._opened = !!value;
+                    this.contentWrapper.style.display = this._opened ? 'block' : 'none';
+                    this.toggleAriaState();
+                },
+
+                get open() {
+                    return this._opened;
+                },
+
                 createdCallback: function() {
                     if (!this.contentElement.id) this.contentElement.id = uid();
                     if (this.parentNode.nodeName === 'B-PANELSET') {
                         this.parentNode.registerPanel(this);
                         return;
                     }
-                    if (this.hasCustomAttribute('expandable') && this.titleElement) {
-                        this.toggleAriaState();
-                        this.titleElement.setAttribute('aria-controls', this.contentElement.id);
-                        this.listen(this.titleElement, 'tap', 'toggleExpansion');
+                    if (this.hasCustomAttribute('expandable')) {
+                        this.open = this.hasAttribute('open');
+                        if (this.titleElement) {
+                            this.titleElement.setAttribute('aria-controls', this.contentElement.id);
+                            this.listen(this.titleElement, 'tap', 'toggleExpansionState');
+                        }
                     }
                     if (this.hasCustomAttribute('removable')) this.inject(Bosonic.Removable);
                     if (this.hasCustomAttribute('resizable')) this.inject(Bosonic.Resizable);
@@ -99,39 +107,31 @@
                     }
                 },
 
-                toggleExpansion: function() {
-                    this.hasAttribute('open') ? this.close() : this.open();
+                toggleExpansionState: function() {
+                    this.open ? this.hide() : this.show();
                 },
 
-                open: function() {
-                    if (!this.hasAttribute('open-transition') || !this.hasTransition(this.getAttribute('open-transition'))) {
-                        this.setAttribute('open', '');
-                        return;
+                show: function() {
+                    this.open = true;
+                    if (this.hasAttribute('open-transition')) {
+                        this.playTransition('open', this.contentWrapper).end();
                     }
-                    this.playTransition(this.getAttribute('open-transition'), this.contentWrapper).end(function() {
-                        this.setAttribute('open', '');
-                    }.bind(this));
                 },
 
-                close: function() {
-                    if (!this.hasAttribute('close-transition') || !this.hasTransition(this.getAttribute('close-transition'))) {
-                        this.removeAttribute('open');
-                        return;
+                hide: function() {
+                    if (!this.hasAttribute('close-transition')) {
+                        this.open = false;
+                    } else {
+                        this.playTransition('close', this.contentWrapper).end(function() {
+                            this.open = false;
+                        }.bind(this));
                     }
-                    this.playTransition(this.getAttribute('close-transition'), this.contentWrapper).end(function() {
-                        this.removeAttribute('open');
-                    }.bind(this));
-                },
-
-                openChanged: function() {
-                    this.toggleAriaState();
                 },
 
                 toggleAriaState: function() {
-                    var open = this.hasAttribute('open');
-                    this.titleElement.setAttribute('aria-expanded', open ? 'true' : 'false');
-                    this.contentElement.setAttribute('aria-hidden', open ? 'false' : 'true');
-                    this.contentElement.tabIndex = open ? 0 : -1;
+                    this.titleElement.setAttribute('aria-expanded', this.open ? 'true' : 'false');
+                    this.contentElement.setAttribute('aria-hidden', this.open ? 'false' : 'true');
+                    this.contentElement.tabIndex = this.open ? 0 : -1;
                 }
             });
         })();

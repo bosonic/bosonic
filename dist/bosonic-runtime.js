@@ -2582,12 +2582,15 @@ Bosonic.Selection = {
 Bosonic.TransitionsRegistry = {};
 
 Bosonic.Transitions = {
-    playTransition: function(transitionName, node) {
+    playTransition: function(stateChange, node) {
         node = node || this;
         var host = this,
-            config = Bosonic.TransitionsRegistry[transitionName],
+            config = this.getTransitionConfig(stateChange, host),
             transitioner = new Transitioner(node);
 
+        if (!config) {
+            return transitioner;
+        }
         return config.play.call(transitioner, node, config);
     },
 
@@ -2595,10 +2598,19 @@ Bosonic.Transitions = {
         Bosonic.TransitionsRegistry[transitionName] = config;
     },
 
-    hasTransition: function(transitionName) {
-        return Bosonic.TransitionsRegistry[transitionName] !== undefined;
+    getTransitionConfig: function(stateChange, host) {
+        var attr = stateChange + '-transition';
+        if (!host.hasAttribute(attr)) return;
+        var transitionName = host.getAttribute(attr),
+            config = Bosonic.TransitionsRegistry[transitionName];
+        if (!config) {
+            console.warn(transitionName + ' transition not found');
+        }
+        return config;
     }
 };
+
+Bosonic.Transitions.TRANSITION_CLASS = 'b-transitioning';
 
 Bosonic.Transitions.TRANSITION_END = (function() {
     var el = document.createElement('div');
@@ -2618,8 +2630,7 @@ Bosonic.Transitions.registerTransition('collapse-height', {
 
 Bosonic.Transitions.registerTransition('expand-height', {
     play: function(node, config) {
-        // process node height when displayed
-        node.style.display = 'block';
+        // process node height
         node.style.height = 'auto';
         var s = window.getComputedStyle(node).height;
         node.style.height = '0px';
@@ -2629,8 +2640,26 @@ Bosonic.Transitions.registerTransition('expand-height', {
     }
 });
 
+Bosonic.Transitions.registerTransition('fade-in', {
+    play: function(node, config) {
+        node.style.opacity = 0;
+        //node.style.display = 'block';
+        return this.duration(config.duration || 150)
+                   .set('opacity', 1);
+    }
+});
+
+Bosonic.Transitions.registerTransition('fade-out', {
+    play: function(node, config) {
+        node.style.opacity = 1;
+        return this.duration(config.duration || 150)
+                   .set('opacity', 0);
+    }
+});
+
 // Code heavily inspired by Move.js (https://github.com/visionmedia/move.js)
 function Transitioner(node, host) {
+    node.classList.add(Bosonic.Transitions.TRANSITION_CLASS);
     this.node = node;
     this.host = host;
     this.properties = {};
@@ -2676,11 +2705,18 @@ Transitioner.prototype.end = function(fn) {
     }
     this.setVendorProperty('transition-properties', this.transitionProps.join(', '));
 
+    // if the user specified a non-existing animation
+    if (this.properties.length === 0) {
+        if (fn) fn();
+        return;
+    }
+
     var self = this,
         node = this.node,
         eventName = Bosonic.Transitions.TRANSITION_END,
         endHandler = function() {
             self.reset();
+            node.classList.remove(Bosonic.Transitions.TRANSITION_CLASS);
             if (fn) fn();
             node.removeEventListener(eventName, endHandler, false);
         };

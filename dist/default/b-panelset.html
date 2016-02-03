@@ -9,6 +9,16 @@
         var(--b-button-primary-bg-color) 100%
     );*/
 }
+        b-panelset {
+            display: block;
+            border: 1px solid transparent;
+                border-color: rgb(214, 214, 214);
+                border-radius: 2px 2px 0 0;
+                box-shadow: 0 5px 10px rgba(0,0,0,.2);
+        }
+        b-panelset > b-panel {
+            border: none;
+        }
         b-panel:not(:first-child) {
             border-radius: 0;
         }
@@ -23,7 +33,7 @@
     <script>
         (function(){
             Bosonic.register({
-                mixins: [Bosonic.Selection],
+                mixins: [Bosonic.Selection, Bosonic.Transitions],
 
                 get tabBar() {
                     return this.querySelector('b-panel-tabs');
@@ -71,12 +81,24 @@
 
                 applySelection: function(index) {
                     var panel = this.getPanel(index);
-                    panel.open();
+                    if (!this.hasAttribute('entry-transition') || !this.hasTransition(this.getAttribute('entry-transition'))) {
+                        panel.open();
+                        return;
+                    }
+                    this.playTransition(this.getAttribute('entry-transition'), panel.contentWrapper).end(function() {
+                        panel.open();
+                    });
                 },
 
                 applyDeselection: function(index) {
                     var panel = this.getPanel(index);
-                    panel.close();
+                    if (!this.hasAttribute('exit-transition') || !this.hasTransition(this.getAttribute('exit-transition'))) {
+                        panel.close();
+                        return;
+                    }
+                    this.playTransition(this.getAttribute('exit-transition'), panel.contentWrapper).end(function() {
+                        panel.close();
+                    });
                 },
 
                 activateTab: function(tab, mustFocus) {
@@ -139,18 +161,22 @@
 }
         b-panel-tabs {
             display: block;
-            background-color: var(--b-tabs-bg-color);
+            /*background-color: var(--b-tabs-bg-color);*/
             border-bottom: 1px solid #ddd;
             box-shadow: 0 3px 3px -2px rgba(0,0,0,.1);
         }
         b-panelset:not([preferreddisplay='tabs']) b-panel-tabs {
             display: none;
         }
+        b-panelset[preferreddisplay='tabs'] > b-panel {
+            border-top: none;
+        }
         b-panelset[preferreddisplay='tabs'] > b-panel > b-panel-title {
             display: none;
         }
         b-panel-tabs > b-panel-title {
             display: inline-block;
+            font-size: 1.1em; /* must be > 1 so that b-panel-tabs bottom border stays visible... */
             cursor: default;
             padding: 0.5em 1em;
             border-bottom: 3px solid transparent;

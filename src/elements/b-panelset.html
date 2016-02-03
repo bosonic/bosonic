@@ -1,5 +1,15 @@
 <element name="b-panelset" attributes="selected">
     <style>
+        b-panelset {
+            display: block;
+            border: 1px solid transparent;
+                border-color: var(--b-panel-border);
+                border-radius: var(--b-panel-border-radius);
+                box-shadow: var(--b-panel-shadow);
+        }
+        b-panelset > b-panel {
+            border: none;
+        }
         b-panel:not(:first-child) {
             border-radius: 0;
         }
@@ -14,7 +24,7 @@
     <script>
         (function(){
             Bosonic.register({
-                mixins: [Bosonic.Selection],
+                mixins: [Bosonic.Selection, Bosonic.Transitions],
 
                 get tabBar() {
                     return this.querySelector('b-panel-tabs');
@@ -62,12 +72,24 @@
 
                 applySelection: function(index) {
                     var panel = this.getPanel(index);
-                    panel.open();
+                    if (!this.hasAttribute('entry-transition') || !this.hasTransition(this.getAttribute('entry-transition'))) {
+                        panel.open();
+                        return;
+                    }
+                    this.playTransition(this.getAttribute('entry-transition'), panel.contentWrapper).end(function() {
+                        panel.open();
+                    });
                 },
 
                 applyDeselection: function(index) {
                     var panel = this.getPanel(index);
-                    panel.close();
+                    if (!this.hasAttribute('exit-transition') || !this.hasTransition(this.getAttribute('exit-transition'))) {
+                        panel.close();
+                        return;
+                    }
+                    this.playTransition(this.getAttribute('exit-transition'), panel.contentWrapper).end(function() {
+                        panel.close();
+                    });
                 },
 
                 activateTab: function(tab, mustFocus) {
@@ -121,18 +143,22 @@
     <style>
         b-panel-tabs {
             display: block;
-            background-color: var(--b-tabs-bg-color);
+            /*background-color: var(--b-tabs-bg-color);*/
             border-bottom: var(--b-tabs-border-bottom);
             box-shadow: var(--b-tabs-shadow);
         }
         b-panelset:not([preferreddisplay='tabs']) b-panel-tabs {
             display: none;
         }
+        b-panelset[preferreddisplay='tabs'] > b-panel {
+            border-top: none;
+        }
         b-panelset[preferreddisplay='tabs'] > b-panel > b-panel-title {
             display: none;
         }
         b-panel-tabs > b-panel-title {
             display: inline-block;
+            font-size: 1.1em; /* must be > 1 so that b-panel-tabs bottom border stays visible... */
             cursor: default;
             padding: var(--b-tab-padding);
             border-bottom: 3px solid transparent;

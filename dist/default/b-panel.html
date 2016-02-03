@@ -83,7 +83,7 @@
                     return this.shadowRoot.querySelector('.b-panel-content');
                 },
 
-                get wrapper() {
+                get contentWrapper() {
                     return this.shadowRoot.querySelector('.b-panel-content-wrapper');
                 },
 
@@ -117,7 +117,7 @@
                         this.setAttribute('open', '');
                         return;
                     }
-                    this.playTransition(this.getAttribute('open-transition'), this.wrapper).end(function() {
+                    this.playTransition(this.getAttribute('open-transition'), this.contentWrapper).end(function() {
                         this.setAttribute('open', '');
                     }.bind(this));
                 },
@@ -127,7 +127,7 @@
                         this.removeAttribute('open');
                         return;
                     }
-                    this.playTransition(this.getAttribute('close-transition'), this.wrapper).end(function() {
+                    this.playTransition(this.getAttribute('close-transition'), this.contentWrapper).end(function() {
                         this.removeAttribute('open');
                     }.bind(this));
                 },

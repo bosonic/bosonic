@@ -70,6 +70,11 @@
                     return this.shadowRoot.querySelector('.b-panel-content');
                 },
 
+                get tabProxyElement() {
+                    if (!this.parentElement.tagName === 'B-PANELSET') return;
+                    return this.parentElement.querySelector("b-panel-tabs > b-panel-title[aria-controls='"+this.contentElement.id+"'");
+                },
+
                 get contentWrapper() {
                     return this.shadowRoot.querySelector('.b-panel-content-wrapper');
                 },
@@ -129,9 +134,17 @@
                 },
 
                 toggleAriaState: function() {
-                    this.titleElement.setAttribute('aria-expanded', this.open ? 'true' : 'false');
-                    this.contentElement.setAttribute('aria-hidden', this.open ? 'false' : 'true');
-                    this.contentElement.tabIndex = this.open ? 0 : -1;
+                    var title = this.titleElement,
+                        content = this.contentElement,
+                        tab = this.tabProxyElement;
+                    title.setAttribute('aria-expanded', this.open ? 'true' : 'false');
+                    content.setAttribute('aria-hidden', this.open ? 'false' : 'true');
+                    content.tabIndex = this.open ? 0 : -1;
+                    if (!tab) return;
+                    //if (mustFocus) tab.focus();
+                    this.open ? tab.classList.add('active') : tab.classList.remove('active');
+                    tab.tabIndex = this.open ? 0 : -1;
+                    tab.setAttribute('aria-selected', this.open ? 'true' : 'false');
                 }
             });
         })();

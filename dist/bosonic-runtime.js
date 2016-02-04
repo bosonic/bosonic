@@ -2643,7 +2643,6 @@ Bosonic.Transitions.registerTransition('expand-height', {
 Bosonic.Transitions.registerTransition('fade-in', {
     play: function(node, config) {
         node.style.opacity = 0;
-        //node.style.display = 'block';
         return this.duration(config.duration || 150)
                    .set('opacity', 1);
     }
@@ -2700,16 +2699,16 @@ Transitioner.prototype.setVendorProperty = function(prop, val) {
 };
 
 Transitioner.prototype.end = function(fn) {
+    // if the user specified a non-existing animation
+    if (Object.keys(this.properties).length === 0 && this.transitionProps.length === 0) {
+        if (fn) fn();
+        return;
+    }
     if (this.transforms.length > 0) {
         this.setVendorProperty('transform', this.transforms.join(' '));
     }
     this.setVendorProperty('transition-properties', this.transitionProps.join(', '));
 
-    // if the user specified a non-existing animation
-    if (this.properties.length === 0) {
-        if (fn) fn();
-        return;
-    }
 
     var self = this,
         node = this.node,

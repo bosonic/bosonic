@@ -1,0 +1,139 @@
+<element name="b-listbox">
+    <style>:root {
+
+    /* gradient experiment: remove borders & 3d effect for testing; */
+    /*--b-button-primary-bg: linear-gradient(
+        to bottom, 
+        color(var(--b-button-primary-bg-color) hue(-8deg) saturation(+16%)) 0%, 
+        color(var(--b-button-primary-bg-color) hue(-8deg) saturation(+8%)) 4%, 
+        var(--b-button-primary-bg-color) 100%
+    );*/
+}
+        b-listbox {
+            display: block;
+            padding: 0;
+            margin: 0;
+            z-index: 1000;
+            /* minimum styling */
+            background-color: white;
+            border: 1px solid rgb(214, 214, 214);
+        }
+        b-listbox > b-item > a {
+            display: block;
+            white-space: nowrap;
+        }
+        b-listbox {
+            background-color: white;
+            border: 1px solid rgb(214, 214, 214);
+            border-radius: 2px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.1);
+            margin-top: 1px;
+            min-width: 140px;
+        }
+        b-listbox > b-item:hover, b-listbox > b-item:focus {
+            background-color: rgb(237, 237, 237);
+            outline: none;
+        }
+        b-listbox > b-item > a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 0.5em 1em;
+            display: block;
+            white-space: nowrap;
+        }
+        b-listbox > b-item > a:hover {
+            text-decoration: none;
+        }
+        b-listbox > hr {
+            margin: 0;
+            border: 0;
+            border-top: 1px solid rgb(214, 214, 214);
+        }
+    </style>
+    <script>
+        Bosonic.register({
+            hostAttributes: {
+                role: 'listbox',
+                tabindex: 0
+            },
+
+            keyBindings: {
+                'up down': 'cycleFocus',
+                'esc': 'echap',
+                'enter': 'enter'
+            },
+
+            get items() {
+                return Array.prototype.slice.call(this.querySelectorAll('b-item'), 0);
+            },
+
+            createdCallback: function() {
+                this.items.forEach(function(item) {
+                    item.setAttribute('role', 'option');
+                    item.tabIndex = -1;
+                });
+                this.querySelector('b-item').tabIndex = 0;
+                this.listen(this, 'focus', 'onHostFocus');
+            },
+
+            onHostFocus: function() {
+                this.focusFirstItem();
+            },
+
+            cycleFocus: function(e, key) {
+                var currentlyFocused = this.querySelector(':focus');
+                if (!currentlyFocused) {
+                    this.focusFirstItem();
+                    return;
+                }
+                var currentlyFocusedIndex = this.items.indexOf(currentlyFocused),
+                    lastFocusableIndex = this.items.length - 1;
+                if (key === 'down' && currentlyFocusedIndex < lastFocusableIndex) {
+                    this.items[currentlyFocusedIndex + 1].focus();
+                } else if (key === 'up' && currentlyFocusedIndex > 0) {
+                    this.items[currentlyFocusedIndex - 1].focus();
+                }
+            },
+
+            focusFirstItem: function() {
+               this.items[0].focus();
+            },
+
+            enter: function(e) {
+                // if (e.target === this.button) {
+                //     e.preventDefault();
+                //     this.show();
+                //     this.focusFirstItem();
+                // }
+            },
+
+            echap: function() {
+                // if (!this.open) {
+                //     return;
+                // }
+                // this.hide();
+                // this.button.focus();
+            }
+        });
+    </script>
+</element>
+<element name="b-item">
+    <style>:root {
+
+    /* gradient experiment: remove borders & 3d effect for testing; */
+    /*--b-button-primary-bg: linear-gradient(
+        to bottom, 
+        color(var(--b-button-primary-bg-color) hue(-8deg) saturation(+16%)) 0%, 
+        color(var(--b-button-primary-bg-color) hue(-8deg) saturation(+8%)) 4%, 
+        var(--b-button-primary-bg-color) 100%
+    );*/
+}
+        b-item {
+            display: block;
+        }
+    </style>
+    <script>
+        Bosonic.register({});
+    </script>
+</element>

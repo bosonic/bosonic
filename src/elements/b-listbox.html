@@ -25,6 +25,9 @@
             background-color: var(--b-dropdown-item-hover-bg);
             outline: none;
         }
+        b-listbox > b-item[aria-selected='true'] {
+            font-weight: 600;
+        }
         b-listbox > b-item > a {
             color: var(--bosonic-default-font-color);
             text-decoration: none;
@@ -44,6 +47,8 @@
     </style>
     <script>
         Bosonic.register({
+            mixins: [Bosonic.Selection],
+
             hostAttributes: {
                 role: 'listbox',
                 tabindex: 0
@@ -57,6 +62,15 @@
 
             get items() {
                 return Array.prototype.slice.call(this.querySelectorAll('b-item'), 0);
+            },
+
+            get focusedItem() {
+                return this.querySelector(':focus');
+            },
+
+            get focusedItemIndex() {
+                if (!this.focusedItem) return -1;
+                return this.items.indexOf(this.focusedItem);
             },
 
             createdCallback: function() {
@@ -73,17 +87,16 @@
             },
 
             cycleFocus: function(e, key) {
-                var currentlyFocused = this.querySelector(':focus');
-                if (!currentlyFocused) {
+                if (!this.focusedItem) {
                     this.focusFirstItem();
                     return;
                 }
-                var currentlyFocusedIndex = this.items.indexOf(currentlyFocused),
-                    lastFocusableIndex = this.items.length - 1;
-                if (key === 'down' && currentlyFocusedIndex < lastFocusableIndex) {
-                    this.items[currentlyFocusedIndex + 1].focus();
-                } else if (key === 'up' && currentlyFocusedIndex > 0) {
-                    this.items[currentlyFocusedIndex - 1].focus();
+                var focusedItemIndex = this.focusedItemIndex,
+                    lastItemIndex = this.items.length - 1;
+                if (key === 'down' && focusedItemIndex < lastItemIndex) {
+                    this.items[focusedItemIndex + 1].focus();
+                } else if (key === 'up' && focusedItemIndex > 0) {
+                    this.items[focusedItemIndex - 1].focus();
                 }
             },
 
@@ -92,11 +105,8 @@
             },
 
             enter: function(e) {
-                // if (e.target === this.button) {
-                //     e.preventDefault();
-                //     this.show();
-                //     this.focusFirstItem();
-                // }
+                if (!this.focusedItem) return;
+                this.selectedItems.indexOf(this.focusedItemIndex) !== -1 ? this.unselect(this.focusedItemIndex) : this.select(this.focusedItemIndex);
             },
 
             echap: function() {

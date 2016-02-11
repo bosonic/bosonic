@@ -1,65 +1,67 @@
 Bosonic.Selection = {
-    get selectedItemIndex() {
-        return this.hasAttribute('selected') ? Number(this.getAttribute('selected')) : null;
+    get multiple() {
+        if (this._multiple === undefined) {
+            this._multiple = this.hasAttribute('multiple');
+        }
+        return this._multiple;
     },
 
-    get selectedItem() {
-        return this.getItem(this.selectedItemIndex);
+    set multiple(value) {
+        this._multiple = !!value;
+    },
+
+    get selectedIndex() {
+        return this._selected.length === 0 ? -1 : this._selected[0];
+    },
+
+    set selectedIndex(value) {
+        this._selected.forEach(function(index) {
+            this.unselect(index);
+        }, this);
+        this.select(value);
+    },
+
+    get selectedItems() {
+        return this._selected;
+    },
+
+    created: function() {
+        this._selected = [];
+        if (this.hasAttribute('selected')) {
+            this.selectedIndex = Number(this.getAttribute('selected'));
+        }
     },
 
     select: function(index) {
-        if (index !== this.selectedItemIndex) {
-            this.setAttribute('selected', index);
+        if (!this.multiple && this.selectedIndex !== -1) {
+            this.unselect(this.selectedIndex);
         }
+        this._select(index);
     },
 
-    unselect: function() {
-        if (this.hasAttribute('selected')) {
-            this.removeAttribute('selected');
-        }
+    unselect: function(index) {
+        var item = this._getItem(index);
+        if (!item) return;
+        item.removeAttribute('aria-selected');
+        this._selected.splice(this._selected.indexOf(index), 1);
     },
 
-    selectFirst: function() {
-        if (this.getItemCount() > 0) {
-            this.select(0);
-        }
+    _select: function(index) {
+        var item = this._getItem(index);
+        if (!item) return;
+        item.setAttribute('aria-selected', 'true');
+        this._selected.push(index);
     },
 
-    selectLast: function() {
-        if (this.getItemCount() > 0) {
-            this.select(this.getItemCount() - 1);
-        }
+    _getItem: function(index) {
+        return this._getItems()[index] || null;
     },
 
-    selectNextItem: function() {
-        if (this.selectedItemIndex === null) {
-            this.selectFirst();
-            return;
-        }
-        if (this.selectedItemIndex < this.getItemCount() - 1) {
-            this.select(this.selectedItemIndex + 1);
-        }
+    _getItemCount: function() {
+        return this._getItems().length;
     },
 
-    selectPreviousItem: function() {
-        if (this.selectedItemIndex === null) {
-            this.selectLast();
-            return;
-        }
-        if (this.selectedItemIndex > 0) {
-            this.select(this.selectedItemIndex - 1);
-        }
-    },
-
-    getItem: function(pos) {
-        return this.getItems()[pos] || null;
-    },
-
-    getItemCount: function() {
-        return this.getItems().length;
-    },
-
-    getItems: function() {
+    _getItems: function() {
         var target = this.getAttribute('target');
         var nodes = target ? this.querySelectorAll(target) : this.children;
         return Array.prototype.slice.call(nodes, 0);

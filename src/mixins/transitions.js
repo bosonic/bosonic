@@ -62,33 +62,62 @@ Bosonic.Transitions.registerTransition('expand-height', {
 Bosonic.Transitions.registerTransition('fade-in', {
     play: function(node, config) {
         node.style.opacity = 0;
-        return this.duration(config.duration || 150)
-                   .set('opacity', 1);
+        return this.set('opacity', 1).duration(config.duration || 150);
     }
 });
 
 Bosonic.Transitions.registerTransition('fade-out', {
     play: function(node, config) {
         node.style.opacity = 1;
-        return this.duration(config.duration || 150)
-                   .set('opacity', 0);
+        return this.set('opacity', 0).duration(config.duration || 150);           
+    }
+});
+
+Bosonic.Transitions.registerTransition('slide-left', {
+    play: function(node, config) {
+        return this.translateX(-100)
+                   .ease()
+                   .duration(config.duration || 300);
+    }
+});
+
+Bosonic.Transitions.registerTransition('slide-from-right', {
+    play: function(node, config) {
+        return this.translateX(100)
+                   .applyThen()
+                   .translateX(0)
+                   .ease()
+                   .duration(config.duration || 300);
     }
 });
 
 // Code heavily inspired by Move.js (https://github.com/visionmedia/move.js)
-function Transitioner(node, host) {
+function Transitioner(node) {
     node.classList.add(Bosonic.Transitions.TRANSITION_CLASS);
     this.node = node;
-    this.host = host;
     this.properties = {};
     this.transitionProps = [];
     this.transforms = [];
+    this.transitioningTransforms = false;
 };
 
 Transitioner.prototype.set = function(prop, val) {
     this.transition(prop);
     this.properties[prop] = val;
     return this;
+};
+
+Transitioner.prototype.transform = function(transform) {
+    this.transforms.push(transform);
+    return this;
+};
+
+Transitioner.prototype.translateX = function(n) {
+    return this.transform('translateX('+n+'%)');
+};
+
+Transitioner.prototype.translateX = function(n) {
+    return this.transform('translateX('+n+'%)');
 };
 
 Transitioner.prototype.setProperty = function(prop, val) {
@@ -104,6 +133,20 @@ Transitioner.prototype.transition = function(prop) {
 
 Transitioner.prototype.duration = function(duration) {
     return this.setVendorProperty('transition-duration', duration + 'ms');
+};
+
+Transitioner.prototype.ease = function() {
+    return this.setVendorProperty('transition-timing-function', 'ease');
+};
+
+Transitioner.prototype.applyThen = function() {
+    if (this.transforms.length > 0) {
+        this.setVendorProperty('transform', this.transforms.join(' '));
+        this.transforms = [];
+    }
+    this.applyProperties();
+    this.properties = [];
+    return this;
 };
 
 Transitioner.prototype.setVendorProperty = function(prop, val) {
@@ -128,15 +171,14 @@ Transitioner.prototype.end = function(fn) {
     }
     this.setVendorProperty('transition-properties', this.transitionProps.join(', '));
 
-
     var self = this,
         node = this.node,
         eventName = Bosonic.Transitions.TRANSITION_END,
         endHandler = function() {
             self.reset();
             node.classList.remove(Bosonic.Transitions.TRANSITION_CLASS);
-            if (fn) fn();
             node.removeEventListener(eventName, endHandler, false);
+            if (fn) fn();
         };
     node.addEventListener(eventName, endHandler, false);
 

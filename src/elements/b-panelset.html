@@ -1,151 +1,111 @@
-<element name="b-panelset" attributes="selected">
+<element name="b-panelset">
     <style>
         b-panelset {
             display: block;
             border: 1px solid transparent;
-                border-color: var(--b-panel-border);
-                border-radius: var(--b-panel-border-radius);
-                box-shadow: var(--b-panel-shadow);
+            border-color: var(--b-panel-border);
+            border-radius: var(--b-panel-border-radius);
+            box-shadow: var(--b-panel-shadow);
         }
         b-panelset > b-panel {
             border: none;
         }
+        b-panelset[preferreddisplay='tabs'] {
+            
+        }
+        b-panelset[preferreddisplay='tabs'] > b-panel {
+            
+        }
         b-panel:not(:first-child) {
             border-radius: 0;
-        }
-        b-panelset b-panel:not([open])::shadow .b-panel-content-wrapper {
-            display: none;
-        }
-        /* For browsers without native shadow DOM */
-        b-panelset b-panel:not([open]) .b-panel-content-wrapper { 
-            display: none;
         }
     </style>
     <script>
         (function(){
             Bosonic.register({
-                mixins: [Bosonic.Selection, Bosonic.Transitions],
+                mixins: [Bosonic.Transitions],
 
                 get tabBar() {
                     return this.querySelector('b-panel-tabs');
                 },
 
+                get selectedIndex() {
+                    return this._selectedIndex;
+                },
+
+                set selectedIndex(value) {
+                    this._selectedIndex = this._registeredPanels[value] !== undefined ? value : 0;
+                    this._registeredPanels.forEach(function(panel, i) {
+                        panel.open = (i === this._selectedIndex) ? true : false;
+                    }, this);
+                },
+
+                get activePanelElement() {
+                    return this._registeredPanels[this.selectedIndex] || null;
+                },
+
                 createdCallback: function() {
-                    this.registeredPanels = [];
+                    this._selectedIndex = -1;
+                    this._registeredPanels = [];
                     var tabBar = document.createElement('b-panel-tabs');
                     this.insertBefore(tabBar, this.firstChild || null);
-                    
-                    if (!this.hasAttribute('selected')) {
-                        this.setAttribute('selected', 0);
-                    }
                 },
 
                 registerPanel: function(panel) {
-                    var title = panel.querySelector('b-panel-title'),
+                    var index = this._registeredPanels.push(panel) - 1,
+                        title = panel.querySelector('b-panel-title'),
                         tab = title.cloneNode(true);
 
                     tab.tabIndex = -1;
+                    tab.panelElement = panel;
                     tab.setAttribute('aria-controls', panel.contentElement.id);
                     tab.setAttribute('aria-selected', 'false');
                     this.tabBar.appendChild(tab);
                     
-                    var newLength = this.registeredPanels.push(panel),
-                        newIndex = newLength - 1;
-
-                    tab.__panelIndex = newIndex;
-
-                    if (this.selectedItemIndex === newIndex) {
-                        panel.setAttribute('open', '');
-                        this.activateTab(tab);
+                    panel.open = false;
+                    if (panel.hasAttribute('open') || index == 0) {
+                        this.selectedIndex = index;
                     }
                     
                     this.listen(title, 'tap', 'handleTitleTap');
                     this.listen(tab, 'tap', 'handleTabTap');
                 },
 
-                selectedChanged: function (oldIndex, newIndex) {
-                    if (!oldIndex) return;
-                    this.applyDeselection(oldIndex);
-                    this.applySelection(newIndex);
-                },
+                selectPanel: function(index) {
+                    var active = this.activePanelElement,
+                        panel = this._registeredPanels[index];
 
-                applySelection: function(index) {
-                    var panel = this.getPanel(index),
-                        tab = this.getTab(index);
-                    if (!this.hasAttribute('entry-transition') || !this.hasTransition(this.getAttribute('entry-transition'))) {
-                        panel.open();
-                        this.activateTab(tab);
-                        return;
+                    this._selectedIndex = index;
+
+                    if (!this.hasAttribute('exit-transition')) {
+                        active.open = false;
+                    } else {
+                        this.playTransition('exit', active.contentWrapper).end(function() {console.log('end exit')
+                            active.open = false;
+                        }.bind(this));
                     }
-                    this.playTransition(this.getAttribute('entry-transition'), panel.contentWrapper).end(function() {
-                        panel.open();
-                        this.activateTab(tab);
-                    }.bind(this));
-                },
-
-                applyDeselection: function(index) {
-                    var panel = this.getPanel(index),
-                        tab = this.getTab(index);
-                    if (!this.hasAttribute('exit-transition') || !this.hasTransition(this.getAttribute('exit-transition'))) {
-                        panel.close();
-                        this.disactivateTab(tab);
-                        return;
-                    }
-                    this.playTransition(this.getAttribute('exit-transition'), panel.contentWrapper).end(function() {
-                        panel.close();
-                        this.disactivateTab(tab);
-                    }.bind(this));
-                },
-
-                activateTab: function(tab, mustFocus) {
-                    if (mustFocus) tab.focus();
-                    tab.classList.add('active');
-                    tab.tabIndex = 0;
-                    tab.setAttribute('aria-selected', 'true');
-                },
-
-                disactivateTab: function(tab) {
-                    tab.classList.remove('active');
-                    tab.tabIndex = -1;
-                    tab.setAttribute('aria-selected', 'false');
+                    panel.open = true;
+                    if (this.hasAttribute('entry-transition')) {console.log('begin entry')
+                                
+                                this.playTransition('entry', panel.contentWrapper).end(function() {console.log('end entry')
+                                    
+                                });
+                            }
+                    
                 },
 
                 handleTitleTap: function(e) {
-                    var panelIndex =  this.getPanels().indexOf(e.target.parentNode);
+                    var panelIndex =  this._registeredPanels.indexOf(e.target.parentNode);
                     if (panelIndex !== -1) {
-                        this.select(panelIndex);
+                        this.selectPanel(panelIndex);
                     }
                 },
 
                 handleTabTap: function(e) {
-                    var panelIndex =  e.target.__panelIndex;
+                    var panelIndex =  this._registeredPanels.indexOf(e.target.panelElement);
                     if (panelIndex !== -1) {
-                        this.select(panelIndex);
+                        this.selectPanel(panelIndex);
                     }
-                },
-
-                getActivePanel: function() {
-                    return this.selectedItem;
-                },
-
-                getPanel: function(index) {
-                    return this.getItem(index);
-                },
-
-                getPanels: function() {
-                    return this.getItems();
-                },
-
-                getTab: function(index) {
-                    return this.getTabs()[index];
-                },
-
-                getTabs: function() {
-                    return Array.prototype.slice.call(this.tabBar.children, 0);
-                },
-
-                getItems: function() {
-                    return this.registeredPanels;
                 }
             });
         })();

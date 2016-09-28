@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Demo</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="bundle.js"></script>
+    </head>
+
+    <body>
+            <button>Say hello</button>
+            <hello-world/>
+            <script type="text/javascript">
+                (function() {
+                    var btn = document.querySelector('button'),
+                        hel = document.querySelector('hello-world');
+                    btn.addEventListener('click', function() { hel.show() });
+                })();
+
+                // window.addEventListener('WebComponentsReady', function() {
+                //     bindDemoButtons('#basic-demos button');
+                // });
+            </script>
+        </div>
+    </body>
+</html>

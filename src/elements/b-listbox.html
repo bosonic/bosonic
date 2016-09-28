@@ -61,11 +61,12 @@
             },
 
             get items() {
+                if (this._items !== undefined) return this._items;
                 return Array.prototype.slice.call(this.querySelectorAll('b-item'), 0);
             },
 
             get focusedItem() {
-                return this.querySelector(':focus');
+                if (this.items.indexOf(document.activeElement) !== -1) return document.activeElement;
             },
 
             get focusedItemIndex() {
@@ -74,12 +75,21 @@
             },
 
             createdCallback: function() {
+                this.applyAriaOnItems();
+                this.listen(this, 'focus', 'onHostFocus');
+            },
+
+            registerItems: function(items) {
+                this._items = items;
+                this.applyAriaOnItems();
+            },
+
+            applyAriaOnItems: function() {
                 this.items.forEach(function(item) {
                     item.setAttribute('role', 'option');
                     item.tabIndex = -1;
                 });
-                this.querySelector('b-item').tabIndex = 0;
-                this.listen(this, 'focus', 'onHostFocus');
+                if (this.items[0]) this.items[0].tabIndex = 0;
             },
 
             onHostFocus: function() {

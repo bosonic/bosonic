@@ -62,6 +62,7 @@ Bosonic.Selection = {
     },
 
     _getItems: function() {
+        if (this.items) return this.items;
         var target = this.getAttribute('target');
         var nodes = target ? this.querySelectorAll(target) : this.children;
         return Array.prototype.slice.call(nodes, 0);

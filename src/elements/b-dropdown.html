@@ -1,0 +1,108 @@
+<link rel="import" href="./b-listbox.html">
+
+<element name="b-dropdown">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+            }
+            :host > b-listbox {
+                display: none;
+                position: absolute;
+                /*left: 0;
+                top: 100%;
+                float: left;*/
+            }
+            :host([open]) > b-listbox {
+                display: block;
+            }
+        </style>
+
+        <button class="b-button b-button--primary">Dropdown</button>
+        <b-listbox>
+            <content></content>
+        </b-listbox>
+    </template>
+    <script>
+        (function(){
+            function isChildOf(node, possibleParent) {
+                var isChildren = false;
+                while (node && !isChildren) {
+                    isChildren = node === possibleParent;
+                    node = node.parentNode;
+                }
+                return isChildren;
+            }
+
+            Bosonic.register({
+                hostAttributes: {
+                    role: 'menu'
+                },
+
+                get open() {
+                    return this.hasAttribute('open');
+                },
+
+                get menu() {
+                    return this.shadowRoot.querySelector('b-listbox');
+                },
+
+                get button() {
+                    return this.shadowRoot.querySelector('button');
+                },
+
+                createdCallback: function() {
+                    this.menu.registerItems(Array.prototype.filter.call(this.menu.querySelector('content').getDistributedNodes(), function(node) {
+                        return node.nodeName === 'B-ITEM';
+                    }).map(function(node) {
+                        return window.ShadowDOMPolyfill ? ShadowDOMPolyfill.unwrap(node) : node;
+                    }));
+                    this.listen(this.button, 'tap', 'toggle');
+                },
+
+                detachedCallback: function() {
+                    this.unlisten(this.button, 'tap', 'toggle');
+                },
+
+                toggle: function(e) {
+                    this.open ? this.hide() : this.show();
+                },
+
+                show: function() {
+                    this.setAttribute('open', '');
+                    this.async(function() {
+                        this.listen(document, 'tap', 'tapOutside');
+                    }, 1);
+                },
+
+                hide: function() {
+                    this.removeAttribute('open');
+                    this.unlisten(document, 'tap', 'tapOutside');
+                },
+
+                // enter: function(e) {
+                //     if (e.target === this.button) {
+                //         e.preventDefault();
+                //         this.show();
+                //         this.focusFirstItem();
+                //     }
+                // },
+
+                // echap: function() {
+                //     if (!this.open) {
+                //         return;
+                //     }
+                //     this.hide();
+                //     this.button.focus();
+                // },
+
+                tapOutside: function(e) {
+                    if (!isChildOf(e.target, this)) {
+                        this.hide();
+                    }
+                }
+            });
+        })();
+    </script>
+</element>

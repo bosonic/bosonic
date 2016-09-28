@@ -1,11 +1,9 @@
 # Dependencies
 node_modules/*
-bower_components/*
 
 # Editors config folders
 .idea
 .DS_Store
 
 # Others
-sauce.json
 C:\\nppdf32Log\\debuglog.txt

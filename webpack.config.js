@@ -1,8 +1,11 @@
 module.exports = {
-  entry: "./src/index.js",
+  entry: {
+    vanilla: './src/index.js',
+    react: './demo/react/index.js'
+  },
   output: {
-    path: "./build",
-    filename: "bundle.js"
+    path: './build',
+    filename: 'bundle.[name].js'
   },
   module: {
     loaders: [

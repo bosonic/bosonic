@@ -18,7 +18,12 @@
   },
   "homepage": "http://bosonic.github.io",
   "dependencies": {
-    "document-register-element": "^1.2.0"
+    "babel-preset-react": "^6.11.1",
+    "document-register-element": "^1.2.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "recompose": "^0.20.2",
+    "skatejs-react-integration": "^1.0.2"
   },
   "devDependencies": {
     "babel-core": "^6.14.0",

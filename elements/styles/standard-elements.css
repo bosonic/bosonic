@@ -1,0 +1,189 @@
+.b-button {
+    display: inline-block;
+    vertical-align: middle;
+    padding: var(--b-button-padding);
+    font-size: var(--b-button-font-size);
+    font-weight: var(--b-button-font-weight);
+    color: var(--b-button-default-color);
+    background: var(--b-button-default-bg);
+    border: 1px solid transparent;
+    border-radius: var(--b-button-border-radius);
+    border-color: var(--b-button-default-border);
+    box-shadow: var(--b-button-3d-effect);
+}
+.b-button[disabled] {
+    color: var(--b-button-disabled-color);
+    background: var(--b-button-default-bg);
+    border-color: var(--b-button-default-bg);
+}
+.b-button:active, .b-button.active {
+    box-shadow: var(--b-button-pressed-effect);
+    background: color(var(--b-button-default-bg) blackness(var(--bosonic-active-blackness)));
+    border-color: color(var(--b-button-default-border) blackness(var(--bosonic-active-border-blackness)));
+}
+.b-button--primary, .b-button.active {
+    color: var(--b-button-primary-color);
+    background: var(--b-button-primary-bg);
+    border-color: var(--b-button-primary-border);
+}
+.b-button--primary:active, .b-button.active {
+    background: color(var(--b-button-primary-bg-color) blackness(var(--bosonic-active-blackness)));
+    border-color: color(var(--b-button-primary-border) blackness(var(--bosonic-active-border-blackness)));
+}
+.b-button--success {
+    color: var(--b-button-success-color);
+    background: var(--b-button-success-bg);
+    border-color: var(--b-button-success-border);
+}
+.b-button--success:active {
+    background: color(var(--b-button-success-bg) blackness(var(--bosonic-active-blackness)));
+    border-color: color(var(--b-button-success-border) blackness(var(--bosonic-active-border-blackness)));
+}
+.b-button--warning {
+    color: var(--b-button-warning-color);
+    background: var(--b-button-warning-bg);
+    border-color: var(--b-button-warning-border);
+}
+.b-button--warning:active {
+    background: color(var(--b-button-warning-bg) blackness(var(--bosonic-active-blackness)));
+    border-color: color(var(--b-button-warning-border) blackness(var(--bosonic-active-border-blackness)));
+}
+.b-button--danger {
+    color: var(--b-button-danger-color);
+    background: var(--b-button-danger-bg);
+    border-color: var(--b-button-danger-border);
+}
+.b-button--danger:active {
+    background: color(var(--b-button-danger-bg) blackness(var(--bosonic-active-blackness)));
+    border-color: color(var(--b-button-danger-border) blackness(var(--bosonic-active-border-blackness)));
+}
+
+@keyframes b-spinner-dots {
+  0%, 80%, 100% { 
+    box-shadow: 0 var(--b-spinner-dots-size) 0 -1.3em var(--b-spinner-dots-color);
+  } 40% {
+    box-shadow: 0 var(--b-spinner-dots-size) 0 0 var(--b-spinner-dots-color);
+  }
+}
+.b-spinner, .b-spinner:before, .b-spinner:after {
+    width: var(--b-spinner-dots-size);
+    height: var(--b-spinner-dots-size);
+    border-radius: 100%;
+    animation: b-spinner-dots 1.4s infinite ease-in-out both;
+}
+.b-spinner {
+    text-indent: 999em;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    top: calc(-0em - var(--b-spinner-dots-size));
+    animation-delay: -0.32s;
+}
+.b-spinner:before, .b-spinner:after {
+    content: ' ';
+    position: absolute;
+    top: 0;
+}
+.b-spinner:before {
+    left: calc(var(--b-spinner-dots-size) + var(--b-spinner-dots-spacing));
+    animation-delay: -0.16s;
+}
+.b-spinner:after {
+    left: calc(2 * var(--b-spinner-dots-size) + 2 * var(--b-spinner-dots-spacing));
+}
+
+.b-card {
+    border: 1px solid transparent;
+    border-color: var(--b-card-border);
+    border-radius: var(--b-card-border-radius);
+    box-shadow: var(--b-card-shadow);
+}
+.b-card-title {
+    padding: var(--b-card-title-padding);
+    margin: 0;
+    font-size: var(--b-card-title-font-size);
+    font-weight: var(--b-card-title-font-weight);
+    line-height: var(--bosonic-line-height-base);
+    background-color: var(--b-card-title-bg);
+    color: var(--b-card-title-color);
+    box-shadow: var(--b-card-title-3d-effect);
+}
+.b-card-content {
+    padding: var(--b-card-content-padding);
+    margin: var(--bosonic-3d-effect-shadow-size) 0 0 0;
+    font-size: var(--b-card-content-font-size);
+    background-color: var(--b-card-content-bg);
+    color: var(--b-card-content-color);
+}
+
+.b-accordion, .b-collapsible {
+    display: block;
+    border: 1px solid transparent;
+    border-color: var(--b-accordion-border);
+    border-bottom: 1px solid transparent;
+    border-radius: var(--b-accordion-border-radius);
+    box-shadow: var(--b-accordion-shadow);
+}
+.b-accordion-title, .b-collapsible-toggle {
+    display: block;
+    width: 100%;
+    border: none;
+    text-align: left;
+    padding: var(--b-accordion-title-padding);
+    margin: 0;
+    font-size: var(--b-accordion-title-font-size);
+    font-weight: var(--b-accordion-title-font-weight);
+    line-height: var(--bosonic-line-height-base);
+    background-color: var(--b-accordion-title-bg);
+    color: var(--b-accordion-title-color);
+    box-shadow: var(--b-accordion-title-3d-effect);
+}
+.b-accordion .b-accordion-title:not(:first-child) {
+    border-top: 1px solid transparent;
+    border-color: var(--b-accordion-border);
+}
+.b-accordion-content, .b-collapsible-content {
+    padding: var(--b-accordion-content-padding);
+    margin: var(--bosonic-3d-effect-shadow-size) 0 0 0;
+    font-size: var(--b-accordion-content-font-size);
+    background-color: var(--b-accordion-content-bg);
+    color: var(--b-accordion-content-color);
+}
+
+.b-list {
+    margin: 0.5em 0 1em 0;
+    border: 1px solid var(--b-list-border);
+    border-radius: var(--b-list-border-radius);
+    overflow: hidden;
+    position: relative;
+    list-style-type: none;
+    padding: 0;
+    box-shadow: var(--b-list-shadow);
+}
+.b-list > * {
+    background-color: #fff;
+    line-height: var(--bosonic-line-height-base);
+    padding: var(--bosonic-padding-base-vertical) var(--bosonic-padding-base-horizontal);
+    margin: 0;
+    border-bottom: 1px solid var(--b-list-border);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.b-list > *:last-child {
+    border-bottom: none;
+}
+.b-list .b-icon {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 2px;
+    margin-right: 5px;
+}
+
+.b-selectable-selected {
+    background-color: var(--b-selectable-selected-color);
+    color: #fff;
+    box-shadow: var(--bosonic-3d-effect);
+}
+
+

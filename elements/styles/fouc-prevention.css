@@ -1,0 +1,16 @@
+/* FOUC prevention */
+b-controlgroup:not(.resolved) {
+    opacity: 0;
+}
+b-tooltip:not(.resolved) {
+    display: none;
+}
+b-dialog:not(.resolved) {
+    display: none;
+}
+b-dropdown:not(.resolved) > ul {
+    display: none;
+}
+input[is='b-switch']:not(.resolved) {
+    display: none;
+}

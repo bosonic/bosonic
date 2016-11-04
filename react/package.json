@@ -1,0 +1,19 @@
+{
+  "name": "react-bosonic",
+  "version": "1.0.0",
+  "description": "A collection of practical everyday UI Components for React",
+  "main": "./lib",
+  "repository": "https://github.com/bosonic/bosonic/tree/master/react",
+  "author": "Raphaël Rougeron <goldoraf@gmail.com>",
+  "license": "MIT",
+  "bugs": "https://github.com/bosonic/bosonic/issues",
+  "homepage": "http://bosonic.github.io",
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "document-register-element": "^1.2.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "recompose": "^0.20.2",
+    "skatejs-react-integration": "^1.0.2"
+  }
+}

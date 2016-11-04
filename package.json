@@ -1,34 +1,30 @@
 {
-  "name": "bosonic",
-  "version": "1.0.0",
-  "description": "A collection of practical everyday Web Components",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack-dev-server --progress --colors --content-base build/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bosonic/bosonic.git"
-  },
+  "private": true,
   "author": "Raphaël Rougeron <goldoraf@gmail.com>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/bosonic/bosonic/issues"
-  },
-  "homepage": "http://bosonic.github.io",
-  "dependencies": {
-    "babel-preset-react": "^6.11.1",
-    "document-register-element": "^1.2.0",
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2",
-    "recompose": "^0.20.2",
-    "skatejs-react-integration": "^1.0.2"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server --progress --colors --content-base build/",
+    "build-elements": "babel ./elements/src --watch --out-dir ./elements/lib",
+    "build-react": "babel ./react/src --watch --out-dir ./react/lib",
+    "dev-elements": "webpack --config config/webpack/elements.js --watch  & postcss -c postcss.config.js --watch  & live-server elements"
   },
   "devDependencies": {
+    "autoprefixer": "^6.5.1",
+    "babel-cli": "^6.16.0",
     "babel-core": "^6.14.0",
     "babel-loader": "^6.2.5",
     "babel-preset-es2015": "^6.14.0",
+    "babel-preset-react": "^6.11.1",
+    "babel-preset-stage-0": "^6.16.0",
+    "css-loader": "^0.25.0",
+    "live-server": "^1.1.0",
+    "postcss": "^5.2.5",
+    "postcss-cli": "^2.6.0",
+    "postcss-color-function": "^2.0.1",
+    "postcss-custom-properties": "^5.0.1",
+    "postcss-import": "^8.1.3",
+    "style-loader": "^0.13.1",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.16.1"
   }

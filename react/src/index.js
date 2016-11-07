@@ -16,3 +16,5 @@ import DialogElement from '../../elements/lib/b-dialog'
 const HelloWorld = reactify(HelloWorldElement)
 const Dialog = reactify(DialogElement)
 export { HelloWorld, Dialog/*, LinearLayout*/ }
+
+export Button from './Button'

@@ -1,0 +1,13 @@
+b-menu-button {
+    position: relative;
+}
+b-menu-button > b-listbox {
+    display: none;
+    position: absolute;
+    /*left: 0;
+    top: 100%;
+    float: left;*/
+}
+b-menu-button[open] > b-listbox {
+    display: block;
+}

@@ -1,0 +1,15 @@
+{
+  "name": "bosonic",
+  "version": "1.0.0",
+  "description": "A collection of practical everyday UI Components",
+  "main": "./lib",
+  "repository": "https://github.com/bosonic/bosonic/tree/master/elements",
+  "author": "Raphaël Rougeron <goldoraf@gmail.com>",
+  "license": "MIT",
+  "bugs": "https://github.com/bosonic/bosonic/issues",
+  "homepage": "http://bosonic.github.io",
+  "dependencies": {
+    "document-register-element": "^1.2.0",
+    "pepjs": "^0.4.2"
+  }
+}

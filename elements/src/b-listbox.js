@@ -29,11 +29,6 @@ export default class ListBoxElement extends HTMLElement {
     })
   }
 
-  registerItems(items) {
-    this._items = items
-    this.applyAriaOnItems()
-  }
-
   applyAria() {
     this.setAttribute('role', 'listbox')
     this.tabIndex = 0

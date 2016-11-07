@@ -3,7 +3,8 @@
     <head>
         <title>Demo</title>
         <meta charset="utf-8">
-        <script type="text/javascript" src="../lib/b-dropdown.js"></script>
+        <script type="text/javascript" src="../lib/bosonic.js"></script>
+        <link rel="stylesheet" href="../lib/styles.css">
     </head>
     <body>
         <h1>Dropdowns</h1>
@@ -14,7 +15,15 @@
             }
         </style>
 
-        <b-dropdown-button>First</b-dropdown-button>
+        <b-menu-button>
+            <button class="b-button b-button--primary">First</button>
+            <b-listbox>
+                <b-item>Some action</b-item>
+                <b-item>Yet another action</b-item>
+                <hr />
+                <b-item>What else?</b-item>
+            </b-listbox>
+        </b-menu-button>
         
 
         <!-- <div class="element-demo" id="example">

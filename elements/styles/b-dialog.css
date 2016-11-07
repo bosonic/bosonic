@@ -1,0 +1,65 @@
+b-dialog {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    height: auto;
+    z-index: 102;
+    visibility: hidden;
+    box-sizing: border-box;
+    transform: translateX(-50%) translateY(-50%);
+    /* minimum styling */
+    background-color: white;
+    border: var(--b-dialog-border);
+    /* advanced styling */
+    border-radius: var(--b-dialog-border-radius);
+    box-shadow: var(--b-dialog-shadow);
+}
+b-dialog[visible] {
+    visibility: visible;
+}
+b-dialog > *:first-child {
+    margin-top: var(--b-dialog-padding-vertical);
+}
+b-dialog > * {
+    padding: 0 var(--b-dialog-padding-horizontal);
+}
+b-dialog > .b-dialog-title {
+    padding: var(--b-dialog-title-padding);
+    margin: 0;
+    font-size: var(--b-dialog-title-font-size);
+    font-weight: var(--b-dialog-title-font-weight);
+    line-height: var(--bosonic-line-height-base);
+    background-color: var(--b-dialog-title-bg);
+    color: var(--b-dialog-title-color);
+    box-shadow: var(--b-dialog-title-3d-effect);
+}
+b-dialog > .b-dialog-buttons {
+    text-align: right;
+    padding: 0 var(--b-dialog-padding-horizontal);
+}
+b-dialog > *:last-child {
+    margin-bottom: var(--b-dialog-padding-vertical);
+}
+.b-overlay {
+    display: block;
+    position: fixed;
+    z-index: 101;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: black;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.b-overlay[opened] {
+    opacity: 0.5;
+}
+.b-scrollbar-measure {
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    position: absolute;
+    top: -9999px;
+}

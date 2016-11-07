@@ -4,10 +4,10 @@
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack-dev-server --progress --colors --content-base build/",
     "build-elements": "babel ./elements/src --watch --out-dir ./elements/lib",
     "build-react": "babel ./react/src --watch --out-dir ./react/lib",
-    "dev-elements": "webpack --config config/webpack/elements.js --watch  & postcss -c postcss.config.js --watch  & live-server elements"
+    "dev-elements": "webpack --config config/webpack/elements.js --watch  & postcss -c postcss.config.js --watch  & live-server elements",
+    "dev-react": "webpack-dev-server --config config/webpack/react.js --content-base react/demo/public --progress --colors --port 8081"
   },
   "devDependencies": {
     "autoprefixer": "^6.5.1",
@@ -18,6 +18,7 @@
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-0": "^6.16.0",
     "css-loader": "^0.25.0",
+    "html-webpack-plugin": "^2.24.1",
     "live-server": "^1.1.0",
     "postcss": "^5.2.5",
     "postcss-cli": "^2.6.0",

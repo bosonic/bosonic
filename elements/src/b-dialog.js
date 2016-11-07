@@ -10,6 +10,10 @@ var KEY = {
 var focusableElementsSelector ="a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]"
 
 export default class DialogElement extends BosonicElement {
+  set opened(val) {
+    val === true ? this.show() : this.hide()
+  }
+
   connectedCallback() {
     this.tabIndex = -1
     this.setAttribute('role', 'dialog')

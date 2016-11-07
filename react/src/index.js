@@ -3,6 +3,7 @@ import reactify from 'skatejs-react-integration'
 import classNames from 'classnames'
 
 import HelloWorldElement from '../../elements/lib/hello-world'
+import DialogElement from '../../elements/lib/b-dialog'
 
 // import '../../elements/src/layout/linear-layout.css'
 
@@ -13,4 +14,5 @@ import HelloWorldElement from '../../elements/lib/hello-world'
 // }
 
 const HelloWorld = reactify(HelloWorldElement)
-export { HelloWorld, LinearLayout }
+const Dialog = reactify(DialogElement)
+export { HelloWorld, Dialog/*, LinearLayout*/ }

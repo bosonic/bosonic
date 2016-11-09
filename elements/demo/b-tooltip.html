@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>b-tooltip</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../lib/bosonic.js"></script>
+        <link rel="stylesheet" href="../lib/styles.css">
+    </head>
+
+    <body>
+        <h1>Tooltips</h1>
+        <div class="element-demo" id="example">
+            <div style="text-align: center">
+                <button id="btn1" class="b-button">Tooltip on left</button>
+                <b-tooltip for="btn1" position="left" transition="fade-in">
+                    <div class="b-tooltip-arrow"></div>
+                    <div class="b-tooltip-inner">
+                        Tooltip text
+                    </div>
+                </b-tooltip>
+                <button id="btn2" class="b-button">Tooltip on bottom</button>
+                <b-tooltip for="btn2" transition="fade-in">Tooltip text</b-tooltip>
+                <button id="btn3" class="b-button">Tooltip on top</button>
+                <b-tooltip for="btn3" position="top" transition="fade-in">Tooltip text</b-tooltip>
+                <button id="btn4" class="b-button">Tooltip on right</button>
+                <b-tooltip for="btn4" position="right" transition="fade-in">Tooltip text</b-tooltip>
+            </div>
+        </div>
+    </body>
+</html>

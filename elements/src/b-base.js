@@ -5,6 +5,10 @@ const TRANSITION_END = (() => {
 })()
 
 export default class BosonicElement extends HTMLElement {
+  // constructor hack needed by document-register-element
+  constructor(_) { return (_ = super(_)).init(), _ }
+  init() {}
+
   toggleClass(name, bool, node) {
     node = node || this
     if (arguments.length == 1) {
@@ -28,6 +32,28 @@ export default class BosonicElement extends HTMLElement {
       bool = !node.hasAttribute(name) || node.getAttribute(name) == 'false'
     }
     bool ? node.setAttribute(name, 'true') : node.setAttribute(name, 'false')
+  }
+
+  reflectAttributes(attrs) {
+    attrs.forEach(a => {
+      if (this.hasCustomAttribute(a)) this[a] = this.getCustomAttribute(a)
+    }, this)
+  }
+
+  getCustomAttribute(name) {
+    return this.getAttribute(this._getRealAttribute(name))
+  }
+
+  hasCustomAttribute(name) {
+    return this.hasAttribute(name) || this._hasPrefixedAttribute(name)
+  }
+
+  _hasPrefixedAttribute(name) {
+    return this.hasAttribute('data-' + name)
+  }
+
+  _getRealAttribute(name) {
+    return this._hasPrefixedAttribute(name) ? 'data-' + name : name
   }
 
   async(callback, time) {

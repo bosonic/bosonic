@@ -1,0 +1,64 @@
+b-tooltip {
+    position: absolute;
+    display: block;
+    z-index: 1000;
+    opacity: 0;
+}
+
+b-tooltip[visible] {
+    opacity: 1;
+}
+
+.b-tooltip-inner {
+    padding: 8px;
+    color: var(--b-tooltip-color);
+    background-color: var(--b-tooltip-background);
+    box-sizing: border-box;
+    border-radius: 3px;
+    white-space: nowrap;
+    line-height: 6px;
+    user-select: none;
+    box-shadow: var(--b-tooltip-shadow);
+}
+
+.b-tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+}
+b-tooltip[position=left], b-tooltip[position=right] {
+    padding: 0 5px;
+}
+b-tooltip[position=left] .b-tooltip-arrow {
+    top: 50%;
+    right: 0;
+    margin-top: -5px;
+    border-width: 5px 0 5px 5px;
+    border-left-color: var(--b-tooltip-background);
+}
+b-tooltip[position=right] .b-tooltip-arrow {
+    top: 50%;
+    left: 0;
+    margin-top: -5px;
+    border-width: 5px 5px 5px 0;
+    border-right-color: var(--b-tooltip-background);
+}
+b-tooltip[position=top], b-tooltip[position=bottom] {
+    padding: 5px 0;
+}
+b-tooltip[position=top] .b-tooltip-arrow {
+    bottom: 0;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px 5px 0;
+    border-top-color: var(--b-tooltip-background);
+}
+b-tooltip[position=bottom] .b-tooltip-arrow {
+    top: 0;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 0 5px 5px;
+    border-bottom-color: var(--b-tooltip-background);
+}

@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { compose, withState, withHandlers } from 'recompose'
 
-import { Dialog, Button, ControlGroup, Listbox, Item } from '../../src'
+import { Dialog, Button, ControlGroup, Listbox, Item, Menu, MenuButton } from '../../src'
 require('../../../elements/lib/styles.css')
 
 const enhance = compose(
@@ -47,6 +47,16 @@ const BosonicSamples = enhance(({ showDialog, onClick }) =>
       <Item>Middle</Item>
       <Item>Bottom</Item>
     </Listbox>
+
+    <h2>Menu button</h2>
+    <MenuButton>
+      <Button>Menu</Button>
+      <Menu>
+        <Item>Top</Item>
+        <Item>Middle</Item>
+        <Item>Bottom</Item>
+      </Menu>
+    </MenuButton>
   </div>
 )
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import reactify from 'skatejs-react-integration'
+import reactify from '../vendor/react-integration'
 
 import ControlGroupElement from '../../elements/lib/b-controlgroup'
 

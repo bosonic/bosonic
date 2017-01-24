@@ -18,6 +18,7 @@ export default class DialogElement extends BosonicElement {
     this.tabIndex = -1
     this.setAttribute('role', 'dialog')
     this.setAttribute('aria-hidden', 'true')
+    if (this.hasAttribute('opened')) this.opened = true
   }
 
   show() {

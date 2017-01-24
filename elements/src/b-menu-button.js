@@ -28,7 +28,7 @@ export default class MenuButtonElement extends HTMLElement {
     this.button.addEventListener('pointerup', this.toggle.bind(this))
   }
 
-  toggle() {console.log(this)
+  toggle() {
     this.open ? this.hide() : this.show()
   }
 

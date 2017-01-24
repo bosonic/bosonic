@@ -1,7 +1,7 @@
 import 'document-register-element'
 import KeyListener from './helpers/KeyListener'
 
-export default class ListBoxElement extends HTMLElement {
+export default class ListboxElement extends HTMLElement {
   get items() {
     if (this._items !== undefined) return this._items
     return Array.prototype.slice.call(this.querySelectorAll('b-item'), 0)
@@ -146,4 +146,4 @@ export default class ListBoxElement extends HTMLElement {
   }
 }
 
-customElements.define('b-listbox', ListBoxElement)
+customElements.define('b-listbox', ListboxElement)

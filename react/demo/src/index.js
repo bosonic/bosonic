@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { compose, withState, withHandlers } from 'recompose'
 
-import { Dialog, Button, ControlGroup } from '../../src'
+import { Dialog, Button, ControlGroup, Listbox, Item } from '../../src'
 require('../../../elements/lib/styles.css')
 
 const enhance = compose(
@@ -40,6 +40,13 @@ const BosonicSamples = enhance(({ showDialog, onClick }) =>
           <input type="checkbox" autoComplete="off"/> Checkbox 3
       </label>
     </ControlGroup>
+
+    <h2>Listbox</h2>
+    <Listbox>
+      <Item>Top</Item>
+      <Item>Middle</Item>
+      <Item>Bottom</Item>
+    </Listbox>
   </div>
 )
 

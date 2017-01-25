@@ -1,5 +1,5 @@
 import React from 'react'
-import reactify from '../vendor/react-integration'
+import reactify from './reactify'
 
 import DialogElement from 'bosonic/lib/b-dialog'
 

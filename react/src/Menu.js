@@ -1,5 +1,5 @@
 import React from 'react'
-import reactify from '../vendor/react-integration'
+import reactify from './reactify'
 
 import MenuButtonElement from 'bosonic/lib/b-menu-button'
 import Listbox, { Item } from './Listbox'

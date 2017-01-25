@@ -11,6 +11,8 @@
   "dependencies": {
     "classnames": "^2.2.5",
     "document-register-element": "^1.2.0",
+    "preact": "^7.1.0",
+    "preact-compat": "^3.11.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "recompose": "^0.20.2",

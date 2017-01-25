@@ -25,6 +25,7 @@ export default class MenuButtonElement extends HTMLElement {
 
   connectedCallback() {
     this.tapOutside = this.tapOutside.bind(this)
+    this.selectItem = this.selectItem.bind(this)
     this.button.addEventListener('pointerup', this.toggle.bind(this))
   }
 
@@ -36,18 +37,24 @@ export default class MenuButtonElement extends HTMLElement {
     this.setAttribute('open', '')
     setTimeout(() => {
       document.addEventListener('pointerup', this.tapOutside)
+      this.menu.addEventListener('b-listbox-select', this.selectItem)
     }, 1)
   }
 
   hide() {
     this.removeAttribute('open')
     document.removeEventListener('pointerup', this.tapOutside)
+    this.menu.removeEventListener('b-listbox-select', this.selectItem)
   }
 
   tapOutside(e) {
     if (!isChildOf(e.target, this)) {
       this.hide()
     }
+  }
+
+  selectItem(e) {
+    this.hide()
   }
 }
 

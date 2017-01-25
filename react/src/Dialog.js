@@ -1,7 +1,7 @@
 import React from 'react'
 import reactify from '../vendor/react-integration'
 
-import DialogElement from '../../elements/lib/b-dialog'
+import DialogElement from 'bosonic/lib/b-dialog'
 
 const DialogComponent = reactify(DialogElement)
 const Dialog = ({ title, footer, children, ...rest }) => (

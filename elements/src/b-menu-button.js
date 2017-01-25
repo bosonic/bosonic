@@ -26,7 +26,12 @@ export default class MenuButtonElement extends HTMLElement {
   connectedCallback() {
     this.tapOutside = this.tapOutside.bind(this)
     this.selectItem = this.selectItem.bind(this)
-    this.button.addEventListener('pointerup', this.toggle.bind(this))
+    this.toggle = this.toggle.bind(this)
+    this.button.addEventListener('pointerup', this.toggle)
+  }
+
+  disconnectedCallback() {
+    this.button.removeEventListener('pointerup', this.toggle)
   }
 
   toggle() {

@@ -1,4 +1,5 @@
 import 'document-register-element'
+import 'pepjs'
 import KeyListener from './helpers/KeyListener'
 
 export default class ListboxElement extends HTMLElement {
@@ -19,6 +20,9 @@ export default class ListboxElement extends HTMLElement {
   connectedCallback() {
     this.applyAria()
     this.initSelection()
+    this.addEventListener('pointerup', e => {
+      this.onActivate(e)
+    })
     this.addEventListener('focus', () => {
       this.onHostFocus()
     })
@@ -27,6 +31,24 @@ export default class ListboxElement extends HTMLElement {
       'esc': 'echap',
       'enter': 'enter'
     })
+  }
+
+  onActivate(e) {
+    let t = e.target
+    while (t && t != this) {
+      let idx = this.items.indexOf(t)
+      if (idx !== -1) {
+        this.activate(idx)
+        return
+      }
+      t = t.parentNode
+    }
+  }
+
+  activate(index) {
+    if (this.dispatchEvent(new CustomEvent('b-listbox-activate', { cancelable: true }))) {
+      this.select(index)
+    }
   }
 
   applyAria() {
@@ -67,11 +89,11 @@ export default class ListboxElement extends HTMLElement {
   }
 
   echap() {
-    // if (!this.open) {
-    //     return
-    // }
-    // this.hide()
-    // this.button.focus()
+    if (!this.open) {
+        return
+    }
+    this.hide()
+    this.button.focus()
   }
 
   // SELECTION HANDLING
@@ -121,6 +143,7 @@ export default class ListboxElement extends HTMLElement {
     if (!item) return
     item.removeAttribute('aria-selected')
     this._selected.splice(this._selected.indexOf(index), 1)
+    this.dispatchEvent(new CustomEvent('b-listbox-unselect'))
   }
 
   _select(index) {
@@ -128,6 +151,7 @@ export default class ListboxElement extends HTMLElement {
     if (!item) return
     item.setAttribute('aria-selected', 'true')
     this._selected.push(index)
+    this.dispatchEvent(new CustomEvent('b-listbox-select'))
   }
 
   _getItem(index) {

@@ -1,5 +1,5 @@
 import 'document-register-element'
-import 'pepjs'
+//import 'pepjs'
 import KeyListener from './helpers/KeyListener'
 
 export default class ListboxElement extends HTMLElement {
@@ -20,7 +20,7 @@ export default class ListboxElement extends HTMLElement {
   connectedCallback() {
     this.applyAria()
     this.initSelection()
-    this.addEventListener('pointerup', e => {
+    this.addEventListener('click', e => {
       this.onActivate(e)
     })
     this.addEventListener('focus', () => {

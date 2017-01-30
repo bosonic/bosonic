@@ -24,14 +24,14 @@ export default class MenuButtonElement extends HTMLElement {
   }
 
   connectedCallback() {
-    this.tapOutside = this.tapOutside.bind(this)
+    this.clickOutside = this.clickOutside.bind(this)
     this.selectItem = this.selectItem.bind(this)
     this.toggle = this.toggle.bind(this)
-    this.button.addEventListener('pointerup', this.toggle)
+    this.button.addEventListener('click', this.toggle)
   }
 
   disconnectedCallback() {
-    this.button.removeEventListener('pointerup', this.toggle)
+    this.button.removeEventListener('click', this.toggle)
   }
 
   toggle() {
@@ -41,18 +41,18 @@ export default class MenuButtonElement extends HTMLElement {
   show() {
     this.setAttribute('open', '')
     setTimeout(() => {
-      document.addEventListener('pointerup', this.tapOutside)
+      document.addEventListener('click', this.clickOutside)
       this.menu.addEventListener('b-listbox-select', this.selectItem)
     }, 1)
   }
 
   hide() {
     this.removeAttribute('open')
-    document.removeEventListener('pointerup', this.tapOutside)
+    document.removeEventListener('click', this.clickOutside)
     this.menu.removeEventListener('b-listbox-select', this.selectItem)
   }
 
-  tapOutside(e) {
+  clickOutside(e) {
     if (!isChildOf(e.target, this)) {
       this.hide()
     }

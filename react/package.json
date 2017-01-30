@@ -1,6 +1,6 @@
 {
   "name": "react-bosonic",
-  "version": "1.0.0-beta2",
+  "version": "1.0.0-beta3",
   "description": "A collection of practical everyday UI Components for React",
   "main": "./lib",
   "repository": "https://github.com/bosonic/bosonic/tree/master/react",
@@ -9,7 +9,7 @@
   "bugs": "https://github.com/bosonic/bosonic/issues",
   "homepage": "http://bosonic.github.io",
   "dependencies": {
-    "bosonic": "^2.0.0-beta1",
+    "bosonic": "^2.0.0-beta2",
     "classnames": "^2.2.5",
     "document-register-element": "^1.2.0",
     "preact": "^7.1.0",

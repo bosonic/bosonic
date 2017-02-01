@@ -1,6 +1,6 @@
 {
   "name": "react-bosonic",
-  "version": "1.0.0-beta3",
+  "version": "1.0.0-beta4",
   "description": "A collection of practical everyday UI Components for React",
   "main": "./lib",
   "repository": "https://github.com/bosonic/bosonic/tree/master/react",

@@ -42,6 +42,22 @@ const Recognizer = {
   }
 }
 
+const TapRecognizer = inherit(Recognizer, {
+  maxPointers: 1,
+  treshold: 10,
+  down(pointers) {
+    pointers.ids.length === this.maxPointers ? this.transitionTo(STATE_POSSIBLE) : this.transitionTo(STATE_FAILED)
+  },
+  move(pointers) {},
+  up(pointers) {
+    var delta = processDelta(pointers)
+    if (this.state !== STATE_FAILED &&
+      Math.abs(delta.dx) < this.treshold &&
+      Math.abs(delta.dy) < this.treshold) this.transitionTo(STATE_RECOGNIZED, delta)
+    else this.transitionTo(STATE_FAILED)
+  }
+})
+
 const TrackRecognizer = inherit(Recognizer, {
   maxPointers: 1,
   down(pointers) {
@@ -102,6 +118,7 @@ const PanUpRecognizer = inherit(PanRecognizer, { direction: DIRECTION_UP })
 const PanDownRecognizer = inherit(PanRecognizer, { direction: DIRECTION_DOWN })
 
 const RECOGNIZERS = {
+  tap: TapRecognizer,
   track: TrackRecognizer,
   pan: PanRecognizer,
   panLeft: PanLeftRecognizer,

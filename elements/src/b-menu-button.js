@@ -20,7 +20,7 @@ export default class MenuButtonElement extends HTMLElement {
   }
 
   get button() {
-    return this.querySelector('button')
+    return this.querySelector('b-listbox button')
   }
 
   connectedCallback() {

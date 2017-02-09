@@ -15,18 +15,12 @@ export default class MenuButtonElement extends HTMLElement {
     return this.hasAttribute('open')
   }
 
-  get menu() {
-    return this.querySelector('b-listbox')
-  }
-
-  get button() {
-    return this.querySelector('button')
-  }
-
   connectedCallback() {
     this.clickOutside = this.clickOutside.bind(this)
     this.selectItem = this.selectItem.bind(this)
     this.toggle = this.toggle.bind(this)
+    this.button = this.querySelector('button')
+    this.menu = this.querySelector('b-listbox')
     this.button.addEventListener('click', this.toggle)
   }
 

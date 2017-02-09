@@ -1,6 +1,6 @@
 {
   "name": "bosonic",
-  "version": "2.0.0-beta3",
+  "version": "2.0.0-beta4",
   "description": "A collection of practical everyday UI Components",
   "main": "./lib",
   "repository": "https://github.com/bosonic/bosonic/tree/master/elements",

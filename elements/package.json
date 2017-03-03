@@ -1,6 +1,6 @@
 {
   "name": "bosonic",
-  "version": "2.0.0-beta4",
+  "version": "2.0.0-beta5",
   "description": "A collection of practical everyday UI Components",
   "main": "./lib",
   "repository": "https://github.com/bosonic/bosonic/tree/master/elements",
@@ -9,7 +9,6 @@
   "bugs": "https://github.com/bosonic/bosonic/issues",
   "homepage": "http://bosonic.github.io",
   "dependencies": {
-    "document-register-element": "^1.2.0",
-    "pepjs": "^0.4.2"
+    "document-register-element": "^1.2.0"
   }
 }

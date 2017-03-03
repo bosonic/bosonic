@@ -1,5 +1,4 @@
 import 'document-register-element'
-//import 'pepjs'
 import KeyListener from './helpers/KeyListener'
 
 export default class ListboxElement extends HTMLElement {

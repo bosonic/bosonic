@@ -1,5 +1,4 @@
 import 'document-register-element'
-import 'pepjs'
 import BosonicElement from './b-base'
 
 export default class ControlGroupElement extends BosonicElement {
@@ -32,8 +31,8 @@ export default class ControlGroupElement extends BosonicElement {
     return false;
   }
 
-  // sadly, we must prevent click events. For a reason unknown, calling 
-  // preventDefault() in the onTap method doesn't work, even with preventDefault forwarding 
+  // sadly, we must prevent click events. For a reason unknown, calling
+  // preventDefault() in the onTap method doesn't work, even with preventDefault forwarding
   // feature added to gestures mixin...
   onClick(event) {
     event.preventDefault();

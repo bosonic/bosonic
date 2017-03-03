@@ -1,5 +1,4 @@
 import 'document-register-element'
-import 'pepjs'
 
 function isChildOf(node, possibleParent) {
   var isChildren = false

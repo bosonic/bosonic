@@ -1,12 +1,11 @@
 import 'document-register-element'
-import 'pepjs'
 import BosonicElement from './b-base'
 
 const DEFAULT_SPACING = 5
 const DEFAULT_POSITION = 'bottom'
 
 export default class TooltipElement extends BosonicElement {
-  
+
   get spacing() { return this._spacing || DEFAULT_SPACING }
   set spacing(val) { this._spacing = val }
 
@@ -14,7 +13,7 @@ export default class TooltipElement extends BosonicElement {
   set position(val) { this._position = val }
 
   get target() {
-    return this.hasAttribute('for') 
+    return this.hasAttribute('for')
     ? document.getElementById(this.getAttribute('for'))
     : this.parentNode
   }
@@ -23,7 +22,7 @@ export default class TooltipElement extends BosonicElement {
     this.setAttribute('role', 'tooltip')
     this.setAttribute('tabindex', '-1')
     this.reflectAttributes(['spacing', 'position'])
-    
+
     this.enterListener = this.onEnterTarget.bind(this)
     this.leaveListener = this.onLeaveTarget.bind(this)
     this.target.addEventListener('mouseenter', this.enterListener, false)
